@@ -1,129 +1,10 @@
-<!DOCTYPE html>
+{% extends 'core_app/base_front.html' %}
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Shares &amp; Bonds Purchase Page</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#137fec",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
-                    },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                },
-            },
-        }
-    </script>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased overflow-x-hidden pb-24 md:pb-0">
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex justify-between items-center transition-colors">
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
-            <h1 class="text-xl font-bold tracking-tight">Techo Drill</h1>
-        </div>
+{% block title %}Shares & Bonds Purchase - Techo Drill{% endblock %}
 
-        <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-6">
-            <a href="home.html" class="text-sm font-medium hover:text-primary transition-colors">Home</a>
-            <a href="about.html" class="text-sm font-medium hover:text-primary transition-colors">About</a>
-            <a href="services.html" class="text-sm font-medium hover:text-primary transition-colors">Services</a>
-            <a href="products.html" class="text-sm font-medium hover:text-primary transition-colors">Portfolio</a>
-            <a href="investment-plan.html" class="text-sm font-medium hover:text-primary transition-colors">Market</a>
-            <a href="contact.html" class="text-sm font-medium hover:text-primary transition-colors">Contact</a>
-        </nav>
-
-        <div class="flex items-center gap-2">
-             <!-- User Balance Widget (Desktop) -->
-            <div class="hidden md:flex flex-col items-end mr-4">
-                 <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400">Balance</span>
-                 <span class="text-sm font-bold text-primary">$12,450.00</span>
-            </div>
-
-            <button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
-            </button>
-            <!-- Mobile Menu Button -->
-            <button onclick="toggleMenu()" class="flex md:hidden items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">menu</span>
-            </button>
-             <!-- Desktop CTA -->
-            <a href="dashboard.html" class="hidden md:flex bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors">
-                Dashboard
-            </a>
-        </div>
-    </header>
-
-    <!-- Offcanvas Menu (Mobile) -->
-    <div id="offcanvas-menu" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
-        <div class="absolute right-0 top-0 h-full w-[280px] bg-surface-light dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col p-6">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-xl font-bold">Menu</h2>
-                <button onclick="toggleMenu()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            
-            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-6">
-                 <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 block mb-1">Total Balance</span>
-                 <span class="text-2xl font-bold text-primary">$12,450.00</span>
-            </div>
-
-            <nav class="flex flex-col gap-4">
-                <a href="home.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <span class="material-symbols-outlined">home</span> Home
-                </a>
-                 <a href="about.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <span class="material-symbols-outlined">info</span> About
-                </a>
-                <a href="services.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                     <span class="material-symbols-outlined">apps</span> Services
-                </a>
-                <a href="products.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <span class="material-symbols-outlined">pie_chart</span> Portfolio
-                </a>
-                <a href="investment-plan.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <span class="material-symbols-outlined">candlestick_chart</span> Market
-                </a>
-                 <a href="shares.html" class="flex items-center gap-3 text-lg font-medium text-primary p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-                    <span class="material-symbols-outlined">monitoring</span> Trading
-                </a>
-                <a href="dashboard.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <span class="material-symbols-outlined">dashboard</span> Dashboard
-                </a>
-                <a href="contact.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <span class="material-symbols-outlined">support_agent</span> Contact
-                </a>
-            </nav>
-            <div class="mt-auto">
-                <button class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-lg shadow-lg shadow-primary/30">
-                    Sign Out
-                </button>
-            </div>
-        </div>
-    </div>
-
+{% block content %}
     <!-- Main Content -->
-    <main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
+     <main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column: Asset Info & Chart -->
             <div class="lg:col-span-2">
@@ -132,7 +13,7 @@
                     <div class="bg-center bg-no-repeat bg-cover rounded-xl h-24 w-24 shadow-md border-2 border-white dark:border-[#2A3B4D]" data-alt="Oil rig silhouette against a sunset gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeIi0JFoUfUJYj6a65pedsVBt7RYgR42TW8hZ3e0BaMwZH8u-uxmRdBpcuBobO5PNMYUpHZ6hJ4Z1HQxE0bOksfzKnSl90FNV5ZF7zs5dpwxuUQrR5LwqFgHHkAxr9skaGnh58JHxsOES99jwzAqopJDzfrj8Ch5BeI4Jv4ys8h9Yp9tQ_xtf3zsyXST_-gtwj0rTY82twQUbiy3qnBuR6j7lSyj7Rum0MoR_YkkKycodtQRXwjvNOPmjSLsc6dINJHCGAbFyX3dY3");'></div>
                     <div class="flex flex-col items-center md:items-start justify-center flex-1">
                         <h1 class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight tracking-[-0.015em] text-center md:text-left">Techo Drill Innovation</h1>
-                        <div class="flex items-center gap-3 mt-2">
+                         <div class="flex items-center gap-3 mt-2">
                             <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">NASDQ: TDI</span>
                             <span class="text-text-sec-light dark:text-text-sec-dark text-sm font-medium">Oil & Gas Exploration</span>
                         </div>
@@ -244,7 +125,7 @@
                                 <div class="size-8 rounded-full bg-[#F7931A] flex items-center justify-center text-white font-bold text-lg">₿</div>
                                 <span class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Bitcoin</span>
                             </label>
-                            <label class="flex shrink-0 cursor-pointer min-w-[100px] flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
+                             <label class="flex shrink-0 cursor-pointer min-w-[100px] flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
                                 <input class="hidden" name="payment" type="radio" value="eth"/>
                                 <div class="size-8 rounded-full bg-[#627EEA] flex items-center justify-center text-white font-bold text-lg">Ξ</div>
                                 <span class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Ethereum</span>
@@ -270,7 +151,6 @@
                              Investing involves risks. <a class="underline hover:text-primary" href="#">Read Prospectus</a>
                          </p>
                     </div>
-
                  </div>
             </div>
         </div>
@@ -287,69 +167,4 @@
             </button>
         </div>
     </main>
-
-    <!-- Bottom Navigation (Mobile Only) -->
-    <nav class="md:hidden fixed bottom-0 w-full bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 px-2 z-50">
-        <div class="flex justify-around items-center h-14">
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="home.html">
-                <span class="material-symbols-outlined text-2xl">home</span>
-                <span class="text-[10px] font-medium">Home</span>
-            </a>
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="services.html">
-                <span class="material-symbols-outlined text-2xl">apps</span>
-                <span class="text-[10px] font-medium">Services</span>
-            </a>
-             <div class="relative -top-5">
-                <button class="bg-primary text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg shadow-primary/40 transform transition-transform active:scale-95 border-4 border-background-light dark:border-background-dark">
-                    <span class="material-symbols-outlined text-2xl">add</span>
-                </button>
-            </div>
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="products.html">
-                <span class="material-symbols-outlined text-2xl">pie_chart</span>
-                <span class="text-[10px] font-medium">Portfolio</span>
-            </a>
-            <a class="flex flex-col items-center justify-center w-full h-full text-primary gap-1" href="investment-plan.html">
-                <span class="material-symbols-outlined text-2xl fill-1">candlestick_chart</span>
-                <span class="text-[10px] font-medium">Market</span>
-            </a>
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="dashboard.html">
-                <span class="material-symbols-outlined text-2xl">dashboard</span>
-                <span class="text-[10px] font-medium">Dashboard</span>
-            </a>
-        </div>
-        <!-- Safe area padding for bottom navigation -->
-        <div class="h-safe-bottom w-full"></div>
-    </nav>
-
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById('offcanvas-menu');
-            const sidebar = menu.querySelector('div');
-            
-            if (menu.classList.contains('opacity-0')) {
-                // Open
-                menu.classList.remove('opacity-0', 'pointer-events-none');
-                setTimeout(() => {
-                    sidebar.classList.remove('translate-x-full');
-                }, 10);
-            } else {
-                // Close
-                sidebar.classList.add('translate-x-full');
-                setTimeout(() => {
-                    menu.classList.add('opacity-0', 'pointer-events-none');
-                }, 300);
-            }
-        }
-
-        // Close on click outside
-        document.getElementById('offcanvas-menu').addEventListener('click', function(e) {
-            if (e.target === this) {
-                toggleMenu();
-            }
-        });
-    </script>
-    <style>
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-        .h-safe-bottom { height: env(safe-area-inset-bottom); }
-    </style>
-</body></html>
+{% endblock %}

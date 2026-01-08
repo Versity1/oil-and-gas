@@ -1,0 +1,55 @@
+{% extends 'core_app/base_dashboard.html' %}
+
+{% block title %}Deposit - Techo Drill Innovation{% endblock %}
+
+{% block content %}
+<main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
+    <div class="px-4 md:px-0 py-6">
+        <h1 class="text-2xl font-bold mb-6 text-text-main-light dark:text-text-main-dark">Deposit Funds</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Payment Methods -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-bold mb-4">Select Payment Method</h2>
+                <div class="space-y-4">
+                    <label class="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                        <input type="radio" name="payment_method" class="text-primary focus:ring-primary" checked>
+                        <div class="flex-1">
+                            <span class="font-bold block">USDT (Tether)</span>
+                            <span class="text-sm text-gray-500">TRC20 Network</span>
+                        </div>
+                        <span class="material-symbols-outlined text-green-500">currency_exchange</span>
+                    </label>
+                    <label class="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                        <input type="radio" name="payment_method" class="text-primary focus:ring-primary">
+                        <div class="flex-1">
+                            <span class="font-bold block">Bitcoin (BTC)</span>
+                            <span class="text-sm text-gray-500">Bitcoin Network</span>
+                        </div>
+                        <span class="material-symbols-outlined text-orange-500">currency_bitcoin</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Deposit Form -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-bold mb-4">Enter Amount</h2>
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Amount (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
+                            <input type="number" class="w-full pl-8 pr-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-bold text-lg" placeholder="0.00" min="100">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Minimum deposit: $100.00</p>
+                    </div>
+                    
+                    <button type="button" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all">
+                        Proceed to Payment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

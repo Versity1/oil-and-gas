@@ -1,0 +1,62 @@
+{% extends 'core_app/base_dashboard.html' %}
+
+{% block title %}Withdrawal - Techo Drill Innovation{% endblock %}
+
+{% block content %}
+<main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
+    <div class="px-4 md:px-0 py-6">
+        <h1 class="text-2xl font-bold mb-6 text-text-main-light dark:text-text-main-dark">Withdraw Funds</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Balance Info -->
+            <div class="bg-gradient-to-br from-primary to-blue-700 rounded-xl p-6 text-white shadow-lg">
+                <p class="text-blue-100 text-sm font-medium mb-1">Available Balance</p>
+                <h2 class="text-3xl font-bold mb-6">$45,230.00</h2>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                        <span class="text-xs text-blue-100 block">Pending</span>
+                        <span class="font-bold text-lg">$0.00</span>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                        <span class="text-xs text-blue-100 block">Withdrawable</span>
+                        <span class="font-bold text-lg">$45,230.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdrawal Form -->
+            <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-bold mb-4">Request Withdrawal</h2>
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Withdrawal Method</label>
+                        <select class="w-full bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary py-3">
+                            <option>USDT (TRC20)</option>
+                            <option>Bitcoin (BTC)</option>
+                            <option>Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Wallet Address / Account</label>
+                        <input type="text" class="w-full px-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary" placeholder="Enter address">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Amount (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
+                            <input type="number" class="w-full pl-8 pr-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-bold text-lg" placeholder="0.00" max="45230">
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all">
+                        Submit Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

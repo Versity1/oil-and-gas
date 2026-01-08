@@ -1,218 +1,87 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Techo Drill Innovation - Home</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Theme Config -->
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#137fec",
-                        "primary-dark": "#0b66c3",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
-                        "surface-light": "#ffffff",
-                        "surface-dark": "#1a2632",
-                        "text-main-light": "#111418",
-                        "text-main-dark": "#f0f2f4",
-                        "text-sec-light": "#617589",
-                        "text-sec-dark": "#9aaebb",
-                    },
-                    fontFamily: {
-                        "display": ["Space Grotesk", "sans-serif"],
-                        "body": ["Noto Sans", "sans-serif"],
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-                    animation: {
-                        'marquee': 'marquee 30s linear infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s ease-in-out infinite',
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            min-height: max(884px, 100dvh);
-            overflow-x: hidden;
-        }
-        
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #137fec;
-            border-radius: 4px;
-        }
-        
-        .dark ::-webkit-scrollbar-track {
-            background: #1a2632;
-        }
-        
-        .dark ::-webkit-scrollbar-thumb {
-            background: #0b66c3;
-        }
-        
-        /* Image hover effects */
-        .img-hover-zoom {
-            overflow: hidden;
-        }
-        
-        .img-hover-zoom img {
-            transition: transform 0.6s ease;
-        }
-        
-        .img-hover-zoom:hover img {
-            transform: scale(1.05);
-        }
-        
-        /* Card hover effects */
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .dark .card-hover:hover {
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-    </style>
-</head>
-<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased">
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex justify-between items-center transition-colors">
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary text-3xl animate-pulse-slow">water_drop</span>
-            <h1 class="text-xl font-bold tracking-tight">Techo Drill</h1>
-        </div>
+{% extends 'core_app/base_front.html' %}
 
-        <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-6">
-            <a href="home.html" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Home</a>
-            <a href="about.html" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">About</a>
-            <a href="services.html" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Services</a>
-            <a href="products.html" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Portfolio</a>
-            <a href="investment-plan.html" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Market</a>
-            <a href="contact.html" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Contact</a>
-        </nav>
+{% block title %}Techo Drill Innovation - Home{% endblock %}
 
-        <div class="flex items-center gap-2">
-            <button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
-                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
-                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            </button>
-            <!-- Mobile Menu Button -->
-            <button id="menu-toggle" class="flex md:hidden items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">menu</span>
-            </button>
-            <!-- Desktop CTA -->
-            <a href="dashboard.html" class="hidden md:flex bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg">
-                Dashboard
-            </a>
-        </div>
-    </header>
-
-    <!-- Offcanvas Menu (Mobile) -->
-    <div id="offcanvas-menu" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 md:hidden">
-        <div class="absolute right-0 top-0 h-full w-[280px] bg-surface-light dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col p-6">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-xl font-bold flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">menu</span>
-                    Menu
-                </h2>
-                <button id="close-menu" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            <nav class="flex flex-col gap-2">
-                <a href="home.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">home</span> Home
-                </a>
-                <a href="about.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">info</span> About
-                </a>
-                <a href="services.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">apps</span> Services
-                </a>
-                <a href="products.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">pie_chart</span> Portfolio
-                </a>
-                <a href="investment-plan.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">candlestick_chart</span> Market
-                </a>
-                <a href="shares.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">monitoring</span> Trading
-                </a>
-                <a href="dashboard.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">dashboard</span> Dashboard
-                </a>
-                <a href="contact.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">support_agent</span> Contact
-                </a>
-            </nav>
-            <div class="mt-auto pt-6 border-t border-gray-200 dark:border-gray-800">
-                <button class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95">
-                    Sign Out
-                </button>
-            </div>
+{% block content %}
+    <!-- Live Market Ticker -->
+    <div class="bg-slate-900 text-white py-2 overflow-hidden border-b border-gray-800">
+        <div class="flex items-center gap-8 animate-marquee whitespace-nowrap">
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> CRUDE OIL (WTI) <span class="font-bold">$78.45</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-red-400">▼</span> NATURAL GAS <span class="font-bold">$2.84</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> BRENT CRUDE <span class="font-bold">$82.10</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> GOLD <span class="font-bold">$2,045.30</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> BITCOIN <span class="font-bold">$42,350.00</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> TDI SHARES <span class="font-bold">$42.85</span></span>
+            <!-- Duplicate for loop -->
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> CRUDE OIL (WTI) <span class="font-bold">$78.45</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-red-400">▼</span> NATURAL GAS <span class="font-bold">$2.84</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> BRENT CRUDE <span class="font-bold">$82.10</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> GOLD <span class="font-bold">$2,045.30</span></span>
+            <span class="flex items-center gap-2 text-xs font-mono"><span class="text-green-400">▲</span> BITCOIN <span class="font-bold">$42,350.00</span></span>
         </div>
     </div>
 
     <!-- Hero Section -->
-    <section class="p-4 md:px-8 md:py-6">
-        <div class="relative w-full h-[400px] md:h-[600px] rounded-2xl overflow-hidden shadow-xl group img-hover-zoom">
-            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCP9IyKn5y9A-mKHpuFqsU1GwSmOgRQiZDrqCRcyURmw50_Xy0qFvSmPxzGIRtUWjsezFfpjb3EEOAtiANAO7nM6zudeepHDp28vjwwXXvaiuyf9FgGAFOIrHkWIzxPEU49-D_W4XPxlCXT8STgihOoakAkw-g86T9kzopEYQZxArGJEn5b6zb8wG-Qkhg8-ibuTOfBcq07bXHPcumGLo0UcBK36oGL3nmlt2pVRwTa8iyJ8jftJquYZ-FDZzNMWmSHHADtimCgqc7e");'></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 flex flex-col items-start gap-4 md:gap-6">
-                <div class="inline-flex items-center px-3 py-1 rounded-full bg-primary/20 backdrop-blur-md border border-primary/40 animate-pulse">
-                    <span class="w-2 h-2 rounded-full bg-primary mr-2 animate-pulse"></span>
-                    <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider">Live Operations</span>
+    <section class="relative h-[600px] md:h-[700px] flex items-center overflow-hidden">
+        <!-- Background Video/Image -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent z-10"></div>
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP9IyKn5y9A-mKHpuFqsU1GwSmOgRQiZDrqCRcyURmw50_Xy0qFvSmPxzGIRtUWjsezFfpjb3EEOAtiANAO7nM6zudeepHDp28vjwwXXvaiuyf9FgGAFOIrHkWIzxPEU49-D_W4XPxlCXT8STgihOoakAkw-g86T9kzopEYQZxArGJEn5b6zb8wG-Qkhg8-ibuTOfBcq07bXHPcumGLo0UcBK36oGL3nmlt2pVRwTa8iyJ8jftJquYZ-FDZzNMWmSHHADtimCgqc7e" alt="Offshore rig" class="w-full h-full object-cover animate-pan">
+        </div>
+
+        <div class="container mx-auto px-4 md:px-8 relative z-20">
+            <div class="max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6 animate-fade-in-up">
+                    <span class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span class="text-sm font-medium text-white tracking-wide">Pioneering Sustainable Energy</span>
                 </div>
-                <div class="max-w-2xl">
-                    <h2 class="text-3xl md:text-5xl font-bold text-white leading-tight mb-2 md:mb-4">Powering the Future of Energy</h2>
-                    <p class="text-gray-200 text-sm md:text-lg font-medium max-w-[90%] md:max-w-full">Advanced deep-sea robotics and AI-driven exploration solutions.</p>
+                
+                <h1 class="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 animate-fade-in-up delay-100">
+                    Energy for a <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Limitless Future.</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed animate-fade-in-up delay-200">
+                    We combine advanced AI-driven exploration with sustainable extraction technologies to power the world's next generation of growth.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-300">
+                    <a href="{% url 'investment_plan' %}" class="bg-primary hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-105 flex items-center justify-center gap-2">
+                        Start Investing
+                        <span class="material-symbols-outlined">trending_up</span>
+                    </a>
+                    <a href="{% url 'about' %}" class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-2 group">
+                        Discover Our Tech
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </a>
                 </div>
-                <button class="w-full md:w-auto bg-primary hover:bg-primary-dark text-white font-bold py-3 px-6 md:px-8 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2 animate-float">
-                    Explore Investments
-                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </button>
+            </div>
+        </div>
+        
+        <!-- Quick Stats Widget Abstract -->
+        <div class="absolute bottom-0 right-0 p-8 hidden lg:block z-20 animate-fade-in-left delay-500">
+            <div class="bg-slate-900/80 backdrop-blur-xl p-6 rounded-2xl border border-white/10 shadow-2xl max-w-xs">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                         <span class="material-symbols-outlined text-green-500">eco</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Carbon Offset</p>
+                        <p class="text-xl font-bold text-white">2.4M Tons</p>
+                    </div>
+                </div>
+                 <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                         <span class="material-symbols-outlined text-blue-500">water_drop</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Daily Output</p>
+                        <p class="text-xl font-bold text-white">450k Barrels</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -239,19 +108,79 @@
         </div>
     </section>
 
-    <!-- About Teaser -->
-    <section class="py-12 md:py-20 px-4 md:px-8">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
-            <div class="w-full md:w-1/2 relative">
-                <div class="relative rounded-2xl overflow-hidden shadow-2xl card-hover">
-                    <div class="img-hover-zoom">
-                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxXLdyCjwyRoFHJs5nsLkIPN6dH5IYjiDvIxSlGo9hV0nPQIVZj19ltQ5u3aWJqKsBBbzQarIwZMHnKQB0exRxiyjSNNWx_uGT4n5nbK0xuEQsN5m6XVAIkGNnNidXp3MkQJXPOPWD1dHUH1xFW4pFr9Rr74b7YL9BWH1fVYV1Gk09TCD2p2SFsxUdCBE0G6ktmzpXXNy2qW-jL9B05run622uiRNoyJKiYrq3p-bPDCiH8MAnMYG2I_G5jxEeb_veUp8QNhAKnoM9" alt="Offshore rig platform" class="w-full h-auto object-cover"/>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent"></div>
+    <!-- Stats Counter Section -->
+    <section class="py-12 bg-white dark:bg-surface-dark border-b border-gray-100 dark:border-gray-800">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-gray-100 dark:divide-gray-800">
+                <div class="group">
+                    <h3 class="text-4xl md:text-5xl font-extrabold text-primary mb-2 group-hover:scale-110 transition-transform">20+</h3>
+                    <p class="text-sm text-gray-500 uppercase tracking-widest font-semibold">Years Experience</p>
                 </div>
-                <div class="absolute -bottom-6 -right-6 bg-surface-light dark:bg-surface-dark p-6 rounded-xl shadow-xl border border-gray-100 dark:border-gray-800 max-w-[200px] animate-float">
-                    <p class="text-4xl font-bold text-primary mb-1">20+</p>
-                    <p class="text-sm font-medium text-text-sec-light dark:text-text-sec-dark">Years of industry leadership</p>
+                 <div class="group">
+                    <h3 class="text-4xl md:text-5xl font-extrabold text-primary mb-2 group-hover:scale-110 transition-transform">3.5k</h3>
+                    <p class="text-sm text-gray-500 uppercase tracking-widest font-semibold">Employees</p>
+                </div>
+                 <div class="group">
+                    <h3 class="text-4xl md:text-5xl font-extrabold text-primary mb-2 group-hover:scale-110 transition-transform">120</h3>
+                    <p class="text-sm text-gray-500 uppercase tracking-widest font-semibold">Active Rigs</p>
+                </div>
+                 <div class="group">
+                    <h3 class="text-4xl md:text-5xl font-extrabold text-primary mb-2 group-hover:scale-110 transition-transform">15</h3>
+                    <p class="text-sm text-gray-500 uppercase tracking-widest font-semibold">Global Awards</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real-Time Forex Chart (TradingView) -->
+    <section class="py-12 bg-gray-50 dark:bg-surface-dark/30 border-y border-gray-100 dark:border-gray-800">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="text-center mb-8">
+                <span class="text-primary font-bold text-sm tracking-wider uppercase mb-2 block">Live Market Data</span>
+                <h2 class="text-3xl font-bold text-text-main-light dark:text-text-main-dark">Global Currency Markets</h2>
+            </div>
+            <div class="h-[500px] rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700">
+                <!-- TradingView Widget BEGIN -->
+                <div class="tradingview-widget-container" style="height:100%;width:100%">
+                    <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+                    {
+                    "autosize": true,
+                    "symbol": "FX:EURUSD",
+                    "interval": "D",
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "enable_publishing": false,
+                    "allow_symbol_change": true,
+                    "calendar": false,
+                    "support_host": "https://www.tradingview.com"
+                    }
+                    </script>
+                </div>
+                <!-- TradingView Widget END -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Teaser -->
+    <section class="py-16 md:py-24 px-4 md:px-8 overflow-hidden">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+            <div class="w-full md:w-1/2 relative group">
+                <div class="absolute -inset-4 bg-gradient-to-r from-primary to-blue-400 rounded-3xl opacity-20 blur-xl group-hover:opacity-30 transition-opacity"></div>
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:-translate-y-2">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxXLdyCjwyRoFHJs5nsLkIPN6dH5IYjiDvIxSlGo9hV0nPQIVZj19ltQ5u3aWJqKsBBbzQarIwZMHnKQB0exRxiyjSNNWx_uGT4n5nbK0xuEQsN5m6XVAIkGNnNidXp3MkQJXPOPWD1dHUH1xFW4pFr9Rr74b7YL9BWH1fVYV1Gk09TCD2p2SFsxUdCBE0G6ktmzpXXNy2qW-jL9B05run622uiRNoyJKiYrq3p-bPDCiH8MAnMYG2I_G5jxEeb_veUp8QNhAKnoM9" alt="Offshore rig platform" class="w-full h-auto object-cover"/>
+                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <!-- Floating Card -->
+                <div class="absolute -bottom-10 -right-10 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 max-w-[220px] animate-float z-10 hidden md:block">
+                    <div class="flex items-center gap-3 mb-3">
+                         <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                         <span class="text-xs font-bold uppercase text-gray-400">System Status</span>
+                    </div>
+                    <p class="text-lg font-bold text-gray-800 dark:text-white mb-1">Operational</p>
+                    <p class="text-xs text-gray-500">All systems functioning at 98.5% efficiency.</p>
                 </div>
             </div>
             <div class="w-full md:w-1/2">
@@ -261,10 +190,10 @@
                     Techo Drill Innovation combines decades of expertise with cutting-edge technology to deliver sustainable, efficient, and profitable energy solutions. From deep-sea extraction to renewable transitions, we are powering the world's future.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="about.html" class="bg-surface-light dark:bg-surface-dark border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-8 rounded-lg transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                    <a href="{% url 'about' %}" class="bg-surface-light dark:bg-surface-dark border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-8 rounded-lg transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
                         Our Story
                     </a>
-                    <a href="services.html" class="flex items-center justify-center gap-2 text-text-main-light dark:text-text-main-dark font-bold hover:text-primary transition-colors px-4 py-3">
+                    <a href="{% url 'services' %}" class="flex items-center justify-center gap-2 text-text-main-light dark:text-text-main-dark font-bold hover:text-primary transition-colors px-4 py-3">
                         View Services <span class="material-symbols-outlined">arrow_forward</span>
                     </a>
                 </div>
@@ -272,11 +201,49 @@
         </div>
     </section>
 
+    <!-- Global Operations Map -->
+    <section class="py-20 px-4 md:px-8 bg-slate-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg')] bg-no-repeat bg-center bg-contain opacity-10"></div>
+        <div class="max-w-7xl mx-auto relative z-10 text-center">
+            <span class="text-primary font-bold text-sm tracking-wider uppercase mb-2 block">Global Reach</span>
+            <h2 class="text-3xl md:text-5xl font-bold mb-12">Powering the World</h2>
+            
+            <div class="relative w-full max-w-4xl mx-auto h-[300px] md:h-[500px] rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm p-8 flex items-center justify-center">
+                <p class="text-gray-400">Interactive Global Map Module</p>
+                <!-- Decorative Hotspots -->
+                <div class="absolute top-[30%] left-[20%] w-4 h-4 bg-primary rounded-full animate-ping"></div>
+                <div class="absolute top-[30%] left-[20%] w-4 h-4 bg-primary rounded-full"></div>
+                
+                <div class="absolute top-[40%] right-[30%] w-4 h-4 bg-green-500 rounded-full animate-ping delay-300"></div>
+                <div class="absolute top-[40%] right-[30%] w-4 h-4 bg-green-500 rounded-full"></div>
+                
+                <div class="absolute bottom-[30%] left-[50%] w-4 h-4 bg-amber-500 rounded-full animate-ping delay-700"></div>
+                <div class="absolute bottom-[30%] left-[50%] w-4 h-4 bg-amber-500 rounded-full"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-16 bg-surface-light dark:bg-surface-dark border-t border-gray-100 dark:border-gray-800">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <span class="material-symbols-outlined text-5xl text-primary mb-4">mark_email_unread</span>
+            <h2 class="text-3xl font-bold mb-4">Market Insights, Delivered.</h2>
+            <p class="text-gray-500 mb-8 max-w-lg mx-auto">Get weekly analysis on energy trends, stock performance, and company updates directly to your inbox.</p>
+            
+            <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" placeholder="Enter your email address" class="flex-1 px-6 py-4 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary outline-none transition-all" />
+                <button type="button" class="bg-primary hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
     <!-- Services Carousel -->
     <section class="py-12 md:py-16 px-4 md:px-8">
         <div class="flex items-center justify-between mb-8">
             <h3 class="text-2xl md:text-3xl font-bold">Core Services</h3>
-            <a class="text-primary text-sm font-medium hover:underline flex items-center gap-1" href="#">
+            <a class="text-primary text-sm font-medium hover:underline flex items-center gap-1" href="{% url 'services' %}">
                 View All <span class="material-symbols-outlined text-sm">chevron_right</span>
             </a>
         </div>
@@ -290,9 +257,6 @@
                     <h4 class="font-bold text-xl mb-2">Precision Drilling</h4>
                     <p class="text-text-sec-light dark:text-text-sec-dark">High-efficiency extraction with minimal ecological footprint using smart sensors.</p>
                 </div>
-                <a class="mt-auto text-primary font-semibold flex items-center gap-1 group" href="#">
-                    Learn More <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">chevron_right</span>
-                </a>
             </div>
             <!-- Card 2 -->
             <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-4 card-hover">
@@ -303,9 +267,6 @@
                     <h4 class="font-bold text-xl mb-2">Seismic Exploration</h4>
                     <p class="text-text-sec-light dark:text-text-sec-dark">Advanced 4D mapping technology to identify reserves with 99% accuracy.</p>
                 </div>
-                <a class="mt-auto text-primary font-semibold flex items-center gap-1 group" href="#">
-                    Learn More <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">chevron_right</span>
-                </a>
             </div>
             <!-- Card 3 -->
             <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-4 card-hover">
@@ -316,9 +277,6 @@
                     <h4 class="font-bold text-xl mb-2">Refining & Sales</h4>
                     <p class="text-text-sec-light dark:text-text-sec-dark">End-to-end production pipeline delivering directly to global markets.</p>
                 </div>
-                <a class="mt-auto text-primary font-semibold flex items-center gap-1 group" href="#">
-                    Learn More <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">chevron_right</span>
-                </a>
             </div>
         </div>
     </section>
@@ -544,6 +502,26 @@
                     Yes. All user funds are held in segregated, insured accounts. We employ bank-grade encryption and security protocols. Furthermore, our physical assets are fully insured against operational risks.
                 </div>
             </details>
+             <!-- FAQ Item 4 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    What is the minimum withdrawal amount?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    The minimum withdrawal amount is $50. Withdrawals are processed within 24 hours and can be sent to your bank account or crypto wallet.
+                </div>
+            </details>
+             <!-- FAQ Item 5 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    Can I trade on mobile?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Absolutely. Our dashboard and trading interfaces are fully responsive and optimized for mobile devices, allowing you to manage your portfolio from anywhere.
+                </div>
+            </details>
         </div>
     </section>
 
@@ -557,142 +535,13 @@
             <h2 class="text-3xl md:text-5xl font-bold mb-6">Ready to Power Your Portfolio?</h2>
             <p class="text-white/90 text-lg md:text-xl mb-10">Join thousands of investors and industry partners shaping the future of energy today.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="dashboard.html" class="bg-white text-primary font-bold py-4 px-10 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all text-lg">
+                <a href="{% url 'dashboard' %}" class="bg-white text-primary font-bold py-4 px-10 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all text-lg">
                     Get Started Now
                 </a>
-                <a href="contact.html" class="bg-transparent border-2 border-white text-white font-bold py-4 px-10 rounded-xl hover:bg-white/10 transition-all text-lg">
+                <a href="{% url 'contact' %}" class="bg-transparent border-2 border-white text-white font-bold py-4 px-10 rounded-xl hover:bg-white/10 transition-all text-lg">
                     Contact Sales
                 </a>
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pt-16 pb-8 px-4 md:px-8">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-            <div>
-                <div class="flex items-center gap-2 mb-6">
-                    <span class="material-symbols-outlined text-primary text-3xl animate-pulse-slow">water_drop</span>
-                    <h2 class="text-xl font-bold tracking-tight">Techo Drill</h2>
-                </div>
-                <p class="text-text-sec-light dark:text-text-sec-dark mb-6">Pioneering sustainable energy solutions through innovation, integrity, and advanced technology.</p>
-                <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-text-sec-light dark:text-text-sec-dark hover:bg-primary hover:text-white transition-colors">
-                        <span class="sr-only">Twitter</span>
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-text-sec-light dark:text-text-sec-dark hover:bg-primary hover:text-white transition-colors">
-                        <span class="sr-only">LinkedIn</span>
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"></path></svg>
-                    </a>
-                </div>
-            </div>
-            
-            <div>
-                <h3 class="font-bold text-lg mb-6">Company</h3>
-                <ul class="space-y-4 text-sm text-text-sec-light dark:text-text-sec-dark">
-                    <li><a href="about.html" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> About Us</a></li>
-                    <li><a href="products.html" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Portfolio</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Careers</a></li>
-                    <li><a href="contact.html" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Contact</a></li>
-                </ul>
-            </div>
-            
-            <div>
-                <h3 class="font-bold text-lg mb-6">Resources</h3>
-                <ul class="space-y-4 text-sm text-text-sec-light dark:text-text-sec-dark">
-                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Investor Relations</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Sustainability Report</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Press & Media</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> FAQ</a></li>
-                </ul>
-            </div>
-            
-            <div>
-                <h3 class="font-bold text-lg mb-6">Contact</h3>
-                <ul class="space-y-4 text-sm text-text-sec-light dark:text-text-sec-dark">
-                    <li class="flex items-start gap-3">
-                        <span class="material-symbols-outlined text-primary text-lg">location_on</span>
-                        <span>123 Energy Blvd, Suite 100<br>Houston, TX 77002</span>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-lg">call</span>
-                        <span>+1 (555) 123-4567</span>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-primary text-lg">mail</span>
-                        <span>info@techodrill.com</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-sec-light dark:text-text-sec-dark">
-            <p>&copy; 2025 Techo Drill Innovation. All rights reserved.</p>
-            <div class="flex gap-6">
-                <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
-                <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- JavaScript for Offcanvas Menu -->
-    <script>
-        const offcanvasMenu = document.getElementById('offcanvas-menu');
-        const menuToggle = document.getElementById('menu-toggle');
-        const closeMenu = document.getElementById('close-menu');
-        const menuLinks = document.querySelectorAll('#offcanvas-menu a');
-        
-        function openMenu() {
-            offcanvasMenu.classList.remove('opacity-0', 'pointer-events-none');
-            offcanvasMenu.querySelector('div').classList.remove('translate-x-full');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeMenuFunc() {
-            offcanvasMenu.classList.add('opacity-0', 'pointer-events-none');
-            offcanvasMenu.querySelector('div').classList.add('translate-x-full');
-            document.body.style.overflow = '';
-        }
-        
-        menuToggle.addEventListener('click', openMenu);
-        closeMenu.addEventListener('click', closeMenuFunc);
-        
-        // Close menu when clicking on links
-        menuLinks.forEach(link => {
-            link.addEventListener('click', closeMenuFunc);
-        });
-        
-        // Close menu when clicking on backdrop
-        offcanvasMenu.addEventListener('click', function(e) {
-            if (e.target === offcanvasMenu) {
-                closeMenuFunc();
-            }
-        });
-        
-        // Close menu with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !offcanvasMenu.classList.contains('opacity-0')) {
-                closeMenuFunc();
-            }
-        });
-        
-        // Add smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#' && href.startsWith('#')) {
-                    e.preventDefault();
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+{% endblock %}

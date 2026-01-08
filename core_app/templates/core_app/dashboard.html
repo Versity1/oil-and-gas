@@ -1,151 +1,8 @@
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Techo Drill Innovation - Dashboard</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Theme Config -->
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "primary": "#137fec",
-              "primary-dark": "#0b66c3",
-              "background-light": "#f6f7f8",
-              "background-dark": "#101922",
-              "surface-light": "#ffffff",
-              "surface-dark": "#1a2632",
-              "text-main-light": "#111418",
-              "text-main-dark": "#f0f2f4",
-              "text-sec-light": "#617589",
-              "text-sec-dark": "#9aaebb",
-            },
-            fontFamily: {
-              "display": ["Space Grotesk", "sans-serif"],
-              "body": ["Noto Sans", "sans-serif"],
-            },
-            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-          },
-        },
-      }
-    </script>
-    <style>
-        body { min-height: max(884px, 100dvh); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-        .h-safe-bottom { height: env(safe-area-inset-bottom); }
-    </style>
-</head>
-<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased overflow-x-hidden pb-24 md:pb-0">
+{% extends 'core_app/base_dashboard.html' %}
 
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex justify-between items-center transition-colors">
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
-            <h1 class="text-xl font-bold tracking-tight">Techo Drill</h1>
-        </div>
+{% block title %}Techo Drill Innovation - Dashboard{% endblock %}
 
-        <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-6">
-            <a href="home.html" class="text-sm font-medium hover:text-primary transition-colors">Home</a>
-            <a href="about.html" class="text-sm font-medium hover:text-primary transition-colors">About</a>
-            <a href="services.html" class="text-sm font-medium hover:text-primary transition-colors">Services</a>
-            <a href="products.html" class="text-sm font-medium hover:text-primary transition-colors">Portfolio</a>
-            <a href="investment-plan.html" class="text-sm font-medium hover:text-primary transition-colors">Market</a>
-            <a href="contact.html" class="text-sm font-medium hover:text-primary transition-colors">Contact</a>
-        </nav>
-
-        <div class="flex items-center gap-4">
-             <!-- User Profile Widget (Desktop) -->
-             <div class="hidden md:flex items-center gap-3">
-                <div class="text-right hidden lg:block">
-                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Good Morning</p>
-                    <h2 class="text-sm font-bold leading-tight">Alex Morgan</h2>
-                </div>
-                <div class="relative cursor-pointer">
-                    <div class="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDFEJRz1-RbqrQOkNw_fU6BWcuFrfkTcd-k5VjFJUsQ3jD5WST0v7kCPYhjOLfaD0H-5yXofIqzSLy1XduY8JPD5nd1dvvpcGfUr7-6aBtcANcsLWlKclKEd1SqA0EkQ155cpXeu2uwysGMl6l8XG-QFuMnlY3SrzHqsoIHv54iUiaZKn8WBbL9G_WGQungSfeewbF4VT-qPS9ICyrRbuO1qJ1K-VOQJc3lLvNfzlR4-LAlJo19WY8S9lM2CcPCK5WBChukceQY9FUk");'></div>
-                    <div class="absolute bottom-0 right-0 size-2.5 bg-green-500 rounded-full border-2 border-white dark:border-background-dark"></div>
-                </div>
-            </div>
-
-            <button class="relative flex size-9 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
-                <span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white dark:border-surface-dark"></span>
-            </button>
-            
-            <!-- Mobile Menu Button -->
-            <button onclick="toggleMenu()" class="flex md:hidden items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">menu</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Offcanvas Menu (Mobile) -->
-    <div id="offcanvas-menu" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
-        <div class="absolute right-0 top-0 h-full w-[280px] bg-surface-light dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col p-6">
-            <div class="flex justify-between items-center mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDFEJRz1-RbqrQOkNw_fU6BWcuFrfkTcd-k5VjFJUsQ3jD5WST0v7kCPYhjOLfaD0H-5yXofIqzSLy1XduY8JPD5nd1dvvpcGfUr7-6aBtcANcsLWlKclKEd1SqA0EkQ155cpXeu2uwysGMl6l8XG-QFuMnlY3SrzHqsoIHv54iUiaZKn8WBbL9G_WGQungSfeewbF4VT-qPS9ICyrRbuO1qJ1K-VOQJc3lLvNfzlR4-LAlJo19WY8S9lM2CcPCK5WBChukceQY9FUk");'></div>
-                    <div>
-                        <p class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Logged in as</p>
-                        <h2 class="text-sm font-bold leading-tight">Alex Morgan</h2>
-                    </div>
-                </div>
-                <button onclick="toggleMenu()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            
-            <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-6">
-                 <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 block mb-1">Total Balance</span>
-                 <span class="text-2xl font-bold text-primary">$45,230.00</span>
-            </div>
-
-            <nav class="flex flex-col gap-3">
-                <a href="home.html" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">home</span> Home
-                </a>
-                <a href="about.html" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">info</span> About
-                </a>
-                <a href="services.html" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">apps</span> Services
-                </a>
-                <a href="products.html" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">pie_chart</span> Portfolio
-                </a>
-                <a href="investment-plan.html" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">candlestick_chart</span> Market
-                </a>
-                <a href="shares.html" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">monitoring</span> Trading
-                </a>
-                <a href="dashboard.html" class="flex items-center gap-3 text-base font-medium text-primary bg-primary/10 p-2 rounded-lg transition-colors">
-                    <span class="material-symbols-outlined fill-1">dashboard</span> Dashboard
-                </a>
-                <a href="contact.html" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <span class="material-symbols-outlined">support_agent</span> Contact
-                </a>
-            </nav>
-            <div class="mt-auto">
-                <button class="w-full bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800 font-bold py-3 rounded-lg transition-colors">
-                    Sign Out
-                </button>
-            </div>
-        </div>
-    </div>
-
+{% block content %}
     <!-- Main Content -->
     <main class="w-full max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
         <!-- Welcome Section -->
@@ -202,7 +59,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-4 px-1">
                         <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Active Projects</h3>
-                        <a href="products.html" class="text-sm text-primary font-medium hover:text-primary-dark transition-colors">View All</a>
+                        <a href="{% url 'products' %}" class="text-sm text-primary font-medium hover:text-primary-dark transition-colors">View All</a>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -253,7 +110,7 @@
                 <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
                     <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark mb-4">Quick Actions</h3>
                     <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                        <a href="investment-plan.html" class="flex flex-col items-center gap-2 group p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{% url 'investment_plan' %}" class="flex flex-col items-center gap-2 group p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <div class="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
                                 <span class="material-symbols-outlined text-2xl">add_circle</span>
                             </div>
@@ -265,13 +122,13 @@
                             </div>
                             <span class="text-xs font-bold text-center text-text-sec-light dark:text-text-sec-dark group-hover:text-orange-500 transition-colors">Withdraw</span>
                         </a>
-                        <a href="transaction-history.html" class="flex flex-col items-center gap-2 group p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{% url 'transaction_history' %}" class="flex flex-col items-center gap-2 group p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <div class="flex size-14 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
                                 <span class="material-symbols-outlined text-2xl">description</span>
                             </div>
                             <span class="text-xs font-bold text-center text-text-sec-light dark:text-text-sec-dark group-hover:text-blue-500 transition-colors">Reports</span>
                         </a>
-                        <a href="contact.html" class="flex flex-col items-center gap-2 group p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <a href="{% url 'contact' %}" class="flex flex-col items-center gap-2 group p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                              <div class="flex size-14 items-center justify-center rounded-2xl bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 group-hover:bg-teal-500 group-hover:text-white transition-all duration-300">
                                 <span class="material-symbols-outlined text-2xl">support_agent</span>
                             </div>
@@ -284,7 +141,7 @@
                 <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
                     <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
                         <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Recent Activity</h3>
-                        <a href="transaction-history.html" class="text-xs font-bold uppercase tracking-wider text-primary hover:text-primary-dark transition-colors">View All</a>
+                        <a href="{% url 'transaction_history' %}" class="text-xs font-bold uppercase tracking-wider text-primary hover:text-primary-dark transition-colors">View All</a>
                     </div>
                     <div>
                          <!-- Transaction Item 1 -->
@@ -331,66 +188,4 @@
             </div>
         </div>
     </main>
-
-    <!-- Bottom Navigation (Mobile Only) -->
-    <nav class="md:hidden fixed bottom-0 w-full bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 px-2 z-50">
-         <div class="flex justify-around items-center h-14">
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="home.html">
-                <span class="material-symbols-outlined text-2xl">home</span>
-                <span class="text-[10px] font-medium">Home</span>
-            </a>
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="services.html">
-                <span class="material-symbols-outlined text-2xl">apps</span>
-                <span class="text-[10px] font-medium">Services</span>
-            </a>
-             <div class="relative -top-5">
-                <button class="bg-primary text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg shadow-primary/40 transform transition-transform active:scale-95 border-4 border-background-light dark:border-background-dark">
-                    <span class="material-symbols-outlined text-2xl">add</span>
-                </button>
-            </div>
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="products.html">
-                <span class="material-symbols-outlined text-2xl">pie_chart</span>
-                <span class="text-[10px] font-medium">Portfolio</span>
-            </a>
-            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="investment-plan.html">
-                <span class="material-symbols-outlined text-2xl">candlestick_chart</span>
-                <span class="text-[10px] font-medium">Market</span>
-            </a>
-            <a class="flex flex-col items-center justify-center w-full h-full text-primary gap-1" href="dashboard.html">
-                <span class="material-symbols-outlined text-2xl fill-1">dashboard</span>
-                <span class="text-[10px] font-medium">Dashboard</span>
-            </a>
-        </div>
-        <!-- Safe area padding for bottom navigation -->
-        <div class="h-safe-bottom w-full"></div>
-    </nav>
-
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById('offcanvas-menu');
-            const sidebar = menu.querySelector('div');
-            
-            if (menu.classList.contains('opacity-0')) {
-                // Open
-                menu.classList.remove('opacity-0', 'pointer-events-none');
-                setTimeout(() => {
-                    sidebar.classList.remove('translate-x-full');
-                }, 10);
-            } else {
-                // Close
-                sidebar.classList.add('translate-x-full');
-                setTimeout(() => {
-                    menu.classList.add('opacity-0', 'pointer-events-none');
-                }, 300);
-            }
-        }
-
-        // Close on click outside
-        document.getElementById('offcanvas-menu').addEventListener('click', function(e) {
-            if (e.target === this) {
-                toggleMenu();
-            }
-        });
-    </script>
-</body>
-</html>
+{% endblock %}

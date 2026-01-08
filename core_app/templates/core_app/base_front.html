@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}Techo Drill Innovation{% endblock %}</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b66c3",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2632",
+                        "text-main-light": "#111418",
+                        "text-main-dark": "#f0f2f4",
+                        "text-sec-light": "#617589",
+                        "text-sec-dark": "#9aaebb",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    animation: {
+                        'marquee': 'marquee 30s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+            overflow-x: hidden;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #137fec; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-track { background: #1a2632; }
+        .dark ::-webkit-scrollbar-thumb { background: #0b66c3; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        .dark .card-hover:hover { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex justify-between items-center transition-colors">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-3xl animate-pulse-slow">water_drop</span>
+            <h1 class="text-xl font-bold tracking-tight">Techo Drill</h1>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-6">
+            <a href="{% url 'home' %}" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Home</a>
+            <a href="{% url 'about' %}" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">About</a>
+            <a href="{% url 'services' %}" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Services</a>
+            <a href="{% url 'products' %}" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Portfolio</a>
+            <a href="{% url 'investment_plan' %}" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Market</a>
+            <a href="{% url 'contact' %}" class="text-sm font-medium hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full">Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+            <button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </button>
+            <button id="menu-toggle" class="flex md:hidden items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">menu</span>
+            </button>
+            <a href="{% url 'dashboard' %}" class="hidden md:flex bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg">
+                Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Offcanvas Menu (Mobile) -->
+    <div id="offcanvas-menu" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 md:hidden">
+        <div class="absolute right-0 top-0 h-full w-[280px] bg-surface-light dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">menu</span> Menu
+                </h2>
+                <button id="close-menu" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-2">
+                <a href="{% url 'home' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">home</span> Home
+                </a>
+                <a href="{% url 'about' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">info</span> About
+                </a>
+                <a href="{% url 'services' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">apps</span> Services
+                </a>
+                <a href="{% url 'products' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">pie_chart</span> Portfolio
+                </a>
+                <a href="{% url 'investment_plan' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">candlestick_chart</span> Market
+                </a>
+                <a href="{% url 'shares' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">monitoring</span> Trading
+                </a>
+                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+                <a href="{% url 'contact' %}" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">support_agent</span> Contact
+                </a>
+            </nav>
+            <div class="mt-auto pt-6 border-t border-gray-200 dark:border-gray-800">
+                <button class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pt-16 pb-8 px-4 md:px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+            <div>
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="material-symbols-outlined text-primary text-3xl animate-pulse-slow">water_drop</span>
+                    <h2 class="text-xl font-bold tracking-tight">Techo Drill</h2>
+                </div>
+                <p class="text-text-sec-light dark:text-text-sec-dark mb-6">Pioneering sustainable energy solutions through innovation, integrity, and advanced technology.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-text-sec-light dark:text-text-sec-dark hover:bg-primary hover:text-white transition-colors"><span class="sr-only">Twitter</span><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-text-sec-light dark:text-text-sec-dark hover:bg-primary hover:text-white transition-colors"><span class="sr-only">LinkedIn</span><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"></path></svg></a>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-6">Company</h3>
+                <ul class="space-y-4 text-sm text-text-sec-light dark:text-text-sec-dark">
+                    <li><a href="{% url 'about' %}" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> About Us</a></li>
+                    <li><a href="{% url 'products' %}" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Portfolio</a></li>
+                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Careers</a></li>
+                    <li><a href="{% url 'contact' %}" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-6">Resources</h3>
+                <ul class="space-y-4 text-sm text-text-sec-light dark:text-text-sec-dark">
+                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Investor Relations</a></li>
+                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Sustainability Report</a></li>
+                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> Press & Media</a></li>
+                    <li><a href="#" class="hover:text-primary transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-xs">chevron_right</span> FAQ</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg mb-6">Contact</h3>
+                <ul class="space-y-4 text-sm text-text-sec-light dark:text-text-sec-dark">
+                    <li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-lg">location_on</span><span>Tech Innovation Tower, Level 42<br>Business Bay, Dubai, UAE</span></li>
+                    <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">call</span><span>+1 (555) 123-4567</span></li>
+                    <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">mail</span><span>info@techodrill.com</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-100 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-sec-light dark:text-text-sec-dark">
+            <p>&copy; 2025 Techo Drill Innovation. All rights reserved.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const offcanvasMenu = document.getElementById('offcanvas-menu');
+        const menuToggle = document.getElementById('menu-toggle');
+        const closeMenu = document.getElementById('close-menu');
+        const menuLinks = document.querySelectorAll('#offcanvas-menu a');
+        
+        function openMenu() {
+            offcanvasMenu.classList.remove('opacity-0', 'pointer-events-none');
+            offcanvasMenu.querySelector('div').classList.remove('translate-x-full');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMenuFunc() {
+            offcanvasMenu.classList.add('opacity-0', 'pointer-events-none');
+            offcanvasMenu.querySelector('div').classList.add('translate-x-full');
+            document.body.style.overflow = '';
+        }
+        
+        menuToggle.addEventListener('click', openMenu);
+        closeMenu.addEventListener('click', closeMenuFunc);
+        menuLinks.forEach(link => link.addEventListener('click', closeMenuFunc));
+        offcanvasMenu.addEventListener('click', e => { if (e.target === offcanvasMenu) closeMenuFunc(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenuFunc(); });
+    </script>
+</body>
+</html>
