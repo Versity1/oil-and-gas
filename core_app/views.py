@@ -2,45 +2,45 @@ from django.shortcuts import render
 
 # Front Pages
 def home(request):
-    return render(request, 'core_app/home.html')
+    return render(request, 'home.html')
 
 def about(request):
-    return render(request, 'core_app/about.html')
+    return render(request, 'about.html')
 
 def services(request):
-    return render(request, 'core_app/services.html')
+    return render(request, 'services.html')
 
 def contact(request):
-    return render(request, 'core_app/contact.html')
+    return render(request, 'contact.html')
 
 def products(request):
-    return render(request, 'core_app/products.html')
+    return render(request, 'products.html')
 
 # Auth Pages
 def login_view(request):
-    return render(request, 'core_app/login.html')
+    return render(request, 'login.html')
 
 def register(request):
-    return render(request, 'core_app/register.html')
+    return render(request, 'register.html')
 
 def password_reset(request):
-    return render(request, 'core_app/password_reset.html')
+    return render(request, 'password_reset.html')
 
 # Dashboard Pages
 def dashboard(request):
-    return render(request, 'core_app/dashboard.html')
+    return render(request, 'dashboard.html')
 
 def investment_plan(request):
-    return render(request, 'core_app/investment-plan.html')
+    return render(request, 'investment-plan.html')
 
 def shares(request):
-    return render(request, 'core_app/shares.html')
+    return render(request, 'shares.html')
 
 def transaction_history(request):
-    return render(request, 'core_app/transaction-history.html')
+    return render(request, 'transaction-history.html')
 
 def deposit(request):
-    return render(request, 'core_app/deposit.html')
+    return render(request, 'deposit.html')
 
 def withdrawal(request):
-    return render(request, 'core_app/withdrawal.html')
+    return render(request, 'withdrawal.html')

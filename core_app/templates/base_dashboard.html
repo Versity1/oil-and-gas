@@ -40,13 +40,7 @@
         },
       }
     </script>
-    <style>
-        body { min-height: max(884px, 100dvh); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-        .h-safe-bottom { height: env(safe-area-inset-bottom); }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased overflow-x-hidden pb-24 md:pb-0">
 
@@ -171,33 +165,6 @@
         <!-- Safe area padding for bottom navigation -->
         <div class="h-safe-bottom w-full"></div>
     </nav>
-
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById('offcanvas-menu');
-            const sidebar = menu.querySelector('div');
-            
-            if (menu.classList.contains('opacity-0')) {
-                // Open
-                menu.classList.remove('opacity-0', 'pointer-events-none');
-                setTimeout(() => {
-                    sidebar.classList.remove('translate-x-full');
-                }, 10);
-            } else {
-                // Close
-                sidebar.classList.add('translate-x-full');
-                setTimeout(() => {
-                    menu.classList.add('opacity-0', 'pointer-events-none');
-                }, 300);
-            }
-        }
-
-        // Close on click outside
-        document.getElementById('offcanvas-menu').addEventListener('click', function(e) {
-            if (e.target === this) {
-                toggleMenu();
-            }
-        });
-    </script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
 </body>
 </html>

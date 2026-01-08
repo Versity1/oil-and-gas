@@ -44,29 +44,7 @@
             },
         }
     </script>
-    <style>
-        body {
-            min-height: max(884px, 100dvh);
-            overflow-x: hidden;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        html { scroll-behavior: smooth; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #137fec; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-track { background: #1a2632; }
-        .dark ::-webkit-scrollbar-thumb { background: #0b66c3; }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
-        .dark .card-hover:hover { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased">
@@ -197,30 +175,6 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        const offcanvasMenu = document.getElementById('offcanvas-menu');
-        const menuToggle = document.getElementById('menu-toggle');
-        const closeMenu = document.getElementById('close-menu');
-        const menuLinks = document.querySelectorAll('#offcanvas-menu a');
-        
-        function openMenu() {
-            offcanvasMenu.classList.remove('opacity-0', 'pointer-events-none');
-            offcanvasMenu.querySelector('div').classList.remove('translate-x-full');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeMenuFunc() {
-            offcanvasMenu.classList.add('opacity-0', 'pointer-events-none');
-            offcanvasMenu.querySelector('div').classList.add('translate-x-full');
-            document.body.style.overflow = '';
-        }
-        
-        menuToggle.addEventListener('click', openMenu);
-        closeMenu.addEventListener('click', closeMenuFunc);
-        menuLinks.forEach(link => link.addEventListener('click', closeMenuFunc));
-        offcanvasMenu.addEventListener('click', e => { if (e.target === offcanvasMenu) closeMenuFunc(); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenuFunc(); });
-    </script>
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>
