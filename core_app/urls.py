@@ -12,6 +12,7 @@ urlpatterns = [
     # Auth Pages
     path('login/', views.login_view, name='login'),
     path('register/', views.register, name='register'),
+    path('logout/', views.logout_view, name='logout'),
     path('password-reset/', views.password_reset, name='password_reset'),
     
     # Dashboard Pages

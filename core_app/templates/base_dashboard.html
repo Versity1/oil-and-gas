@@ -66,7 +66,7 @@
              <div class="hidden md:flex items-center gap-3">
                 <div class="text-right hidden lg:block">
                     <p class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Good Morning</p>
-                    <h2 class="text-sm font-bold leading-tight">Alex Morgan</h2>
+                    <h2 class="text-sm font-bold leading-tight">{{ user.first_name|default:user.username }}</h2>
                 </div>
                 <div class="relative cursor-pointer">
                     <div class="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDFEJRz1-RbqrQOkNw_fU6BWcuFrfkTcd-k5VjFJUsQ3jD5WST0v7kCPYhjOLfaD0H-5yXofIqzSLy1XduY8JPD5nd1dvvpcGfUr7-6aBtcANcsLWlKclKEd1SqA0EkQ155cpXeu2uwysGMl6l8XG-QFuMnlY3SrzHqsoIHv54iUiaZKn8WBbL9G_WGQungSfeewbF4VT-qPS9ICyrRbuO1qJ1K-VOQJc3lLvNfzlR4-LAlJo19WY8S9lM2CcPCK5WBChukceQY9FUk");'></div>
@@ -94,7 +94,7 @@
                     <div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDFEJRz1-RbqrQOkNw_fU6BWcuFrfkTcd-k5VjFJUsQ3jD5WST0v7kCPYhjOLfaD0H-5yXofIqzSLy1XduY8JPD5nd1dvvpcGfUr7-6aBtcANcsLWlKclKEd1SqA0EkQ155cpXeu2uwysGMl6l8XG-QFuMnlY3SrzHqsoIHv54iUiaZKn8WBbL9G_WGQungSfeewbF4VT-qPS9ICyrRbuO1qJ1K-VOQJc3lLvNfzlR4-LAlJo19WY8S9lM2CcPCK5WBChukceQY9FUk");'></div>
                     <div>
                         <p class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Logged in as</p>
-                        <h2 class="text-sm font-bold leading-tight">Alex Morgan</h2>
+                        <h2 class="text-sm font-bold leading-tight">{{ user.first_name|default:user.username }}</h2>
                     </div>
                 </div>
                 <button onclick="toggleMenu()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -128,9 +128,12 @@
                 </a>
             </nav>
             <div class="mt-auto">
-                <button class="w-full bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800 font-bold py-3 rounded-lg transition-colors">
-                    Sign Out
-                </button>
+                <form action="{% url 'logout' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800 font-bold py-3 rounded-lg transition-colors">
+                        Sign Out
+                    </button>
+                </form>
             </div>
         </div>
     </div>

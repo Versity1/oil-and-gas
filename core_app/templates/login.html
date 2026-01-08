@@ -36,7 +36,15 @@
     </div>
     </div>
     <!-- Login Form -->
-    <form class="px-6 pb-2 flex flex-col gap-5">
+    <form class="px-6 pb-2 flex flex-col gap-5" method="POST">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="p-3 mb-4 text-sm {% if message.tags == 'error' %}text-red-700 bg-red-100{% else %}text-blue-700 bg-blue-100{% endif %} rounded-xl">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
     <!-- Email Field -->
     <div class="flex flex-col gap-1.5">
     <label class="text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">Corporate Email</label>
@@ -44,7 +52,7 @@
     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
     <span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors text-[20px]">mail</span>
     </div>
-    <input class="w-full pl-10 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all text-base" placeholder="name@techodrill.com" type="email"/>
+    <input name="username" class="w-full pl-10 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all text-base" placeholder="name@techodrill.com" type="text" required/>
     </div>
     </div>
     <!-- Password Field -->
@@ -57,14 +65,14 @@
     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
     <span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors text-[20px]">lock</span>
     </div>
-    <input class="w-full pl-10 pr-10 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all text-base" placeholder="••••••••" type="password"/>
+    <input name="password" class="w-full pl-10 pr-10 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all text-base" placeholder="••••••••" type="password" required/>
     <button class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer" type="button">
     <span class="material-symbols-outlined text-[20px]">visibility</span>
     </button>
     </div>
     </div>
     <!-- Main Action -->
-    <button class="mt-2 w-full bg-primary hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 flex items-center justify-center gap-2" type="button">
+    <button class="mt-2 w-full bg-primary hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 flex items-center justify-center gap-2" type="submit">
     <span>Secure Login</span>
     <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
     </button>
