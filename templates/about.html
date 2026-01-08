@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>About Techo Drill Innovation</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "primary-dark": "#0b66c3",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1a2632",
+              "text-main-light": "#111418",
+              "text-main-dark": "#f0f2f4",
+              "text-sec-light": "#617589",
+              "text-sec-dark": "#9aaebb",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+    <style>
+        body { min-height: max(884px, 100dvh); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .h-safe-bottom { height: env(safe-area-inset-bottom); }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex justify-between items-center transition-colors">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
+            <h1 class="text-xl font-bold tracking-tight">Techo Drill</h1>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-6">
+            <a href="home.html" class="text-sm font-medium hover:text-primary transition-colors">Home</a>
+             <a href="about.html" class="text-sm font-medium text-primary transition-colors">About</a>
+            <a href="services.html" class="text-sm font-medium hover:text-primary transition-colors">Services</a>
+            <a href="products.html" class="text-sm font-medium hover:text-primary transition-colors">Portfolio</a>
+            <a href="investment-plan.html" class="text-sm font-medium hover:text-primary transition-colors">Market</a>
+            <a href="contact.html" class="text-sm font-medium hover:text-primary transition-colors">Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+            <button class="hidden md:flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
+            </button>
+            <a href="dashboard.html" class="hidden md:flex bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors">
+                Dashboard
+            </a>
+            <!-- Mobile Menu Button -->
+            <button onclick="toggleMenu()" class="flex md:hidden items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">menu</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Offcanvas Menu (Mobile) -->
+    <div id="offcanvas-menu" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+        <div class="absolute right-0 top-0 h-full w-[280px] bg-surface-light dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button onclick="toggleMenu()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <nav class="flex flex-col gap-4">
+                <a href="home.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">home</span> Home
+                </a>
+                <a href="about.html" class="flex items-center gap-3 text-lg font-medium text-primary bg-primary/10 p-2 rounded-lg">
+                    <span class="material-symbols-outlined fill-1">info</span> About
+                </a>
+                <a href="services.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                     <span class="material-symbols-outlined">apps</span> Services
+                </a>
+                <a href="products.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">pie_chart</span> Portfolio
+                </a>
+                <a href="investment-plan.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">candlestick_chart</span> Market
+                </a>
+                 <a href="shares.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">monitoring</span> Trading
+                </a>
+                <a href="dashboard.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+                 <a href="contact.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">support_agent</span> Contact
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
+        <!-- Hero Section -->
+        <div class="relative bg-cover bg-center flex flex-col justify-end overflow-hidden h-[300px] md:h-[400px] md:rounded-2xl" data-alt="Large offshore oil rig platform in the ocean during a dramatic sunset" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 50%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDxXLdyCjwyRoFHJs5nsLkIPN6dH5IYjiDvIxSlGo9hV0nPQIVZj19ltQ5u3aWJqKsBBbzQarIwZMHnKQB0exRxiyjSNNWx_uGT4n5nbK0xuEQsN5m6XVAIkGNnNidXp3MkQJXPOPWD1dHUH1xFW4pFr9Rr74b7YL9BWH1fVYV1Gk09TCD2p2SFsxUdCBE0G6ktmzpXXNy2qW-jL9B05run622uiRNoyJKiYrq3p-bPDCiH8MAnMYG2I_G5jxEeb_veUp8QNhAKnoM9");'>
+            <div class="flex flex-col p-6 md:p-10 z-10 max-w-4xl">
+                <span class="inline-flex w-fit items-center gap-1 rounded-full bg-primary/90 px-2 py-1 text-xs md:text-sm font-medium text-white mb-2">
+                    <span class="material-symbols-outlined text-[14px]">bolt</span> Innovation
+                </span>
+                <h1 class="text-white tracking-tight text-3xl md:text-5xl font-bold leading-tight drop-shadow-md">Powering the Future of Energy</h1>
+                 <p class="text-white/90 text-sm md:text-lg mt-2 max-w-xl">Excellence in drilling, exploration, and sustainable energy production.</p>
+            </div>
+        </div>
+
+        <!-- Intro Section -->
+        <div class="py-8 md:py-12 px-4 md:px-0">
+             <div class="max-w-3xl">
+                <h2 class="text-text-main-light dark:text-text-main-dark tracking-tight text-2xl md:text-3xl font-bold leading-tight mb-4">Excellence in Exploration</h2>
+                <p class="text-text-sec-light dark:text-text-sec-dark text-base md:text-lg leading-relaxed">
+                    Techo Drill Innovation specializes in oil and gas drilling, exploration, production, and sales. We blend decades of industrial expertise with modern technology to extract value responsibly while powering global progress. Our commitment to sustainability and safety sets us apart in the energy sector.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stats Strip -->
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 px-4 md:px-0 mb-12">
+            <div class="flex flex-col gap-2 rounded-xl p-6 bg-gray-50 dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-2xl">oil_barrel</span>
+                    <p class="text-text-sec-light dark:text-text-sec-dark text-xs font-bold uppercase tracking-wide">Production</p>
+                </div>
+                <p class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight">1M+</p>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Barrels Annually</p>
+            </div>
+            <div class="flex flex-col gap-2 rounded-xl p-6 bg-gray-50 dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-2xl">precision_manufacturing</span>
+                    <p class="text-text-sec-light dark:text-text-sec-dark text-xs font-bold uppercase tracking-wide">Fleet</p>
+                </div>
+                <p class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight">50+</p>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Active Rigs</p>
+            </div>
+            <div class="col-span-2 md:col-span-1 flex flex-col gap-2 rounded-xl p-6 bg-gray-50 dark:bg-surface-dark border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-primary text-2xl">health_and_safety</span>
+                    <p class="text-text-sec-light dark:text-text-sec-dark text-xs font-bold uppercase tracking-wide">Safety</p>
+                </div>
+                <p class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight">Zero</p>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Major Incidents</p>
+            </div>
+        </div>
+
+        <!-- Our Pillars Grid -->
+        <div class="mb-12 px-4 md:px-0">
+            <h3 class="text-lg font-bold uppercase tracking-wider text-text-main-light dark:text-text-main-dark mb-6">Our Pillars</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Mission -->
+                <div class="bg-primary/5 dark:bg-primary/10 p-6 rounded-xl border border-primary/10 dark:border-primary/20 flex flex-col gap-4 hover:shadow-lg transition-all group">
+                    <div class="size-12 rounded-full bg-white dark:bg-surface-dark flex items-center justify-center shadow-sm text-primary group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl">flag</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark mb-2">Mission</h4>
+                        <p class="text-sm leading-relaxed text-text-sec-light dark:text-text-sec-dark">To extract value responsibly while powering global progress through sustainable practices.</p>
+                    </div>
+                </div>
+                <!-- Vision -->
+                <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 hover:shadow-lg transition-all group">
+                    <div class="size-12 rounded-full bg-gray-50 dark:bg-background-dark flex items-center justify-center shadow-sm text-text-main-light dark:text-white group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl">visibility</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark mb-2">Vision</h4>
+                        <p class="text-sm leading-relaxed text-text-sec-light dark:text-text-sec-dark">Leading the transition to efficient, safe, and technologically advanced energy production.</p>
+                    </div>
+                </div>
+                <!-- Values -->
+                <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 hover:shadow-lg transition-all group">
+                    <div class="size-12 rounded-full bg-gray-50 dark:bg-background-dark flex items-center justify-center shadow-sm text-text-main-light dark:text-white group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl">diamond</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark mb-2">Values</h4>
+                        <p class="text-sm leading-relaxed text-text-sec-light dark:text-text-sec-dark">Integrity, Innovation, and Sustainability are at the core of everything we do.</p>
+                    </div>
+                </div>
+                <!-- Safety -->
+                <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 hover:shadow-lg transition-all group">
+                    <div class="size-12 rounded-full bg-gray-50 dark:bg-background-dark flex items-center justify-center shadow-sm text-text-main-light dark:text-white group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl">shield</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark mb-2">Safety</h4>
+                        <p class="text-sm leading-relaxed text-text-sec-light dark:text-text-sec-dark">Our number one priority. We ensure everyone goes home safe, every single day.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Widget -->
+        <div class="rounded-2xl bg-gray-50 dark:bg-surface-dark/50 p-6 md:p-8 mb-12">
+            <h3 class="text-lg font-bold uppercase tracking-wider text-text-main-light dark:text-text-main-dark mb-8">Our Legacy</h3>
+            <div class="relative border-l-2 border-gray-200 dark:border-gray-700 ml-3 space-y-10">
+                <!-- Timeline Item 1 -->
+                <div class="pl-8 relative group">
+                    <div class="absolute -left-[9px] top-0 size-[18px] rounded-full bg-white dark:bg-background-dark border-4 border-primary group-hover:scale-125 transition-transform"></div>
+                    <span class="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded mb-2 inline-block">2023</span>
+                    <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark">Global Expansion</h4>
+                    <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Expanded operations into Southeast Asia and the North Sea, marking a new era of global reach and operational diversity.</p>
+                    <div class="mt-4 rounded-xl overflow-hidden h-40 w-full md:w-2/3 bg-gray-200 relative shadow-sm">
+                        <div class="absolute inset-0 bg-cover bg-center" data-alt="Map showing flight paths connecting global office locations" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAzIaZlFFEDu0PXxh1wpndgqNLaTG6-zMZttnKKK9fwMddKMsVn5QQO-tY8xTrBRXW1qCLcfd9nyRly-U4WmrjFQWFAXqqhFIjrg_8BKUrPPcFchC0qU_nB5e-ikX5Br5CMX3USxIbSs6CHnao719eLx90Zb_u39nBPxl2FdNlcO0yqrcwdihMFgbWsxwAZQfIVedZlu60HTDIEzfsM4elp4frdP1qxWTKGsnH24i0bPFH6OI366QB1x7IbnchzadYK6OurXOR5tVQb");'>
+                        </div>
+                    </div>
+                </div>
+                <!-- Timeline Item 2 -->
+                <div class="pl-8 relative group">
+                    <div class="absolute -left-[7px] top-1 size-3.5 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors"></div>
+                    <span class="text-text-sec-light dark:text-text-sec-dark font-bold text-sm mb-1 inline-block">2012</span>
+                    <h4 class="font-bold text-base text-text-main-light dark:text-text-main-dark">First Offshore Rig</h4>
+                    <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Launched our first deep-water drilling project, setting new industry standards for efficiency and safety.</p>
+                </div>
+                <!-- Timeline Item 3 -->
+                <div class="pl-8 relative group">
+                    <div class="absolute -left-[7px] top-1 size-3.5 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors"></div>
+                    <span class="text-text-sec-light dark:text-text-sec-dark font-bold text-sm mb-1 inline-block">2005</span>
+                    <h4 class="font-bold text-base text-text-main-light dark:text-text-main-dark">Company Founded</h4>
+                    <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Established in Houston, Texas with a mission to revolutionize oil exploration through technology.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leadership Profiles -->
+        <div class="mb-12 px-4 md:px-0">
+            <h3 class="text-lg font-bold uppercase tracking-wider text-text-main-light dark:text-text-main-dark mb-8">Leadership</h3>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <!-- Person 1 -->
+                <div class="flex flex-col items-center group">
+                    <div class="size-32 rounded-full bg-gray-200 overflow-hidden mb-4 border-4 border-transparent group-hover:border-primary transition-colors shadow-sm">
+                        <div class="h-full w-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500" data-alt="Headshot of Sarah Jenkins, CEO, smiling professionally" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAIE6G6fiUedSdvQU53zD8OQ5iZZWCRJD0QJ-3cSGKoKq7iv2dMhABKGv_Ddeu1Rv2KnTBjz-5FTxi001KluzXu5jE50Ucq4Fg0QzXZvoxKFwsJS4-c3JNuZJLSiDl6zmwaWYqmmmKFtb_-wFJQZAfyaj7s0kW9KuZnDP0m8KEb2g2likmWSvC-xQ0-UDD98u8Ip6bMs-MnOWxUTUAr8NTJHDMf6HdMihAFZMxXGiEYzDTcbv3wZ8DPnux7WuGDANqeCY8sz4DZ78aQ");'>
+                        </div>
+                    </div>
+                    <p class="font-bold text-lg text-text-main-light dark:text-text-main-dark">Sarah Jenkins</p>
+                    <p class="text-sm text-primary font-medium">CEO</p>
+                </div>
+                <!-- Person 2 -->
+                <div class="flex flex-col items-center group">
+                    <div class="size-32 rounded-full bg-gray-200 overflow-hidden mb-4 border-4 border-transparent group-hover:border-primary transition-colors shadow-sm">
+                        <div class="h-full w-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500" data-alt="Headshot of Michael Chen, CTO, wearing glasses and a suit" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAiOC4Y3KjVbbFdHfMV_bGb5t4x6wCtcTLwW6zQm2iJbx1gWrF9fesmzQJAolcZBPX3wixqrVHMBYHFkgw1k6iqqUY91aNL_hQRDLWjkeYTDUr9SKL9oziQqzvz1IMyQFOH9C0q-Zhd8IsdV5B9bXsetNiUXCh8UioeN_fhV7v51BdB-cXe-gca3P0uxx6yDwZrMUEKZQT3Qv5d1CL0opoSIpkOzjDqlEBY1aO6-1YyTBxH7tVPa18IzhnMk73KoHGrAjp2Z2Fl_qcw");'>
+                        </div>
+                    </div>
+                    <p class="font-bold text-lg text-text-main-light dark:text-text-main-dark">Michael Chen</p>
+                    <p class="text-sm text-primary font-medium">CTO</p>
+                </div>
+                <!-- Person 3 -->
+                 <div class="flex flex-col items-center group">
+                    <div class="size-32 rounded-full bg-gray-200 overflow-hidden mb-4 border-4 border-transparent group-hover:border-primary transition-colors shadow-sm">
+                        <div class="h-full w-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500" data-alt="Headshot of Elena Rodriguez, VP of Operations" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuADnh4JPX6uhgWl_8Jgu7gDWmE8-ioNFGvjsmC9uv8FnU6y3-iUcKLTIDaZsLDFFGW-1Xs10cbxCO6cJ5nnt1Ktuxp_sVxMhUuipORnv5lJJHJIKfr_qIfXbmzaX5jLHS-PmOE3Sw1AkCzTl4uX6CW8wRuYRJGmWvxcf-I6qIQzqF330D1LEraq406kixA03nj5rRe-8utZXuN6e57hdRDAQVbnRpKpgs3vDCkWXi4Dvojgb-KR602zFRoJ067-JMnoPhE69Sx8pHwO");'>
+                        </div>
+                    </div>
+                    <p class="font-bold text-lg text-text-main-light dark:text-text-main-dark">Elena Rodriguez</p>
+                    <p class="text-sm text-primary font-medium">VP Operations</p>
+                </div>
+                <!-- Person 4 -->
+                 <div class="flex flex-col items-center group">
+                    <div class="size-32 rounded-full bg-gray-200 overflow-hidden mb-4 border-4 border-transparent group-hover:border-primary transition-colors shadow-sm">
+                        <div class="h-full w-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500" data-alt="Headshot of David Okonjo, Head of Safety" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCutFuAepzH7DgVTgToTdjXPK7lHoVETN25d4dOJBKhT9FH0db_dP32-mcGXeC0vLprdneLBy6ISJOBEFDsUPQMtI2qliqU6PJj4BXfDGd4bQ5rkvmyJAHhRKz2Nxkh9kWzClEbN3S5wVM4uAEaN9Q0Ev1TtKcFcCVN1Dvq7pPPyFEfjFE41C7KoP4uYVkqmnkB3PgLP-ObYVNXGZQAMvW6TLnsnicBQ8imGTbAOzLdLYCzmpj-9vNLIT5vFwzeVUywExkWrvMGmmBw");'>
+                        </div>
+                    </div>
+                    <p class="font-bold text-lg text-text-main-light dark:text-text-main-dark">David Okonjo</p>
+                    <p class="text-sm text-primary font-medium">Head of Safety</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="rounded-2xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 p-8 md:p-12 text-center mx-4 md:mx-0">
+            <h4 class="text-2xl font-bold text-text-main-light dark:text-text-main-dark mb-4">Ready to work with us?</h4>
+            <p class="text-base text-text-sec-light dark:text-text-sec-dark mb-8 max-w-lg mx-auto">Discover how our expertise and technology can power your next project. Let's build the future together.</p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="contact.html" class="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg">
+                    <span class="material-symbols-outlined">mail</span>
+                    Contact Sales
+                </a>
+                <a href="products.html" class="bg-white dark:bg-transparent border border-gray-200 dark:border-gray-600 text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800 font-bold py-3 px-8 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                    <span class="material-symbols-outlined">folder_open</span>
+                    View Projects
+                </a>
+            </div>
+        </div>
+        
+         <div class="mt-12 text-center pb-8 p-4">
+            <p class="text-sm text-text-sec-light dark:text-text-sec-dark">© 2024 Techo Drill Innovation. All rights reserved.</p>
+        </div>
+    </main>
+
+
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('offcanvas-menu');
+            const sidebar = menu.querySelector('div');
+            
+            if (menu.classList.contains('opacity-0')) {
+                // Open
+                menu.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    sidebar.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                // Close
+                sidebar.classList.add('translate-x-full');
+                setTimeout(() => {
+                    menu.classList.add('opacity-0', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        // Close on click outside
+        document.getElementById('offcanvas-menu').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleMenu();
+            }
+        });
+    </script>
+</body>
+</html>

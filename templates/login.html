@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Techo Drill Innovation - Authentication</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display min-h-screen flex flex-col items-center justify-center p-4 selection:bg-primary/30">
+<!-- Main Container: Mobile Form Factor -->
+<div class="w-full max-w-md bg-white dark:bg-[#1a2632] rounded-2xl shadow-xl overflow-hidden flex flex-col relative">
+<!-- Decorative Top Pattern -->
+<div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-blue-400"></div>
+<!-- Header Section -->
+<div class="pt-8 pb-4 px-6 flex flex-col items-center text-center">
+<!-- Branding Logo/Icon -->
+<div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-primary text-4xl">oil_barrel</span>
+</div>
+<h1 class="text-2xl font-bold tracking-tight mb-2">Techo Drill Innovation</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Secure Access Portal</p>
+</div>
+<!-- Authentication Switcher (Tabs) -->
+<div class="px-6 mb-6">
+<div class="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+<button class="flex-1 py-2.5 text-sm font-medium rounded-lg bg-white dark:bg-[#1a2632] shadow-sm text-primary transition-all duration-200">
+                    Log In
+                </button>
+<button class="flex-1 py-2.5 text-sm font-medium rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all duration-200">
+                    Register
+                </button>
+</div>
+</div>
+<!-- Hero/Welcome Section -->
+<div class="px-6 mb-6 flex flex-col items-center gap-3">
+<div class="w-full h-32 rounded-xl bg-cover bg-center relative overflow-hidden group" data-alt="Abstract blue digital oil drilling schematic dashboard background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDRHrfTraQeySw7hGvcmDCypA68oyFrAFuiEcvLatCWPG8DZqDEWwdR_uc4Zxrr3EmxkJvDgyfXHup81D_B3NWxGj-ocqfrMwrY_3i4v6mJukjcxHRh_7MMbJ3paSjQhjw7unnzBsRyC6ThQXy0hh1w3goatJVgK-mPzHp7-2MO8XUefyLnTFfEXETDLWLYhsyhL0oS_kCuu2-fDSsQ2-6a5tt08fJzHJ3io71Vcc7Q2PJIkl3bd_JEFQ_Q0VefRUcYkLcYqGgRndlN');">
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
+<p class="text-white font-bold text-lg">Welcome back, Operator</p>
+<p class="text-slate-200 text-xs opacity-90">System operational. Ready for secure login.</p>
+</div>
+</div>
+</div>
+<!-- Login Form -->
+<form class="px-6 pb-2 flex flex-col gap-5">
+<!-- Email Field -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">Corporate Email</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors text-[20px]">mail</span>
+</div>
+<input class="w-full pl-10 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all text-base" placeholder="name@techodrill.com" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center ml-1">
+<label class="text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
+<a class="text-xs font-medium text-primary hover:text-blue-600 transition-colors" href="#">Forgot Password?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors text-[20px]">lock</span>
+</div>
+<input class="w-full pl-10 pr-10 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all text-base" placeholder="••••••••" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Main Action -->
+<button class="mt-2 w-full bg-primary hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 flex items-center justify-center gap-2" type="button">
+<span>Secure Login</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="px-6 py-6">
+<div class="relative flex items-center">
+<div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+<span class="flex-shrink-0 mx-4 text-slate-400 text-xs uppercase tracking-wider font-medium">Or continue with</span>
+<div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+</div>
+</div>
+<!-- Biometric / SSO -->
+<div class="px-6 pb-8 grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 py-3 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">fingerprint</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Biometric</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-3 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors group">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">domain</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">SSO</span>
+</button>
+</div>
+<!-- Footer Legal -->
+<div class="bg-slate-50 dark:bg-[#15202b] py-4 px-6 text-center border-t border-slate-100 dark:border-slate-800">
+<p class="text-xs text-slate-400">
+                By logging in, you agree to our 
+                <a class="text-primary hover:underline" href="#">Terms of Service</a> &amp; 
+                <a class="text-primary hover:underline" href="#">Privacy Policy</a>.
+            </p>
+</div>
+</div>
+</body></html>

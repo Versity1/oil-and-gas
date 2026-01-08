@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Techo Drill Products</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1c2630",
+                        "text-main": "#111418",
+                        "text-sub": "#617589",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for chips */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200 antialiased overflow-x-hidden pb-20 md:pb-0">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex justify-between items-center transition-colors">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
+            <h1 class="text-xl font-bold tracking-tight">Techo Drill</h1>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-6">
+            <a href="home.html" class="text-sm font-medium hover:text-primary transition-colors">Home</a>
+             <a href="about.html" class="text-sm font-medium hover:text-primary transition-colors">About</a>
+            <a href="services.html" class="text-sm font-medium hover:text-primary transition-colors">Services</a>
+            <a href="products.html" class="text-sm font-medium text-primary transition-colors">Portfolio</a>
+            <a href="investment-plan.html" class="text-sm font-medium hover:text-primary transition-colors">Market</a>
+            <a href="contact.html" class="text-sm font-medium hover:text-primary transition-colors">Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+            <button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
+            </button>
+            <!-- Mobile Menu Button -->
+            <button onclick="toggleMenu()" class="flex md:hidden items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">menu</span>
+            </button>
+            <!-- Desktop CTA -->
+            <a href="dashboard.html" class="hidden md:flex bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors">
+                Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Offcanvas Menu (Mobile) -->
+    <div id="offcanvas-menu" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+        <div class="absolute right-0 top-0 h-full w-[280px] bg-surface-light dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col p-6">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold">Menu</h2>
+                <button onclick="toggleMenu()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-4">
+                <a href="home.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">home</span> Home
+                </a>
+                <a href="about.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">info</span> About
+                </a>
+                <a href="services.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">apps</span> Services
+                </a>
+                <a href="products.html" class="flex items-center gap-3 text-lg font-medium text-primary p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                    <span class="material-symbols-outlined">pie_chart</span> Portfolio
+                </a>
+                <a href="investment-plan.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">candlestick_chart</span> Market
+                </a>
+                 <a href="shares.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">monitoring</span> Trading
+                </a>
+                <a href="dashboard.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+                <a href="contact.html" class="flex items-center gap-3 text-lg font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <span class="material-symbols-outlined">support_agent</span> Contact
+                </a>
+            </nav>
+            <div class="mt-auto">
+                <button class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-lg shadow-lg shadow-primary/30">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+     <main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
+        
+        <!-- Search and Filter Section -->
+        <div class="px-4 py-4 md:px-0 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <!-- Search Bar -->
+             <label class="flex flex-col h-12 w-full md:max-w-md">
+                <div class="flex w-full flex-1 items-stretch rounded-xl h-full shadow-sm border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark">
+                    <div class="text-text-sub flex bg-transparent items-center justify-center pl-4 rounded-l-xl">
+                        <span class="material-symbols-outlined">search</span>
+                    </div>
+                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-text-main-light dark:text-text-main-dark focus:outline-0 focus:ring-0 border-none bg-transparent focus:border-none h-full placeholder:text-text-sub px-4 rounded-l-none pl-2 text-base font-normal leading-normal transition-colors" placeholder="Search rigs, bits, sensors..." value=""/>
+                </div>
+            </label>
+            
+            <!-- Filter Chips -->
+             <div class="w-full md:w-auto overflow-x-auto no-scrollbar">
+                <div class="flex gap-3 min-w-max">
+                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary pl-5 pr-5 shadow-lg shadow-primary/30 transition-transform active:scale-95">
+                        <p class="text-white text-sm font-bold leading-normal">All</p>
+                    </button>
+                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 pl-5 pr-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        <p class="text-text-main-light dark:text-gray-300 text-sm font-medium leading-normal">Drilling Rigs</p>
+                    </button>
+                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 pl-5 pr-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        <p class="text-text-main-light dark:text-gray-300 text-sm font-medium leading-normal">Downhole Sensors</p>
+                    </button>
+                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 pl-5 pr-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        <p class="text-text-main-light dark:text-gray-300 text-sm font-medium leading-normal">Drill Bits</p>
+                    </button>
+                    <button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 pl-5 pr-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        <p class="text-text-main-light dark:text-gray-300 text-sm font-medium leading-normal">Safety</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Section -->
+        <div class="px-4 py-4 md:px-0">
+             <h2 class="text-text-main-light dark:text-text-main-dark tracking-tight text-[22px] font-bold leading-tight text-left mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">verified</span>
+                Featured Technology
+            </h2>
+            <div class="relative w-full rounded-2xl overflow-hidden shadow-xl group cursor-pointer md:h-[400px]">
+                <div class="absolute top-3 left-3 z-10">
+                    <span class="px-3 py-1 bg-primary text-white text-xs font-bold rounded-full shadow-sm uppercase tracking-wider">New Arrival</span>
+                </div>
+                <div class="w-full h-full aspect-[4/3] md:aspect-auto bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Massive offshore oil rig platform in deep blue ocean" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6kPqr6tXkx6X_bou_ywq8pdVjZrS8114jLvN_ZrDaGqH4V20OVq1nrD1WLYGDw9gwK-8nVDjxH7qsoGAOJUjGVonBgNLdMjajgbNfl-3Yy9USQ4OQ9yo4KIXIULHzV7gPvnYXpS6pimAda3Hrk5z0T4remui2OHC1QjSgSJAxNd8DtL6tgZKgA05ggYgB4lMYdsuwmUwKXmakKGBANZzLZlh5P9QApneomqOQA9xE7tRu2vCxELYlwCdFSjRUYePXM5B4Y3d8Usfe");'>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 p-5 md:p-8 text-white">
+                    <h3 class="text-2xl md:text-3xl font-bold leading-tight mb-2">TDI-X5000 Deep Sea Rig</h3>
+                    <p class="text-gray-200 text-sm md:text-base mb-4 line-clamp-2 md:max-w-2xl">Next-gen automated platform for ultra-deep water exploration with AI-assisted drilling control.</p>
+                    <div class="flex items-center justify-between md:justify-start md:gap-8">
+                        <div class="flex gap-4 text-xs md:text-sm font-mono text-gray-300">
+                            <span>3000 HP</span>
+                            <span class="w-px h-4 bg-gray-500"></span>
+                            <span>40k ft Depth</span>
+                        </div>
+                        <button class="bg-white text-primary hover:bg-gray-100 rounded-lg px-4 py-2 text-sm font-bold transition-colors">
+                            View Specs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Equipment Grid -->
+        <div class="px-4 py-6 md:px-0">
+             <h2 class="text-text-main-light dark:text-text-main-dark tracking-tight text-[22px] font-bold leading-tight text-left mb-6">Latest Equipment</h2>
+             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1: Sensor -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+                    <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 bg-cover bg-center relative" data-alt="High tech industrial sensor probe with metallic finish" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCp7E3wbAthuUWxFWdOBZ4KQhOU2E9a22UmIw5qb00rABzzPkjGCKvuCM1zMIXCMZeCiWMtRWrGURLHd3rr8A-P_pe6JcktKtyi78Mnyv8SLRkBsewTiZC5fbkzvEWukfcoHHeDxYW1G05uBTCucPcOk8gBUyLhHM7ybdyGFYfILl_Vu2AVk0JMSpo9R9nXW0QwW9UIIsP_qCRKa9l6AKgzURFHkCt0GVu10X18_RIKueT8yVQdQvwxq9Q3whGCZ4zjaB5jjBZ2gUlZ");'>
+                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-white text-xs font-mono">
+                            SENSOR
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">SmartPore Sensor V2</h3>
+                                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Real-time downhole analytics tool.</p>
+                            </div>
+                            <span class="material-symbols-outlined text-primary">sensors</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 my-4 bg-background-light dark:bg-background-dark rounded-lg p-3">
+                             <div class="flex flex-col">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">Max Temp</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">350°F</span>
+                            </div>
+                            <div class="flex flex-col border-l border-gray-200 dark:border-gray-700 pl-3">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">Data Rate</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">120 bps</span>
+                            </div>
+                            <div class="flex flex-col pt-2 border-t border-gray-200 dark:border-gray-700 mt-1 col-span-2">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">Pressure Rating</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">25,000 PSI</span>
+                            </div>
+                        </div>
+                        <button class="mt-auto w-full h-10 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                            View Datasheet <span class="material-symbols-outlined text-lg">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Drill Bit -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+                    <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 bg-cover bg-center relative" data-alt="Close up of industrial diamond drill bit teeth" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBY-gqJwAnSXb5DZpCsOP2O1KVnEBOxocJfS-6xnUsreLz8fF2r4kaY3qpjG6OtMlj6MENIQOXrQ8_QBQ4iXl39JwvpB_9xabE9TPNog07BtTTeGUYZXzDPi1BxPtF3RdViXDKGUeNnDBGdD-EZI0wpaJufEJoCBEH2LtfxR2I1V6uIfxadNaG4Ugka-YlE3EP8Sk0Na4_rZ73BEWqc_KiJan7a23kf6BChd09d3-AMYmap-xJkIQ9qeE8-KXxrMCFDN42IpUiLldxA");'>
+                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-white text-xs font-mono">
+                            DRILL BIT
+                        </div>
+                    </div>
+                     <div class="p-4 flex flex-col flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Titanium PDC Bit</h3>
+                                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Enhanced durability for hard rock formations.</p>
+                            </div>
+                             <span class="material-symbols-outlined text-primary">construction</span>
+                        </div>
+                         <div class="grid grid-cols-2 gap-2 my-4 bg-background-light dark:bg-background-dark rounded-lg p-3">
+                             <div class="flex flex-col">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">Cutter Density</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">High</span>
+                            </div>
+                            <div class="flex flex-col border-l border-gray-200 dark:border-gray-700 pl-3">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">Blades</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">6 Alloy</span>
+                            </div>
+                            <div class="flex flex-col pt-2 border-t border-gray-200 dark:border-gray-700 mt-1 col-span-2">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">ROP Increase</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">+15% vs Std</span>
+                            </div>
+                        </div>
+                         <button class="mt-auto w-full h-10 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                            View Datasheet <span class="material-symbols-outlined text-lg">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Pipe Handler -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+                    <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 bg-cover bg-center relative" data-alt="Industrial robotic arm moving heavy pipes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDhIs9WwgyV33sJL2ZIZG6JWqw7EQcIijGdn2aUaZrGjD5AqOCmzbySJVeM0MXmhNPFcfwvxOaDjYo_qJ0c8HedovY3HQQFv6WdRc_qz1mfVGw8MCsJ6Ur3nPRM9hs8LyXmiYlfBRUz9xWUvwL1cVcTUoDF0bwH0Izn8NgCnT4vDTymx_G6jZZbv9zOfZp9_IJqwCd5g7nYJ3AW1WqhPy3_RkaFmxooVmSFURGhjY3VWojwPqisVeCoJuNBlX_xRvE6cuHvczbPxr93");'>
+                        <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-white text-xs font-mono">
+                            AUTOMATION
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Auto-Pipe Handler X1</h3>
+                                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Hands-free tubular management system.</p>
+                            </div>
+                            <span class="material-symbols-outlined text-primary">precision_manufacturing</span>
+                        </div>
+                         <div class="grid grid-cols-2 gap-2 my-4 bg-background-light dark:bg-background-dark rounded-lg p-3">
+                             <div class="flex flex-col">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">Lift Cap.</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">5 Tons</span>
+                            </div>
+                            <div class="flex flex-col border-l border-gray-200 dark:border-gray-700 pl-3">
+                                <span class="text-[10px] uppercase text-text-sec-light dark:text-text-sec-dark font-bold tracking-wider">Cycle Time</span>
+                                <span class="text-sm font-mono text-text-main-light dark:text-text-main-dark font-semibold">&lt; 45s</span>
+                            </div>
+                        </div>
+                        <button class="mt-auto w-full h-10 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                            View Datasheet <span class="material-symbols-outlined text-lg">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+             </div>
+        </div>
+        
+        <!-- Floating Action Button -->
+        <button class="fixed bottom-24 right-4 z-40 bg-primary hover:bg-blue-600 text-white shadow-lg shadow-blue-500/40 rounded-full h-14 px-6 flex items-center justify-center gap-2 transition-all transform hover:scale-105">
+            <span class="material-symbols-outlined">chat</span>
+            <span class="font-bold text-sm">Contact Sales</span>
+        </button>
+    </main>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav class="md:hidden fixed bottom-0 w-full bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 px-2 z-50">
+        <div class="flex justify-around items-center h-14">
+            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="home.html">
+                <span class="material-symbols-outlined text-2xl">home</span>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="services.html">
+                <span class="material-symbols-outlined text-2xl">apps</span>
+                <span class="text-[10px] font-medium">Services</span>
+            </a>
+             <div class="relative -top-5">
+                <button class="bg-primary text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg shadow-primary/40 transform transition-transform active:scale-95 border-4 border-background-light dark:border-background-dark">
+                    <span class="material-symbols-outlined text-2xl">add</span>
+                </button>
+            </div>
+            <a class="flex flex-col items-center justify-center w-full h-full text-primary gap-1" href="products.html">
+                <span class="material-symbols-outlined text-2xl fill-1">pie_chart</span>
+                <span class="text-[10px] font-medium">Portfolio</span>
+            </a>
+            <a class="flex flex-col items-center justify-center w-full h-full text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary gap-1 transition-colors" href="dashboard.html">
+                <span class="material-symbols-outlined text-2xl">dashboard</span>
+                <span class="text-[10px] font-medium">Dashboard</span>
+            </a>
+        </div>
+        <!-- Safe area padding for bottom navigation -->
+        <div class="h-safe-bottom w-full"></div>
+    </nav>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('offcanvas-menu');
+            const sidebar = menu.querySelector('div');
+            
+            if (menu.classList.contains('opacity-0')) {
+                // Open
+                menu.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    sidebar.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                // Close
+                sidebar.classList.add('translate-x-full');
+                setTimeout(() => {
+                    menu.classList.add('opacity-0', 'pointer-events-none');
+                }, 300);
+            }
+        }
+
+        // Close on click outside
+        document.getElementById('offcanvas-menu').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleMenu();
+            }
+        });
+    </script>
+    <style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .h-safe-bottom { height: env(safe-area-inset-bottom); }
+    </style>
+</body></html>
