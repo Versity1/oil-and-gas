@@ -84,7 +84,12 @@
                                         <span class="material-symbols-outlined">hourglass_bottom</span>
                                     </div>
                                     <div>
-                                        <p class="text-text-main-light dark:text-text-main-dark font-bold">Withdrawal: {{ wth.network }}</p>
+                                        <p class="text-text-main-light dark:text-text-main-dark font-bold">
+                                            Withdrawal: {{ wth.network }}
+                                            {% if wth.wallet_name %}
+                                                <span class="text-xs font-normal text-gray-500">({{ wth.wallet_name }})</span>
+                                            {% endif %}
+                                        </p>
                                         <p class="text-xs text-text-sec-light dark:text-text-sec-dark">{{ wth.created_at|date:"M d, Y • H:i" }}</p>
                                     </div>
                                 </div>

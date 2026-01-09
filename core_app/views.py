@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
 from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment
-from .utils import send_transaction_email
+from .utils import send_transaction_email, send_transaction_request_email
 
 # Front Pages
 def home(request):
@@ -216,6 +216,8 @@ def deposit(request):
                 status='pending'
             )
             
+            send_transaction_request_email(request.user, 'deposit', amount)
+            
             messages.success(request, f"Deposit request for {amount} submitted. It will be credited once confirmed.")
             return redirect('dashboard')
     else:
@@ -237,7 +239,7 @@ def withdrawal(request):
             wallet_address = form.cleaned_data['wallet_address']
             network = form.cleaned_data['network']
             
-            Withdrawal.objects.create(
+            withdrawal_obj = Withdrawal.objects.create(
                 user=request.user,
                 amount=amount,
                 wallet_name=wallet_name,
@@ -245,6 +247,8 @@ def withdrawal(request):
                 network=network,
                 status='pending'
             )
+            
+            send_transaction_request_email(request.user, 'withdrawal', amount, withdrawal=withdrawal_obj)
             
             messages.success(request, f"Withdrawal request for {amount} submitted. It will be processed shortly.")
             return redirect('dashboard')

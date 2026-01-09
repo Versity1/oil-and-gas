@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db import transaction
 from .models import Account, Deposit, Withdrawal, Transaction
+from .utils import send_transaction_email
 
 @receiver(post_save, sender=User)
 def create_user_account(sender, instance, created, **kwargs):
@@ -25,7 +26,7 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                 account.balance += instance.amount
                 account.save()
                 
-                Transaction.objects.create(
+                txn = Transaction.objects.create(
                     account=account,
                     transaction_type='deposit',
                     amount=instance.amount,
@@ -33,6 +34,7 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                     status='completed',
                     reference=txn_ref
                 )
+                send_transaction_email(instance.user, txn)
 
 @receiver(post_save, sender=Withdrawal)
 def handle_withdrawal_update(sender, instance, created, **kwargs):
@@ -46,11 +48,13 @@ def handle_withdrawal_update(sender, instance, created, **kwargs):
                 account.balance -= instance.amount
                 account.save()
                 
-                Transaction.objects.create(
+                wallet_info = f" ({instance.wallet_name})" if instance.wallet_name else ""
+                txn = Transaction.objects.create(
                     account=account,
                     transaction_type='withdrawal',
                     amount=instance.amount,
-                    description=f"Crypto Withdrawal: {instance.network}",
+                    description=f"Crypto Withdrawal{wallet_info}: {instance.network}",
                     status='completed',
                     reference=txn_ref
                 )
+                send_transaction_email(instance.user, txn)

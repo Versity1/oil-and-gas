@@ -65,7 +65,8 @@ class Withdrawal(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Withdrawal {self.amount} - {self.user.username} ({self.status})"
+        wallet_info = f" ({self.wallet_name})" if self.wallet_name else ""
+        return f"Withdrawal {self.amount}{wallet_info} - {self.user.username} ({self.status})"
 
 class Project(models.Model):
     STATUS_CHOICES = (
