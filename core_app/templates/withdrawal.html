@@ -9,48 +9,60 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Balance Info -->
-            <div class="bg-gradient-to-br from-primary to-blue-700 rounded-xl p-6 text-white shadow-lg">
-                <p class="text-blue-100 text-sm font-medium mb-1">Available Balance</p>
-                <h2 class="text-3xl font-bold mb-6">${{ account.balance|floatformat:2 }}</h2>
+            <div class="bg-gradient-to-br from-primary to-blue-700 rounded-xl p-8 text-white shadow-lg h-fit">
+                <p class="text-blue-100 text-sm font-medium mb-1 uppercase tracking-wider">Available Balance</p>
+                <h2 class="text-4xl font-bold mb-6">${{ account.balance|floatformat:2 }}</h2>
                 
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-                        <span class="text-xs text-blue-100 block">Status</span>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/5">
+                        <span class="text-[10px] text-blue-100 block uppercase font-bold tracking-widest mb-1">Status</span>
                         <span class="font-bold text-lg">Active</span>
                     </div>
-                    <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-                        <span class="text-xs text-blue-100 block">Withdrawable</span>
-                        <span class="font-bold text-lg">${{ account.balance|floatformat:2 }}</span>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/5">
+                        <span class="text-[10px] text-blue-100 block uppercase font-bold tracking-widest mb-1">Currency</span>
+                        <span class="font-bold text-lg">USD</span>
                     </div>
                 </div>
             </div>
 
             <!-- Withdrawal Form -->
             <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-bold mb-4">Request Withdrawal</h2>
+                <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">payments</span>
+                    Request Withdrawal
+                </h2>
                 <form method="post" class="space-y-6">
                     {% csrf_token %}
                     <div>
-                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Amount (USD)</label>
+                        <label class="block text-sm font-bold mb-2 text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider">Amount (USD)</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
-                            <input type="number" step="0.01" name="amount" id="id_amount" class="w-full pl-8 pr-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-bold text-lg" placeholder="0.00" min="1" max="{{ account.balance }}" required>
+                            <input type="number" step="0.01" name="amount" id="id_amount" class="w-full pl-8 pr-4 py-4 bg-background-light dark:bg-background-dark rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary font-bold text-xl" placeholder="0.00" min="1" max="{{ account.balance }}" required>
                         </div>
                         {% if form.amount.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.amount.errors.0 }}</p>
+                            <p class="text-red-500 text-xs mt-1 font-bold">{{ form.amount.errors.0 }}</p>
                         {% endif %}
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Description (Optional)</label>
-                        <input type="text" name="description" id="id_description" class="w-full px-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-medium" placeholder="E.g. Bank Transfer">
-                        {% if form.description.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>
-                        {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider">Wallet Address</label>
+                            <input type="text" name="wallet_address" id="id_wallet_address" class="w-full px-4 py-4 bg-background-light dark:bg-background-dark rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary font-medium text-sm" placeholder="Paste your address" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider">Network</label>
+                            <input type="text" name="network" id="id_network" class="w-full px-4 py-4 bg-background-light dark:bg-background-dark rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary font-medium text-sm" placeholder="e.g. ERC20, TRC20" required>
+                        </div>
                     </div>
                     
-                    <button type="submit" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all">
-                        Submit Withdrawal
+                    <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                        <p class="text-[10px] text-gray-500 font-medium leading-relaxed italic">
+                            Withdrawals are processed within 24-48 hours after security verification. Please double-check your wallet address and network before submitting.
+                        </p>
+                    </div>
+                    
+                    <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all transform active:scale-[0.98]">
+                        Confirm Withdrawal Request
                     </button>
                 </form>
             </div>

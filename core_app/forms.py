@@ -58,6 +58,8 @@ class UserRegistrationForm(forms.ModelForm):
             user.save()
         return user
 
+from .models import PaymentMethod
+
 class TransactionForm(forms.Form):
     amount = forms.DecimalField(
         max_digits=12, 
@@ -65,16 +67,31 @@ class TransactionForm(forms.Form):
         min_value=1.00,
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00'})
     )
-    description = forms.CharField(
-        max_length=255, 
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional description'})
-    )
 
 class DepositForm(TransactionForm):
-    pass
+    payment_method = forms.ModelChoiceField(
+        queryset=PaymentMethod.objects.filter(is_active=True),
+        widget=forms.RadioSelect(attrs={'class': 'hidden'}),
+        required=True
+    )
+    transaction_hash = forms.CharField(
+        max_length=255, 
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Paste transaction hash/ID'})
+    )
 
 class WithdrawalForm(TransactionForm):
+    wallet_address = forms.CharField(
+        max_length=255,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your wallet address'})
+    )
+    network = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Network (e.g. TRC20, ERC20)'})
+    )
+
     def __init__(self, *args, **kwargs):
         self.account = kwargs.pop('account', None)
         super().__init__(*args, **kwargs)

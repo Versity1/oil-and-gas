@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
-from .models import Account, Transaction
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal
 from .utils import send_transaction_email
 
 # Front Pages
@@ -87,39 +87,46 @@ def shares(request):
 @login_required
 def transaction_history(request):
     account = request.user.account
-    transactions = Transaction.objects.filter(account=account).order_by('-timestamp')
-    return render(request, 'transaction-history.html', {'transactions': transactions})
+    # Realized transactions (Ledger)
+    ledger = Transaction.objects.filter(account=account).order_by('-timestamp')
+    
+    # Pending requests
+    pending_deposits = Deposit.objects.filter(user=request.user, status='pending')
+    pending_withdrawals = Withdrawal.objects.filter(user=request.user, status='pending')
+    
+    return render(request, 'transaction-history.html', {
+        'transactions': ledger,
+        'pending_deposits': pending_deposits,
+        'pending_withdrawals': pending_withdrawals
+    })
 
 @login_required
 def deposit(request):
+    payment_methods = PaymentMethod.objects.filter(is_active=True)
     if request.method == 'POST':
         form = DepositForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
-            description = form.cleaned_data['description']
+            payment_method = form.cleaned_data['payment_method']
+            txn_hash = form.cleaned_data['transaction_hash']
             
-            with transaction.atomic():
-                account = request.user.account
-                account.balance += amount
-                account.save()
-                
-                txn = Transaction.objects.create(
-                    account=account,
-                    transaction_type='deposit',
-                    amount=amount,
-                    description=description or 'Account Deposit',
-                    status='completed'
-                )
+            Deposit.objects.create(
+                user=request.user,
+                payment_method=payment_method,
+                amount=amount,
+                transaction_hash=txn_hash,
+                status='pending'
+            )
             
-            # Send email notification
-            send_transaction_email(request.user, txn)
-            
-            messages.success(request, f"Successfully deposited {amount}. Your new balance is {account.balance}.")
+            messages.success(request, f"Deposit request for {amount} submitted. It will be credited once confirmed.")
             return redirect('dashboard')
     else:
         form = DepositForm()
     
-    return render(request, 'deposit.html', {'form': form})
+    return render(request, 'deposit.html', {
+        'form': form, 
+        'payment_methods': payment_methods
+    })
 
 @login_required
 def withdrawal(request):
@@ -128,28 +135,19 @@ def withdrawal(request):
         form = WithdrawalForm(request.POST, account=account)
         if form.is_valid():
             amount = form.cleaned_data['amount']
-            description = form.cleaned_data['description']
+            wallet_address = form.cleaned_data['wallet_address']
+            network = form.cleaned_data['network']
             
-            if account.balance >= amount:
-                with transaction.atomic():
-                    account.balance -= amount
-                    account.save()
-                    
-                    txn = Transaction.objects.create(
-                        account=account,
-                        transaction_type='withdrawal',
-                        amount=amount,
-                        description=description or 'Account Withdrawal',
-                        status='completed'
-                    )
-                
-                # Send email notification
-                send_transaction_email(request.user, txn)
-                
-                messages.success(request, f"Successfully withdrawn {amount}. Your new balance is {account.balance}.")
-                return redirect('dashboard')
-            else:
-                messages.error(request, "Insufficient funds.")
+            Withdrawal.objects.create(
+                user=request.user,
+                amount=amount,
+                wallet_address=wallet_address,
+                network=network,
+                status='pending'
+            )
+            
+            messages.success(request, f"Withdrawal request for {amount} submitted. It will be processed shortly.")
+            return redirect('dashboard')
         else:
             for error_list in form.errors.values():
                 for error in error_list:

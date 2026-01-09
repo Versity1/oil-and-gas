@@ -7,60 +7,147 @@
     <div class="px-4 md:px-0 py-6">
         <h1 class="text-2xl font-bold mb-6 text-text-main-light dark:text-text-main-dark">Deposit Funds</h1>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Payment Methods -->
-            <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-bold mb-4">Select Payment Method</h2>
-                <div class="space-y-4">
-                    <label class="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
-                        <input type="radio" name="payment_method" class="text-primary focus:ring-primary" checked>
-                        <div class="flex-1">
-                            <span class="font-bold block">USDT (Tether)</span>
-                            <span class="text-sm text-gray-500">TRC20 Network</span>
+        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {% csrf_token %}
+            
+            <!-- Step 1: Select Asset -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="flex items-center justify-center size-6 rounded-full bg-primary text-white text-xs">1</span> 
+                        Select Asset
+                    </h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {% for pm in payment_methods %}
+                        <label class="relative flex flex-col items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:border-primary transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 group" onclick="selectPayment('{{ pm.id }}', '{{ pm.name }}', '{{ pm.network }}', '{{ pm.wallet_address }}', '{{ pm.qr_code.url|default:'' }}')">
+                            <input type="radio" name="payment_method" value="{{ pm.id }}" class="hidden" required {% if forloop.first %}checked{% endif %}>
+                            {% if pm.thumbnail %}
+                                <img src="{{ pm.thumbnail.url }}" alt="{{ pm.name }}" class="size-10 object-contain group-hover:scale-110 transition-transform">
+                            {% else %}
+                                <div class="size-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-bold text-primary">{{ pm.symbol|slice:":1" }}</div>
+                            {% endif %}
+                            <div class="text-center">
+                                <span class="font-bold block text-sm">{{ pm.name }}</span>
+                                <span class="text-[10px] text-gray-500 uppercase font-bold">{{ pm.network }}</span>
+                            </div>
+                            <div class="absolute top-2 right-2 opacity-0 group-has-[:checked]:opacity-100 transition-opacity">
+                                <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Step 2: Amount & Proof -->
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <span class="flex items-center justify-center size-6 rounded-full bg-primary text-white text-xs">2</span> 
+                        Transaction Details
+                    </h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider">Deposit Amount (USD)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
+                                <input type="number" step="0.01" name="amount" id="id_amount" class="w-full pl-8 pr-4 py-4 bg-background-light dark:bg-background-dark rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary font-bold text-xl" placeholder="0.00" min="1" required>
+                            </div>
                         </div>
-                        <span class="material-symbols-outlined text-green-500">currency_exchange</span>
-                    </label>
-                    <label class="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-primary transition-colors">
-                        <input type="radio" name="payment_method" class="text-primary focus:ring-primary">
-                        <div class="flex-1">
-                            <span class="font-bold block">Bitcoin (BTC)</span>
-                            <span class="text-sm text-gray-500">Bitcoin Network</span>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider">Transaction Hash / Proof</label>
+                            <input type="text" name="transaction_hash" id="id_transaction_hash" class="w-full px-4 py-4 bg-background-light dark:bg-background-dark rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-primary font-medium" placeholder="Enter transaction hash or ID after paying">
+                            <p class="text-[10px] text-gray-500 mt-2 font-medium">Providing the transaction hash helps us verify your payment faster.</p>
                         </div>
-                        <span class="material-symbols-outlined text-orange-500">currency_bitcoin</span>
-                    </label>
+                    </div>
                 </div>
             </div>
 
-            <!-- Deposit Form -->
-            <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-bold mb-4">Enter Amount</h2>
-                <form method="post" class="space-y-6">
-                    {% csrf_token %}
-                    <div>
-                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Amount (USD)</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
-                            <input type="number" step="0.01" name="amount" id="id_amount" class="w-full pl-8 pr-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-bold text-lg" placeholder="0.00" min="1" required>
+            <!-- Right Column: Merchant Wallet Info -->
+            <div class="lg:col-span-1">
+                <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg sticky top-24 overflow-hidden">
+                    <div class="p-4 bg-primary/5 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined">account_balance_wallet</span>
+                            Merchant Wallet
+                        </h3>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <div id="qr-container" class="flex justify-center bg-white p-4 rounded-xl border border-gray-100">
+                            <!-- Placeholder QR or dynamic image -->
+                             <img id="wallet-qr" src="" alt="Scan to pay" class="size-48 object-contain">
+                             <div id="no-qr" class="size-48 bg-gray-50 flex items-center justify-center text-gray-400 text-xs text-center hidden">QR Code Not Available</div>
                         </div>
-                        {% if form.amount.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.amount.errors.0 }}</p>
-                        {% endif %}
+
+                        <div class="space-y-4">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Network</span>
+                                <p id="wallet-network" class="font-bold text-primary text-sm"></p>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Wallet Address</span>
+                                <div class="flex items-center gap-2">
+                                    <p id="wallet-address" class="font-mono text-xs break-all flex-1 p-2 bg-background-light dark:bg-background-dark rounded border border-gray-100 dark:border-gray-800"></p>
+                                    <button type="button" onclick="copyAddress()" class="p-2 text-primary hover:bg-primary/10 rounded transition-colors" title="Copy Address">
+                                        <span class="material-symbols-outlined text-sm">content_copy</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-100 dark:border-orange-800/30">
+                            <p class="text-[10px] text-orange-700 dark:text-orange-400 font-medium leading-relaxed">
+                                <span class="font-bold block mb-1 uppercase tracking-wider">Warning</span>
+                                Make sure to send only the selected asset via the correct network. Sending through a different network may result in permanent loss of funds.
+                            </p>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all transform active:scale-[0.98]">
+                            I've Made The Payment
+                        </button>
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Description (Optional)</label>
-                        <input type="text" name="description" id="id_description" class="w-full px-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-medium" placeholder="E.g. Monthly Savings">
-                        {% if form.description.errors %}
-                            <p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <button type="submit" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all">
-                        Proceed to Deposit
-                    </button>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </main>
+
+<script>
+function selectPayment(id, name, network, address, qrUrl) {
+    document.getElementById('wallet-network').innerText = network;
+    document.getElementById('wallet-address').innerText = address;
+    
+    const qrImg = document.getElementById('wallet-qr');
+    const noQr = document.getElementById('no-qr');
+    
+    if (qrUrl) {
+        qrImg.src = qrUrl;
+        qrImg.classList.remove('hidden');
+        noQr.classList.add('hidden');
+    } else {
+        qrImg.classList.add('hidden');
+        noQr.classList.remove('hidden');
+    }
+}
+
+function copyAddress() {
+    const address = document.getElementById('wallet-address').innerText;
+    navigator.clipboard.writeText(address).then(() => {
+        const btn = event.currentTarget;
+        const icon = btn.querySelector('.material-symbols-outlined');
+        icon.innerText = 'check';
+        setTimeout(() => {
+            icon.innerText = 'content_copy';
+        }, 2000);
+    });
+}
+
+// Initialize with the first one
+window.onload = function() {
+    const firstActive = document.querySelector('input[name="payment_method"]:checked');
+    if (firstActive) {
+        firstActive.closest('label').click();
+    }
+}
+</script>
 {% endblock %}
