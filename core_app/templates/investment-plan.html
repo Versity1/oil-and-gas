@@ -24,37 +24,31 @@
 
         <!-- Pricing Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-0 mb-12">
-            <!-- Plan A -->
+            {% for project in projects %}
             <div class="flex flex-1 flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark p-6 shadow-sm hover:shadow-lg transition-shadow">
+                {% if project.image %}
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="w-full h-40 object-cover rounded-lg mb-2">
+                {% endif %}
                 <div class="flex flex-col gap-2">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold">Onshore Exploration</h3>
-                        <span class="text-primary text-xs font-bold uppercase tracking-wider rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-1 border border-blue-100 dark:border-blue-800">Conservative</span>
+                        <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold">{{ project.title }}</h3>
+                        <span class="text-primary text-xs font-bold uppercase tracking-wider rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-1 border border-blue-100 dark:border-blue-800">{{ project.status|title }}</span>
                     </div>
                     <div class="flex items-baseline gap-1 mt-1">
-                        <span class="text-text-main-light dark:text-text-main-dark text-4xl font-black">12%</span>
+                        <span class="text-text-main-light dark:text-text-main-dark text-4xl font-black">{{ project.return_rate|floatformat:0 }}%</span>
                         <span class="text-text-sec-light dark:text-text-sec-dark text-sm font-bold">Est. ROI</span>
                     </div>
                     <div class="flex items-center gap-2 text-sm text-text-sec-light dark:text-text-sec-dark">
                         <span class="material-symbols-outlined text-base">schedule</span>
-                        <span>6 Months Duration</span>
+                        <span>{{ project.duration_days }} Days Duration</span>
                     </div>
                 </div>
-                <!-- Progress Bar -->
-                <div class="flex flex-col gap-1 mt-2">
-                    <div class="flex justify-between text-xs font-medium text-text-sec-light dark:text-text-sec-dark">
-                        <span>Funded</span>
-                        <span>$4.2M / $5M</span>
-                    </div>
-                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-primary h-2 rounded-full transition-all duration-500" style="width: 84%"></div>
-                    </div>
-                </div>
+                
                 <div class="h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
                 <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
                         <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
-                        <span>Min. Investment: $5,000</span>
+                        <span>Min. Investment: ${{ project.min_investment|floatformat:0 }}</span>
                     </div>
                     <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
                         <span class="material-symbols-outlined text-green-500 text-xl">shield</span>
@@ -62,111 +56,30 @@
                     </div>
                     <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
                         <span class="material-symbols-outlined text-green-500 text-xl">payments</span>
-                        <span>Monthly Payouts</span>
+                        <span>Periodic Payouts</span>
                     </div>
                 </div>
-                <div class="mt-auto flex gap-3 pt-2">
-                    <button class="flex-1 rounded-lg h-11 px-4 border border-gray-200 dark:border-gray-600 text-text-main-light dark:text-text-main-dark text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Details</button>
-                    <button class="flex-1 rounded-lg h-11 px-4 bg-primary text-white text-sm font-bold shadow-md hover:bg-blue-600 transition-colors">Invest Now</button>
-                </div>
-            </div>
-
-            <!-- Plan B -->
-            <div class="flex flex-1 flex-col gap-4 rounded-xl border-2 border-solid border-primary/20 dark:border-primary/40 bg-surface-light dark:bg-surface-dark p-6 shadow-lg relative overflow-hidden transform md:-translate-y-2">
-                <div class="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">POPULAR</div>
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between pr-8">
-                        <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold">Offshore Deepwater</h3>
-                    </div>
-                    <div class="flex items-center gap-2 mt-0.5">
-                         <span class="text-orange-500 text-xs font-bold uppercase tracking-wider rounded-full bg-orange-50 dark:bg-orange-900/20 px-2 py-0.5 border border-orange-100 dark:border-orange-800">Moderate Risk</span>
-                    </div>
-                    <div class="flex items-baseline gap-1 mt-1">
-                        <span class="text-text-main-light dark:text-text-main-dark text-4xl font-black">18%</span>
-                        <span class="text-text-sec-light dark:text-text-sec-dark text-sm font-bold">Est. ROI</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-sm text-text-sec-light dark:text-text-sec-dark">
-                        <span class="material-symbols-outlined text-base">schedule</span>
-                        <span>12 Months Duration</span>
-                    </div>
-                </div>
-                <!-- Progress Bar -->
-                <div class="flex flex-col gap-1 mt-2">
-                    <div class="flex justify-between text-xs font-medium text-text-sec-light dark:text-text-sec-dark">
-                        <span>Funded</span>
-                        <span>$12.5M / $20M</span>
-                    </div>
-                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-primary h-2 rounded-full transition-all duration-500" style="width: 62%"></div>
-                    </div>
-                </div>
-                <div class="h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
-                <div class="flex flex-col gap-3">
-                    <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
-                        <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
-                        <span>Min. Investment: $25,000</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
-                        <span class="material-symbols-outlined text-green-500 text-xl">trending_up</span>
-                        <span>High Yield Potential</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
-                        <span class="material-symbols-outlined text-green-500 text-xl">payments</span>
-                        <span>Quarterly Dividends</span>
-                    </div>
-                </div>
-                <div class="mt-auto flex gap-3 pt-2">
-                    <button class="flex-1 rounded-lg h-11 px-4 border border-gray-200 dark:border-gray-600 text-text-main-light dark:text-text-main-dark text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Details</button>
-                    <button class="flex-1 rounded-lg h-11 px-4 bg-primary text-white text-sm font-bold shadow-md hover:bg-blue-600 transition-colors">Invest Now</button>
+                <div class="mt-auto flex flex-col gap-3 pt-2">
+                    <form action="{% url 'buy_project' project.id %}" method="POST" class="flex flex-col gap-3">
+                        {% csrf_token %}
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                            <input type="number" name="amount" min="{{ project.min_investment }}" step="0.01" value="{{ project.min_investment }}" class="w-full pl-7 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:border-primary outline-none" required>
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="button" class="flex-1 rounded-lg h-11 px-4 border border-gray-200 dark:border-gray-600 text-text-main-light dark:text-text-main-dark text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Details</button>
+                            <button type="submit" class="flex-1 rounded-lg h-11 px-4 bg-primary text-white text-sm font-bold shadow-md hover:bg-blue-600 transition-colors">Invest Now</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <!-- Plan C -->
-            <div class="flex flex-1 flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark p-6 shadow-sm hover:shadow-lg transition-shadow">
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold">Global Production</h3>
-                        <span class="text-purple-500 text-xs font-bold uppercase tracking-wider rounded-full bg-purple-50 dark:bg-purple-900/20 px-3 py-1 border border-purple-100 dark:border-purple-800">Exclusive</span>
-                    </div>
-                    <div class="flex items-baseline gap-1 mt-1">
-                        <span class="text-text-main-light dark:text-text-main-dark text-4xl font-black">25%</span>
-                        <span class="text-text-sec-light dark:text-text-sec-dark text-sm font-bold">Est. ROI</span>
-                    </div>
-                    <div class="flex items-center gap-2 text-sm text-text-sec-light dark:text-text-sec-dark">
-                        <span class="material-symbols-outlined text-base">schedule</span>
-                        <span>24 Months Duration</span>
-                    </div>
-                </div>
-                <!-- Progress Bar -->
-                <div class="flex flex-col gap-1 mt-2">
-                    <div class="flex justify-between text-xs font-medium text-text-sec-light dark:text-text-sec-dark">
-                        <span>Funded</span>
-                        <span>$2.1M / $100M</span>
-                    </div>
-                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-primary h-2 rounded-full transition-all duration-500" style="width: 2%"></div>
-                    </div>
-                </div>
-                <div class="h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
-                <div class="flex flex-col gap-3">
-                    <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
-                        <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
-                        <span>Min. Investment: $100,000</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
-                        <span class="material-symbols-outlined text-green-500 text-xl">verified</span>
-                        <span>Audited Reserves</span>
-                    </div>
-                    <div class="flex items-center gap-3 text-sm text-text-main-light dark:text-text-main-dark">
-                        <span class="material-symbols-outlined text-green-500 text-xl">diamond</span>
-                        <span>Max Dividends</span>
-                    </div>
-                </div>
-                <div class="mt-auto flex gap-3 pt-2">
-                    <button class="flex-1 rounded-lg h-11 px-4 border border-gray-200 dark:border-gray-600 text-text-main-light dark:text-text-main-dark text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Details</button>
-                    <button class="flex-1 rounded-lg h-11 px-4 bg-primary text-white text-sm font-bold shadow-md hover:bg-blue-600 transition-colors">Invest Now</button>
-                </div>
+            {% empty %}
+            <div class="col-span-full py-20 text-center">
+                <span class="material-symbols-outlined text-6xl text-gray-200 mb-4">oil_barrel</span>
+                <p class="text-text-sec-light dark:text-text-sec-dark font-bold">No active investment projects found.</p>
+                <p class="text-xs text-text-sec-light mt-1">Please check back later or contact support.</p>
             </div>
+            {% endfor %}
         </div>
 
         <!-- ROI Calculator Widget -->

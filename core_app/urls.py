@@ -36,4 +36,6 @@ urlpatterns = [
     path('transaction-history/', views.transaction_history, name='transaction_history'),
     path('deposit/', views.deposit, name='deposit'),
     path('withdrawal/', views.withdrawal, name='withdrawal'),
+    path('buy-project/<int:project_id>/', views.buy_project, name='buy_project'),
+    path('buy-asset/<int:asset_id>/', views.buy_asset, name='buy_asset'),
 ]

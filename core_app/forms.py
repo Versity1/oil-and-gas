@@ -81,6 +81,11 @@ class DepositForm(TransactionForm):
     )
 
 class WithdrawalForm(TransactionForm):
+    wallet_name = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Wallet Name (e.g. My Binance)'})
+    )
     wallet_address = forms.CharField(
         max_length=255,
         required=True,

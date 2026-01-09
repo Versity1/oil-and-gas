@@ -57,6 +57,7 @@ class Withdrawal(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='withdrawals')
     amount = models.DecimalField(max_digits=12, decimal_places=2)
+    wallet_name = models.CharField(max_length=100, blank=True, null=True, help_text="Optional name for your wallet")
     wallet_address = models.CharField(max_length=255)
     network = models.CharField(max_length=50)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -65,6 +66,70 @@ class Withdrawal(models.Model):
 
     def __str__(self):
         return f"Withdrawal {self.amount} - {self.user.username} ({self.status})"
+
+class Project(models.Model):
+    STATUS_CHOICES = (
+        ('funding', 'Funding'),
+        ('active', 'Active'),
+        ('completed', 'Completed'),
+    )
+
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    min_investment = models.DecimalField(max_digits=12, decimal_places=2)
+    return_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Percentage return (e.g. 15.00)")
+    duration_days = models.IntegerField(help_text="Duration in days")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='funding')
+    image = models.ImageField(upload_to='projects/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class Asset(models.Model):
+    ASSET_TYPES = (
+        ('share', 'Share'),
+        ('bond', 'Bond'),
+    )
+
+    name = models.CharField(max_length=100)
+    ticker = models.CharField(max_length=10, unique=True)
+    asset_type = models.CharField(max_length=10, choices=ASSET_TYPES)
+    current_price = models.DecimalField(max_digits=10, decimal_places=2)
+    previous_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, help_text="For Bonds")
+    maturity_date = models.DateField(blank=True, null=True, help_text="For Bonds")
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.ticker})"
+
+    @property
+    def growth_percentage(self):
+        if self.previous_price and self.previous_price > 0:
+            growth = ((self.current_price - self.previous_price) / self.previous_price) * 100
+            return round(growth, 2)
+        return 0
+
+class Investment(models.Model):
+    STATUS_CHOICES = (
+        ('active', 'Active'),
+        ('matured', 'Matured'),
+        ('sold', 'Sold'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='investments')
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True)
+    asset = models.ForeignKey(Asset, on_delete=models.SET_NULL, blank=True, null=True)
+    amount_invested = models.DecimalField(max_digits=12, decimal_places=2)
+    units = models.DecimalField(max_digits=12, decimal_places=4, default=1.0)
+    purchase_price = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        target = self.project.title if self.project else self.asset.name
+        return f"{self.user.username} - {target} ({self.amount_invested})"
 
 class Transaction(models.Model):
     TRANSACTION_TYPES = (

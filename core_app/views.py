@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
-from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment
 from .utils import send_transaction_email
 
 # Front Pages
@@ -77,12 +77,110 @@ def dashboard(request):
 @login_required
 def investment_plan(request):
     account = request.user.account
-    return render(request, 'investment-plan.html', {'account': account})
+    projects = Project.objects.filter(status__in=['funding', 'active'])
+    return render(request, 'investment-plan.html', {
+        'account': account,
+        'projects': projects
+    })
 
 @login_required
 def shares(request):
     account = request.user.account
-    return render(request, 'shares.html', {'account': account})
+    # Fetch TDI share (assuming it's the main one)
+    tdi_share = Asset.objects.filter(ticker='TDI', asset_type='share').first()
+    # Fetch other assets
+    other_assets = Asset.objects.filter(is_active=True).exclude(ticker='TDI')
+    return render(request, 'shares.html', {
+        'account': account,
+        'tdi_share': tdi_share,
+        'other_assets': other_assets
+    })
+
+@login_required
+def buy_project(request, project_id):
+    if request.method == 'POST':
+        project = get_object_or_404(Project, id=project_id)
+        amount_str = request.POST.get('amount', '0').replace(',', '')
+        try:
+            from decimal import Decimal
+            amount = Decimal(amount_str)
+        except:
+            messages.error(request, "Invalid amount.")
+            return redirect('investment_plan')
+
+        account = request.user.account
+        
+        if amount < project.min_investment:
+            messages.error(request, f"Minimum investment for this project is ${project.min_investment}")
+            return redirect('investment_plan')
+            
+        if account.balance >= amount:
+            with transaction.atomic():
+                account.balance -= amount
+                account.save()
+                
+                Investment.objects.create(
+                    user=request.user,
+                    project=project,
+                    amount_invested=amount,
+                    purchase_price=amount,
+                    status='active'
+                )
+                
+                Transaction.objects.create(
+                    account=account,
+                    transaction_type='withdrawal',
+                    amount=amount,
+                    description=f"Investment in Project: {project.title}",
+                    status='completed',
+                    reference=f"INV-PRJ-{project.id}-{request.user.id}-{transaction.get_connection().connection.get_server_version() if hasattr(transaction.get_connection(), 'connection') else ''}"[:100] # Simplistic unique ref
+                )
+            messages.success(request, f"Successfully invested ${amount} in {project.title}")
+        else:
+            messages.error(request, "Insufficient funds.")
+    return redirect('investment_plan')
+
+@login_required
+def buy_asset(request, asset_id):
+    if request.method == 'POST':
+        asset = get_object_or_404(Asset, id=asset_id)
+        amount_str = request.POST.get('amount', '0').replace(',', '')
+        try:
+            from decimal import Decimal
+            amount = Decimal(amount_str)
+        except:
+            messages.error(request, "Invalid amount.")
+            return redirect('shares')
+
+        account = request.user.account
+        
+        if account.balance >= amount:
+            with transaction.atomic():
+                units = amount / asset.current_price
+                account.balance -= amount
+                account.save()
+                
+                Investment.objects.create(
+                    user=request.user,
+                    asset=asset,
+                    amount_invested=amount,
+                    units=units,
+                    purchase_price=asset.current_price,
+                    status='active'
+                )
+                
+                Transaction.objects.create(
+                    account=account,
+                    transaction_type='withdrawal',
+                    amount=amount,
+                    description=f"Purchased {units:.4f} units of {asset.ticker}",
+                    status='completed',
+                    reference=f"INV-AST-{asset.id}-{request.user.id}"
+                )
+            messages.success(request, f"Successfully purchased {units:.4f} units of {asset.name}")
+        else:
+            messages.error(request, "Insufficient funds.")
+    return redirect('shares')
 
 @login_required
 def transaction_history(request):
@@ -135,12 +233,14 @@ def withdrawal(request):
         form = WithdrawalForm(request.POST, account=account)
         if form.is_valid():
             amount = form.cleaned_data['amount']
+            wallet_name = form.cleaned_data.get('wallet_name')
             wallet_address = form.cleaned_data['wallet_address']
             network = form.cleaned_data['network']
             
             Withdrawal.objects.create(
                 user=request.user,
                 amount=amount,
+                wallet_name=wallet_name,
                 wallet_address=wallet_address,
                 network=network,
                 status='pending'

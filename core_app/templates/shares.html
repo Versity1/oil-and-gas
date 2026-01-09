@@ -4,7 +4,7 @@
 
 {% block content %}
     <!-- Main Content -->
-     <main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
+    <main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8 pb-24 md:pb-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column: Asset Info & Chart -->
             <div class="lg:col-span-2">
@@ -12,9 +12,9 @@
                 <div class="flex flex-col md:flex-row items-center md:items-start gap-6 px-4 pt-2 pb-6 md:px-0">
                     <div class="bg-center bg-no-repeat bg-cover rounded-xl h-24 w-24 shadow-md border-2 border-white dark:border-[#2A3B4D]" data-alt="Oil rig silhouette against a sunset gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeIi0JFoUfUJYj6a65pedsVBt7RYgR42TW8hZ3e0BaMwZH8u-uxmRdBpcuBobO5PNMYUpHZ6hJ4Z1HQxE0bOksfzKnSl90FNV5ZF7zs5dpwxuUQrR5LwqFgHHkAxr9skaGnh58JHxsOES99jwzAqopJDzfrj8Ch5BeI4Jv4ys8h9Yp9tQ_xtf3zsyXST_-gtwj0rTY82twQUbiy3qnBuR6j7lSyj7Rum0MoR_YkkKycodtQRXwjvNOPmjSLsc6dINJHCGAbFyX3dY3");'></div>
                     <div class="flex flex-col items-center md:items-start justify-center flex-1">
-                        <h1 class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight tracking-[-0.015em] text-center md:text-left">Techo Drill Innovation</h1>
+                        <h1 class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight tracking-[-0.015em] text-center md:text-left">{{ tdi_share.name|default:"Techo Drill Innovation" }}</h1>
                          <div class="flex items-center gap-3 mt-2">
-                            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">NASDQ: TDI</span>
+                            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">NASDQ: {{ tdi_share.ticker|default:"TDI" }}</span>
                             <span class="text-text-sec-light dark:text-text-sec-dark text-sm font-medium">Oil & Gas Exploration</span>
                         </div>
                     </div>
@@ -37,11 +37,13 @@
                         <div class="flex flex-col gap-1 mb-6">
                             <p class="text-text-sec-light dark:text-text-sec-dark text-sm font-medium uppercase tracking-wider">Current Price</p>
                             <div class="flex items-baseline gap-4">
-                                <h2 class="text-text-main-light dark:text-text-main-dark text-5xl font-bold leading-none tracking-tight">$42.50</h2>
-                                <div class="flex items-center text-[#078838] bg-[#078838]/10 px-3 py-1 rounded-lg text-base font-bold">
-                                    <span class="material-symbols-outlined text-[18px] mr-1">trending_up</span>
-                                    +1.2% (24h)
+                                <h2 class="text-text-main-light dark:text-text-main-dark text-5xl font-bold leading-none tracking-tight">${{ tdi_share.current_price|default:"42.50" }}</h2>
+                                {% if tdi_share.previous_price %}
+                                <div class="flex items-center {% if tdi_share.current_price >= tdi_share.previous_price %}text-[#078838] bg-[#078838]/10{% else %}text-red-500 bg-red-500/10{% endif %} px-3 py-1 rounded-lg text-base font-bold">
+                                    <span class="material-symbols-outlined text-[18px] mr-1">{% if tdi_share.current_price >= tdi_share.previous_price %}trending_up{% else %}trending_down{% endif %}</span>
+                                    {{ tdi_share.growth_percentage|default:"1.2" }}%
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                         <!-- Chart SVG -->
@@ -68,101 +70,101 @@
                     </div>
                 </div>
 
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 pb-6 md:px-0">
-                    <div class="flex flex-col gap-1 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm">
-                        <p class="text-text-sec-light dark:text-text-sec-dark text-xs font-medium uppercase">Market Cap</p>
-                        <p class="text-text-main-light dark:text-text-main-dark text-lg font-bold">$450M</p>
-                    </div>
-                    <div class="flex flex-col gap-1 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm">
-                        <p class="text-text-sec-light dark:text-text-sec-dark text-xs font-medium uppercase">Vol (24h)</p>
-                        <p class="text-text-main-light dark:text-text-main-dark text-lg font-bold">2.1M</p>
-                    </div>
-                    <div class="flex flex-col gap-1 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm">
-                        <p class="text-text-sec-light dark:text-text-sec-dark text-xs font-medium uppercase">Div Yield</p>
-                        <p class="text-text-main-light dark:text-text-main-dark text-lg font-bold">4.2%</p>
-                    </div>
-                    <div class="flex flex-col gap-1 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm">
-                        <p class="text-text-sec-light dark:text-text-sec-dark text-xs font-medium uppercase">P/E Ratio</p>
-                        <p class="text-text-main-light dark:text-text-main-dark text-lg font-bold">12.5</p>
+                <!-- Market List -->
+                <div class="px-4 md:px-0 mb-8">
+                    <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold mb-4">Other Assets</h3>
+                    <div class="space-y-4">
+                        {% for asset in other_assets %}
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 shadow-sm hover:border-primary transition-all cursor-pointer">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-bold text-primary">{{ asset.ticker|slice:":1" }}</div>
+                                <div>
+                                    <p class="text-text-main-light dark:text-text-main-dark font-bold">{{ asset.name }}</p>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider">{{ asset.ticker }} • {{ asset.asset_type|title }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-text-main-light dark:text-text-main-dark font-bold">${{ asset.current_price }}</p>
+                                {% if asset.previous_price %}
+                                <p class="text-xs {% if asset.current_price >= asset.previous_price %}text-green-500{% else %}text-red-500{% endif %} font-bold">
+                                    {% if asset.current_price >= asset.previous_price %}+{% endif %}{{ asset.growth_percentage|default:0 }}%
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-center py-10 text-gray-500 italic">No other assets available for listing.</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
 
             <!-- Right Column: Purchase Interface (Sticky on Desktop) -->
             <div class="lg:col-span-1">
-                 <div class="bg-surface-light dark:bg-surface-dark rounded-xl md:border md:border-gray-200 md:dark:border-gray-800 md:shadow-lg md:sticky md:top-24 p-6">
-                    <!-- Purchase Input -->
-                    <div class="pb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold">Amount</h3>
-                            <span class="text-xs font-bold text-text-sec-light">Balance: ${{ account.balance|floatformat:2 }}</span>
-                        </div>
-                        <div class="flex flex-col gap-4">
-                            <div class="relative group">
-                                <div class="absolute top-1/2 left-4 -translate-y-1/2 text-text-main-light dark:text-text-main-dark font-bold text-xl pointer-events-none">$</div>
-                                <input class="w-full bg-background-light dark:bg-background-dark text-text-main-light dark:text-text-main-dark text-2xl font-bold pl-10 pr-20 py-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="0.00" type="number" value="1000"/>
-                             </div>
-                            <div class="flex justify-between items-center px-2">
-                                <span class="text-text-sec-light dark:text-text-sec-dark text-sm">Est. Shares</span>
-                                <span class="text-text-main-light dark:text-text-main-dark font-bold text-lg">~23.52 TDI</span>
+                 <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-gray-800 shadow-lg sticky top-24 p-6">
+                    <form action="{% if tdi_share %}{% url 'buy_asset' tdi_share.id %}{% endif %}" method="POST">
+                        {% csrf_token %}
+                        <!-- Purchase Input -->
+                        <div class="pb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold">Purchase {{ tdi_share.ticker|default:"Asset" }}</h3>
+                                <span class="text-xs font-bold text-text-sec-light">Balance: ${{ account.balance|floatformat:2 }}</span>
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <div class="relative group">
+                                    <div class="absolute top-1/2 left-4 -translate-y-1/2 text-text-main-light dark:text-text-main-dark font-bold text-xl pointer-events-none">$</div>
+                                    <input id="buy-amount" name="amount" class="w-full bg-background-light dark:bg-background-dark text-text-main-light dark:text-text-main-dark text-2xl font-bold pl-10 pr-20 py-4 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="0.00" type="number" step="0.01" oninput="calculateUnits()" required/>
+                                 </div>
+                                <div class="flex justify-between items-center px-2">
+                                    <span class="text-text-sec-light dark:text-text-sec-dark text-sm">Est. Units</span>
+                                    <span class="text-text-main-light dark:text-text-main-dark font-bold text-lg">~<span id="est-units">0.00</span> {{ tdi_share.ticker|default:"Units" }}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Payment Methods -->
-                    <div class="pb-8">
-                        <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold mb-4">Select Payment Method</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="flex cursor-pointer flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
-                                <input checked="" class="hidden" name="payment" type="radio" value="balance"/>
-                                <div class="size-8 rounded-full bg-primary flex items-center justify-center text-white">
-                                    <span class="material-symbols-outlined text-sm">account_balance_wallet</span>
-                                </div>
-                                <span class="text-xs font-bold text-text-main-light dark:text-text-main-dark text-center">Account Balance</span>
-                            </label>
-                            <label class="flex cursor-pointer flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
-                                <input class="hidden" name="payment" type="radio" value="crypto"/>
-                                <div class="size-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
-                                    <span class="material-symbols-outlined text-sm">currency_bitcoin</span>
-                                </div>
-                                <span class="text-xs font-bold text-text-main-light dark:text-text-main-dark text-center">External Crypto</span>
-                            </label>
+                        
+                        <!-- Payment Methods -->
+                        <div class="pb-8">
+                            <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold mb-4">Select Source</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="flex cursor-pointer flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
+                                    <input checked="" class="hidden" name="payment" type="radio" value="balance"/>
+                                    <div class="size-8 rounded-full bg-primary flex items-center justify-center text-white">
+                                        <span class="material-symbols-outlined text-sm">account_balance_wallet</span>
+                                    </div>
+                                    <span class="text-xs font-bold text-text-main-light dark:text-text-main-dark text-center">Account Balance</span>
+                                </label>
+                                <label class="flex cursor-pointer flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
+                                    <input class="hidden" name="payment" type="radio" value="crypto"/>
+                                    <div class="size-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
+                                        <span class="material-symbols-outlined text-sm">currency_bitcoin</span>
+                                    </div>
+                                    <span class="text-xs font-bold text-text-main-light dark:text-text-main-dark text-center">External Crypto</span>
+                                </label>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 mt-4 text-text-sec-light dark:text-text-sec-dark text-xs justify-center">
-                            <span class="material-symbols-outlined text-[14px]">lock</span>
-                            <span>Secure SSL Encrypted Payment</span>
+                        
+                        <!-- Action Button -->
+                        <div class="flex flex-col gap-3">
+                            <button type="submit" class="w-full py-4 bg-primary text-white font-black rounded-xl shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all transform active:scale-95 text-lg">
+                                Confirm Purchase
+                            </button>
                         </div>
-                    </div>
-                    
-                    <!-- Desktop Action Buttons -->
-                    <div class="hidden md:flex flex-col gap-3">
-                         <div class="flex justify-between items-center text-xs text-text-sec-light dark:text-text-sec-dark">
-                            <span>Transaction Fee (0.5%)</span>
-                            <span>$5.00</span>
-                        </div>
-                        <button class="w-full h-12 bg-primary hover:bg-primary/90 text-white text-base font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/30">
-                            <span>Confirm Purchase</span>
-                            <span class="material-symbols-outlined">arrow_forward</span>
-                        </button>
-                         <p class="text-text-sec-light dark:text-text-sec-dark text-xs text-center mt-2">
-                             Investing involves risks. <a class="underline hover:text-primary" href="#">Read Prospectus</a>
-                         </p>
-                    </div>
-                 </div>
+                    </form>
+                </div>
             </div>
-        </div>
-        
-        <!-- Mobile Sticky Bottom Action Bar -->
-        <div class="md:hidden fixed bottom-16 left-0 w-full bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 p-4 flex flex-col gap-3 z-40">
-            <div class="flex justify-between items-center text-xs text-text-sec-light dark:text-text-sec-dark">
-                <span>Transaction Fee (0.5%)</span>
-                <span>$5.00</span>
-            </div>
-            <button class="w-full h-12 bg-primary hover:bg-primary/90 text-white text-base font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-primary/30">
-                <span>Confirm Purchase</span>
-                <span class="material-symbols-outlined">arrow_forward</span>
-            </button>
         </div>
     </main>
+
+    <script>
+        const currentPrice = {{ tdi_share.current_price|default:1 }};
+        function calculateUnits() {
+            const amount = document.getElementById('buy-amount').value;
+            if (amount && amount > 0) {
+                const units = (amount / currentPrice).toFixed(4);
+                document.getElementById('est-units').innerText = units;
+            } else {
+                document.getElementById('est-units').innerText = '0.00';
+            }
+        }
+    </script>
 {% endblock %}
