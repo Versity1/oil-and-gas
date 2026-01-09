@@ -1,4 +1,4 @@
-{% extends 'base_front.html' %}
+{% extends 'base_dashboard.html' %}
 
 {% block title %}Techo Drill Innovation - Investment Plans{% endblock %}
 
@@ -6,18 +6,14 @@
     <!-- Main Content -->
      <main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
         <!-- Hero Section -->
-        <div class="relative w-full h-[320px] md:h-[420px] bg-cover bg-center flex flex-col justify-end overflow-hidden md:rounded-2xl shadow-lg group mx-auto mb-8" style='background-image: linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.7) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDShwRWNZS50eH_D7_IdDxIWZGgYFu2nonqIbF2n0UMSx35WWDTdL_Zm1Dbt55guGIQO7jCuKVksZax6KJhRQgGUcggnCDqKVnwFZ-F39yG5BRI_i6q32Th_-At5eHxuai3_-O_NwLZ1WMFmRgYSd2Dan1m_GLG-u435t6AFGxNmg3Bdkhf2VySCAgDs3GAWQPV-Vupra-1XFpQj8gnx9xwu8-pFtA2LdEdoLrUidb5PORoNZT-YIey4Qd5YKZoeFvZceHyABrbf5K2");'>
-            <div class="flex flex-col p-6 md:p-10 max-w-3xl z-10">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 backdrop-blur-md border border-green-400/30 w-fit mb-3">
-                    <span class="material-symbols-outlined text-green-400 text-sm">trending_up</span>
-                    <span class="text-green-100 text-xs font-bold uppercase tracking-wide">Market Surge</span>
-                </div>
-                <h1 class="text-white text-3xl md:text-5xl font-black leading-tight drop-shadow-lg mb-2">Crude prices up 5%</h1>
-                <p class="text-gray-200 text-sm md:text-lg font-medium max-w-lg drop-shadow-md mb-6">Global demand is rising. Explore new drilling ventures and capitalize on the current market surge with our top-tier funds.</p>
-                <button class="flex w-fit cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary hover:bg-blue-600 transition-colors text-white text-sm font-bold shadow-lg">
-                    View Market Trends
-                </button>
+        <div class="relative w-full h-[220px] md:h-[320px] bg-gradient-to-br from-primary to-blue-900 flex flex-col justify-center overflow-hidden md:rounded-2xl shadow-lg mb-8 p-6 md:p-10 text-white">
+            <div class="relative z-10">
+                <p class="text-blue-100 text-sm font-medium mb-1 uppercase tracking-wider">Available Balance</p>
+                <h1 class="text-4xl md:text-5xl font-black mb-2">${{ account.balance|floatformat:2 }}</h1>
+                <p class="text-blue-200 text-xs md:text-sm max-w-md">Your funds are ready for deployment. Choose an investment plan below to start generating returns.</p>
             </div>
+            <!-- Abstract background pattern -->
+            <div class="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
         </div>
 
         <!-- Headline -->

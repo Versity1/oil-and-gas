@@ -57,3 +57,30 @@ class UserRegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class TransactionForm(forms.Form):
+    amount = forms.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        min_value=1.00,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00'})
+    )
+    description = forms.CharField(
+        max_length=255, 
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional description'})
+    )
+
+class DepositForm(TransactionForm):
+    pass
+
+class WithdrawalForm(TransactionForm):
+    def __init__(self, *args, **kwargs):
+        self.account = kwargs.pop('account', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_amount(self):
+        amount = self.cleaned_data.get('amount')
+        if self.account and amount > self.account.balance:
+            raise forms.ValidationError(f"Insufficient funds. Your current balance is {self.account.balance}")
+        return amount

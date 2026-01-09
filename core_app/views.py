@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from .forms import UserRegistrationForm
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
+from .models import Account, Transaction
+from .utils import send_transaction_email
 
 # Front Pages
 def home(request):
@@ -60,24 +64,97 @@ def logout_view(request):
     messages.info(request, "You have successfully logged out.")
     return redirect('home')
 
-def password_reset(request):
-    return render(request, 'password_reset.html')
-
 # Dashboard Pages
+@login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    account, created = Account.objects.get_or_create(user=request.user)
+    transactions = Transaction.objects.filter(account=account).order_by('-timestamp')[:5]
+    return render(request, 'dashboard.html', {
+        'account': account,
+        'recent_transactions': transactions
+    })
 
+@login_required
 def investment_plan(request):
-    return render(request, 'investment-plan.html')
+    account = request.user.account
+    return render(request, 'investment-plan.html', {'account': account})
 
+@login_required
 def shares(request):
-    return render(request, 'shares.html')
+    account = request.user.account
+    return render(request, 'shares.html', {'account': account})
 
+@login_required
 def transaction_history(request):
-    return render(request, 'transaction-history.html')
+    account = request.user.account
+    transactions = Transaction.objects.filter(account=account).order_by('-timestamp')
+    return render(request, 'transaction-history.html', {'transactions': transactions})
 
+@login_required
 def deposit(request):
-    return render(request, 'deposit.html')
+    if request.method == 'POST':
+        form = DepositForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            description = form.cleaned_data['description']
+            
+            with transaction.atomic():
+                account = request.user.account
+                account.balance += amount
+                account.save()
+                
+                txn = Transaction.objects.create(
+                    account=account,
+                    transaction_type='deposit',
+                    amount=amount,
+                    description=description or 'Account Deposit',
+                    status='completed'
+                )
+            
+            # Send email notification
+            send_transaction_email(request.user, txn)
+            
+            messages.success(request, f"Successfully deposited {amount}. Your new balance is {account.balance}.")
+            return redirect('dashboard')
+    else:
+        form = DepositForm()
+    
+    return render(request, 'deposit.html', {'form': form})
 
+@login_required
 def withdrawal(request):
-    return render(request, 'withdrawal.html')
+    account = request.user.account
+    if request.method == 'POST':
+        form = WithdrawalForm(request.POST, account=account)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            description = form.cleaned_data['description']
+            
+            if account.balance >= amount:
+                with transaction.atomic():
+                    account.balance -= amount
+                    account.save()
+                    
+                    txn = Transaction.objects.create(
+                        account=account,
+                        transaction_type='withdrawal',
+                        amount=amount,
+                        description=description or 'Account Withdrawal',
+                        status='completed'
+                    )
+                
+                # Send email notification
+                send_transaction_email(request.user, txn)
+                
+                messages.success(request, f"Successfully withdrawn {amount}. Your new balance is {account.balance}.")
+                return redirect('dashboard')
+            else:
+                messages.error(request, "Insufficient funds.")
+        else:
+            for error_list in form.errors.values():
+                for error in error_list:
+                    messages.error(request, error)
+    else:
+        form = WithdrawalForm()
+    
+    return render(request, 'withdrawal.html', {'form': form, 'account': account})

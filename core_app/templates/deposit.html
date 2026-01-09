@@ -34,18 +34,29 @@
             <!-- Deposit Form -->
             <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <h2 class="text-lg font-bold mb-4">Enter Amount</h2>
-                <form class="space-y-6">
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
                     <div>
                         <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Amount (USD)</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
-                            <input type="number" class="w-full pl-8 pr-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-bold text-lg" placeholder="0.00" min="100">
+                            <input type="number" step="0.01" name="amount" id="id_amount" class="w-full pl-8 pr-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-bold text-lg" placeholder="0.00" min="1" required>
                         </div>
-                        <p class="text-xs text-gray-400 mt-2">Minimum deposit: $100.00</p>
+                        {% if form.amount.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.amount.errors.0 }}</p>
+                        {% endif %}
                     </div>
                     
-                    <button type="button" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all">
-                        Proceed to Payment
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-text-sec-light dark:text-text-sec-dark">Description (Optional)</label>
+                        <input type="text" name="description" id="id_description" class="w-full px-4 py-3 bg-background-light dark:bg-background-dark rounded-lg border-none focus:ring-2 focus:ring-primary font-medium" placeholder="E.g. Monthly Savings">
+                        {% if form.description.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all">
+                        Proceed to Deposit
                     </button>
                 </form>
             </div>
