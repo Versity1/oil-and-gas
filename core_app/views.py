@@ -126,15 +126,51 @@ def investment_plan(request):
 
 @login_required
 def shares(request):
+    from django.db.models import Sum
+    from decimal import Decimal
+    
     tdi_share = Asset.objects.filter(ticker='TDI').first()
-    other_assets = Asset.objects.exclude(ticker='TDI')
+    all_assets = Asset.objects.filter(is_active=True)
+    other_assets = all_assets.exclude(ticker='TDI')
     payment_methods = PaymentMethod.objects.filter(is_active=True)
     account = request.user.account
+    
+    # Get user's asset holdings
+    user_holdings = Investment.objects.filter(
+        user=request.user, 
+        asset__isnull=False, 
+        status='active'
+    ).select_related('asset')
+    
+    # Calculate portfolio stats
+    total_invested = user_holdings.aggregate(total=Sum('amount_invested'))['total'] or Decimal('0')
+    
+    # Calculate current value based on current prices
+    portfolio_value = Decimal('0')
+    holdings_data = []
+    for holding in user_holdings:
+        current_value = holding.units * holding.asset.current_price
+        unrealized_gain = current_value - holding.amount_invested
+        holdings_data.append({
+            'holding': holding,
+            'current_value': current_value,
+            'unrealized_gain': unrealized_gain,
+            'gain_percent': (unrealized_gain / holding.amount_invested * 100) if holding.amount_invested > 0 else 0
+        })
+        portfolio_value += current_value
+    
+    total_gain = portfolio_value - total_invested
+    
     return render(request, 'shares.html', {
         'tdi_share': tdi_share,
+        'all_assets': all_assets,
         'other_assets': other_assets,
         'payment_methods': payment_methods,
-        'account': account
+        'account': account,
+        'user_holdings': holdings_data,
+        'total_invested': total_invested,
+        'portfolio_value': portfolio_value,
+        'total_gain': total_gain
     })
 
 @login_required
