@@ -93,7 +93,7 @@ oil-and-gas/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/oil-and-gas.git
+   git clone https://github.com/versity1/oil-and-gas.git
    cd oil-and-gas
    ```
 
