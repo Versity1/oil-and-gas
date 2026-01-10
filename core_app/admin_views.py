@@ -218,6 +218,94 @@ def admin_toggle_plan(request, plan_id):
 
 
 @staff_member_required
+def admin_create_plan(request):
+    """Create a new investment plan."""
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        short_description = request.POST.get('short_description')
+        min_price = request.POST.get('min_price')
+        max_price = request.POST.get('max_price')
+        daily_profit_rate = request.POST.get('daily_profit_rate')
+        duration_days = request.POST.get('duration_days')
+        capital_return = request.POST.get('capital_return') == 'on'
+        
+        try:
+            min_price = Decimal(min_price)
+            max_price = Decimal(max_price)
+            daily_profit_rate = Decimal(daily_profit_rate)
+            duration_days = int(duration_days)
+            
+            if min_price <= 0 or max_price <= 0 or daily_profit_rate <= 0:
+                raise ValueError("Values must be positive")
+            if min_price > max_price:
+                raise ValueError("Min price cannot exceed max price")
+        except Exception as e:
+            messages.error(request, f"Invalid data: {e}")
+            return redirect('admin_investment_plans')
+        
+        InvestmentPlan.objects.create(
+            name=name,
+            short_description=short_description,
+            min_price=min_price,
+            max_price=max_price,
+            daily_profit_rate=daily_profit_rate,
+            duration_days=duration_days,
+            capital_return=capital_return,
+            is_active=True
+        )
+        
+        messages.success(request, f"Investment plan '{name}' created successfully.")
+    
+    return redirect('admin_investment_plans')
+
+
+@staff_member_required
+def admin_edit_plan(request, plan_id):
+    """Edit an investment plan."""
+    plan = get_object_or_404(InvestmentPlan, id=plan_id)
+    
+    if request.method == 'POST':
+        plan.name = request.POST.get('name', plan.name)
+        plan.short_description = request.POST.get('short_description', plan.short_description)
+        
+        try:
+            plan.min_price = Decimal(request.POST.get('min_price', plan.min_price))
+            plan.max_price = Decimal(request.POST.get('max_price', plan.max_price))
+            plan.daily_profit_rate = Decimal(request.POST.get('daily_profit_rate', plan.daily_profit_rate))
+            plan.duration_days = int(request.POST.get('duration_days', plan.duration_days))
+        except:
+            messages.error(request, "Invalid numeric data provided.")
+            return redirect('admin_investment_plans')
+        
+        plan.capital_return = request.POST.get('capital_return') == 'on'
+        plan.save()
+        
+        messages.success(request, f"Plan '{plan.name}' updated successfully.")
+    
+    return redirect('admin_investment_plans')
+
+
+@staff_member_required
+def admin_delete_plan(request, plan_id):
+    """Delete an investment plan."""
+    plan = get_object_or_404(InvestmentPlan, id=plan_id)
+    
+    if request.method == 'POST':
+        name = plan.name
+        # Check for active user subscriptions
+        active_subs = UserPlan.objects.filter(plan=plan, is_active=True).count()
+        
+        if active_subs > 0:
+            messages.error(request, f"Cannot delete '{name}' - there are {active_subs} active subscribers.")
+            return redirect('admin_investment_plans')
+        
+        plan.delete()
+        messages.success(request, f"Plan '{name}' deleted successfully.")
+    
+    return redirect('admin_investment_plans')
+
+
+@staff_member_required
 def admin_projects(request):
     """Projects management."""
     projects = Project.objects.all().order_by('-created_at')
@@ -226,6 +314,91 @@ def admin_projects(request):
         'projects': projects,
     }
     return render(request, 'custom_admin/projects.html', context)
+
+
+@staff_member_required
+def admin_create_project(request):
+    """Create a new project."""
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        min_investment = request.POST.get('min_investment')
+        return_rate = request.POST.get('return_rate')
+        duration_days = request.POST.get('duration_days')
+        status = request.POST.get('status', 'funding')
+        image = request.FILES.get('image')
+        
+        try:
+            min_investment = Decimal(min_investment)
+            return_rate = Decimal(return_rate)
+            duration_days = int(duration_days)
+            
+            if min_investment <= 0 or return_rate <= 0:
+                raise ValueError("Values must be positive")
+        except Exception as e:
+            messages.error(request, f"Invalid data: {e}")
+            return redirect('admin_projects')
+        
+        Project.objects.create(
+            title=title,
+            description=description,
+            min_investment=min_investment,
+            return_rate=return_rate,
+            duration_days=duration_days,
+            status=status,
+            image=image
+        )
+        
+        messages.success(request, f"Project '{title}' created successfully.")
+    
+    return redirect('admin_projects')
+
+
+@staff_member_required
+def admin_edit_project(request, project_id):
+    """Edit a project."""
+    project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        project.title = request.POST.get('title', project.title)
+        project.description = request.POST.get('description', project.description)
+        project.status = request.POST.get('status', project.status)
+        
+        try:
+            project.min_investment = Decimal(request.POST.get('min_investment', project.min_investment))
+            project.return_rate = Decimal(request.POST.get('return_rate', project.return_rate))
+            project.duration_days = int(request.POST.get('duration_days', project.duration_days))
+        except:
+            messages.error(request, "Invalid numeric data provided.")
+            return redirect('admin_projects')
+        
+        if 'image' in request.FILES:
+            project.image = request.FILES['image']
+        
+        project.save()
+        messages.success(request, f"Project '{project.title}' updated successfully.")
+    
+    return redirect('admin_projects')
+
+
+@staff_member_required
+def admin_delete_project(request, project_id):
+    """Delete a project."""
+    project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        title = project.title
+        # Check for active investments
+        active_investments = Investment.objects.filter(project=project, status='active').count()
+        
+        if active_investments > 0:
+            messages.error(request, f"Cannot delete '{title}' - there are {active_investments} active investments.")
+            return redirect('admin_projects')
+        
+        project.delete()
+        messages.success(request, f"Project '{title}' deleted successfully.")
+    
+    return redirect('admin_projects')
 
 
 @staff_member_required
@@ -271,6 +444,78 @@ def admin_toggle_payment_method(request, method_id):
     
     status = "activated" if method.is_active else "deactivated"
     messages.success(request, f"Payment method '{method.name}' has been {status}.")
+    return redirect('admin_payment_methods')
+
+
+@staff_member_required
+def admin_create_payment_method(request):
+    """Create a new payment method."""
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        symbol = request.POST.get('symbol', '').upper()
+        network = request.POST.get('network')
+        wallet_address = request.POST.get('wallet_address')
+        qr_code = request.FILES.get('qr_code')
+        thumbnail = request.FILES.get('thumbnail')
+        
+        if not all([name, symbol, network, wallet_address]):
+            messages.error(request, "All required fields must be filled.")
+            return redirect('admin_payment_methods')
+        
+        PaymentMethod.objects.create(
+            name=name,
+            symbol=symbol,
+            network=network,
+            wallet_address=wallet_address,
+            qr_code=qr_code,
+            thumbnail=thumbnail,
+            is_active=True
+        )
+        
+        messages.success(request, f"Payment method '{name}' created successfully.")
+    
+    return redirect('admin_payment_methods')
+
+
+@staff_member_required
+def admin_edit_payment_method(request, method_id):
+    """Edit a payment method."""
+    method = get_object_or_404(PaymentMethod, id=method_id)
+    
+    if request.method == 'POST':
+        method.name = request.POST.get('name', method.name)
+        method.symbol = request.POST.get('symbol', method.symbol).upper()
+        method.network = request.POST.get('network', method.network)
+        method.wallet_address = request.POST.get('wallet_address', method.wallet_address)
+        
+        if 'qr_code' in request.FILES:
+            method.qr_code = request.FILES['qr_code']
+        if 'thumbnail' in request.FILES:
+            method.thumbnail = request.FILES['thumbnail']
+        
+        method.save()
+        messages.success(request, f"Payment method '{method.name}' updated successfully.")
+    
+    return redirect('admin_payment_methods')
+
+
+@staff_member_required
+def admin_delete_payment_method(request, method_id):
+    """Delete a payment method."""
+    method = get_object_or_404(PaymentMethod, id=method_id)
+    
+    if request.method == 'POST':
+        name = method.name
+        # Check for pending deposits using this method
+        pending_deposits = Deposit.objects.filter(payment_method=method, status='pending').count()
+        
+        if pending_deposits > 0:
+            messages.error(request, f"Cannot delete '{name}' - there are {pending_deposits} pending deposits using this method.")
+            return redirect('admin_payment_methods')
+        
+        method.delete()
+        messages.success(request, f"Payment method '{name}' deleted successfully.")
+    
     return redirect('admin_payment_methods')
 
 

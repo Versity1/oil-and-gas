@@ -5,6 +5,62 @@
 {% block page_subtitle %}Manage investment projects{% endblock %}
 
 {% block content %}
+<!-- Create Project Form -->
+<div class="bg-admin-card border border-admin-border rounded-xl p-6 mb-6">
+    <h3 class="font-bold mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">add_circle</span>
+        Create New Project
+    </h3>
+    <form action="{% url 'admin_create_project' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Project Title *</label>
+                <input type="text" name="title" required placeholder="e.g. Oil Rig Alpha"
+                       class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Min Investment ($) *</label>
+                <input type="number" name="min_investment" required step="0.01" min="0.01" placeholder="1000"
+                       class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Return Rate (%) *</label>
+                <input type="number" name="return_rate" required step="0.01" min="0.01" placeholder="15"
+                       class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Duration (days) *</label>
+                <input type="number" name="duration_days" required min="1" placeholder="90"
+                       class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div class="md:col-span-2">
+                <label class="block text-xs text-gray-500 mb-1">Description *</label>
+                <textarea name="description" required rows="2" placeholder="Project description..."
+                          class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary resize-none"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Status</label>
+                <select name="status" class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                    <option value="funding">Funding</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Project Image</label>
+                <input type="file" name="image" accept="image/*"
+                       class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary file:text-white">
+            </div>
+        </div>
+        <button type="submit" class="px-6 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-colors">
+            Create Project
+        </button>
+    </form>
+</div>
+
 <!-- Projects Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for project in projects %}
@@ -47,25 +103,126 @@
                 </div>
             </div>
             
-            <!-- Status Update Form -->
-            <form action="{% url 'admin_update_project_status' project.id %}" method="POST" class="flex gap-2">
+            <!-- Status Update -->
+            <form action="{% url 'admin_update_project_status' project.id %}" method="POST" class="flex gap-2 mb-3">
                 {% csrf_token %}
                 <select name="status" class="flex-1 px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
                     <option value="funding" {% if project.status == 'funding' %}selected{% endif %}>Funding</option>
                     <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
                     <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
                 </select>
-                <button type="submit" class="px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-sm font-medium transition-colors">
+                <button type="submit" class="px-3 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-sm font-medium transition-colors">
                     Update
                 </button>
             </form>
+            
+            <!-- Actions -->
+            <div class="flex gap-2">
+                <button onclick="openEditProjectModal({{ project.id }}, '{{ project.title|escapejs }}', '{{ project.description|escapejs }}', '{{ project.min_investment }}', '{{ project.return_rate }}', {{ project.duration_days }}, '{{ project.status }}')"
+                        class="flex-1 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm font-medium transition-colors text-center">
+                    Edit
+                </button>
+                <form action="{% url 'admin_delete_project' project.id %}" method="POST" class="flex-1"
+                      onsubmit="return confirm('Delete {{ project.title }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-medium transition-colors">
+                        Delete
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
     {% empty %}
     <div class="col-span-full py-12 text-center text-gray-500">
         <span class="material-symbols-outlined text-4xl mb-2 block">construction</span>
-        No projects found
+        No projects found. Create your first project above.
     </div>
     {% endfor %}
 </div>
+
+<!-- Edit Project Modal -->
+<div id="editProjectModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/60" onclick="closeEditProjectModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-admin-card border border-admin-border rounded-xl p-6">
+        <h3 class="font-bold text-lg mb-4">Edit Project</h3>
+        <form id="editProjectForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Title</label>
+                    <input type="text" name="title" id="edit_project_title" required
+                           class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Description</label>
+                    <textarea name="description" id="edit_project_desc" rows="3" required
+                              class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary resize-none"></textarea>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Min Investment</label>
+                        <input type="number" name="min_investment" id="edit_project_min" step="0.01" required
+                               class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Return Rate (%)</label>
+                        <input type="number" name="return_rate" id="edit_project_rate" step="0.01" required
+                               class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Duration (days)</label>
+                        <input type="number" name="duration_days" id="edit_project_duration" min="1" required
+                               class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Status</label>
+                        <select name="status" id="edit_project_status"
+                                class="w-full px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                            <option value="funding">Funding</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">New Image (optional)</label>
+                        <input type="file" name="image" accept="image/*"
+                               class="w-full px-2 py-1 bg-admin-bg border border-admin-border rounded-lg text-white text-xs focus:outline-none focus:border-primary file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary file:text-white">
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-6">
+                <button type="button" onclick="closeEditProjectModal()" 
+                        class="flex-1 py-2 bg-admin-bg border border-admin-border rounded-lg font-medium hover:bg-white/5 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="flex-1 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-colors">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditProjectModal(id, title, desc, min, rate, duration, status) {
+    document.getElementById('editProjectForm').action = `/admin/projects/${id}/edit/`;
+    document.getElementById('edit_project_title').value = title;
+    document.getElementById('edit_project_desc').value = desc;
+    document.getElementById('edit_project_min').value = min;
+    document.getElementById('edit_project_rate').value = rate;
+    document.getElementById('edit_project_duration').value = duration;
+    document.getElementById('edit_project_status').value = status;
+    document.getElementById('editProjectModal').classList.remove('hidden');
+}
+
+function closeEditProjectModal() {
+    document.getElementById('editProjectModal').classList.add('hidden');
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeEditProjectModal();
+});
+</script>
 {% endblock %}
