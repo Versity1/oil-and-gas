@@ -69,6 +69,9 @@ def logout_view(request):
 def dashboard(request):
     account, created = Account.objects.get_or_create(user=request.user)
     transactions = Transaction.objects.filter(account=account).order_by('-timestamp')[:5]
+    # Fetch pending deposits and withdrawals
+    pending_deposits = Deposit.objects.filter(user=request.user, status='pending').order_by('-created_at')[:3]
+    pending_withdrawals = Withdrawal.objects.filter(user=request.user, status='pending').order_by('-created_at')[:3]
     # Fetch active projects and investment plans for the dashboard
     active_projects = Project.objects.filter(status='funding')[:3]
     investment_plans = InvestmentPlan.objects.filter(is_active=True)[:3]
@@ -77,6 +80,8 @@ def dashboard(request):
     return render(request, 'dashboard.html', {
         'account': account,
         'recent_transactions': transactions,
+        'pending_deposits': pending_deposits,
+        'pending_withdrawals': pending_withdrawals,
         'active_projects': active_projects,
         'investment_plans': investment_plans,
         'payment_methods': payment_methods
@@ -348,6 +353,20 @@ def deposit(request):
     return render(request, 'deposit.html', {
         'form': form, 
         'payment_methods': payment_methods
+    })
+
+@login_required
+def deposit_pay(request, deposit_id):
+    """Show payment details for a pending deposit (linked investment flow)."""
+    deposit_obj = get_object_or_404(Deposit, id=deposit_id, user=request.user)
+    
+    if deposit_obj.status != 'pending':
+        messages.info(request, "This deposit has already been processed.")
+        return redirect('dashboard')
+    
+    return render(request, 'deposit_pay.html', {
+        'deposit': deposit_obj,
+        'payment_method': deposit_obj.payment_method
     })
 
 @login_required

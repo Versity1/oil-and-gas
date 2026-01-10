@@ -40,4 +40,5 @@ urlpatterns = [
     path('buy-project/<int:project_id>/', views.buy_project, name='buy_project'),
     path('buy-asset/<int:asset_id>/', views.buy_asset, name='buy_asset'),
     path('buy-package/<int:package_id>/', views.buy_package, name='buy_package'),
+    path('deposit/<int:deposit_id>/pay/', views.deposit_pay, name='deposit_pay'),
 ]

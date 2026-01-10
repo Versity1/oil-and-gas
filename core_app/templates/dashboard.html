@@ -361,12 +361,45 @@
                         <a href="{% url 'transaction_history' %}" class="text-xs font-bold uppercase tracking-wider text-primary hover:text-primary-dark transition-colors">View All</a>
                     </div>
                     <div>
+                        <!-- Pending Deposits -->
+                        {% for dep in pending_deposits %}
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 bg-amber-50/50 dark:bg-amber-900/10">
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-lg">schedule</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Deposit Pending</p>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">{{ dep.created_at|date:"M d, Y" }} • Awaiting confirmation</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-amber-600">+${{ dep.amount }}</span>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Pending Withdrawals -->
+                        {% for wd in pending_withdrawals %}
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 bg-amber-50/50 dark:bg-amber-900/10">
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-lg">schedule</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Withdrawal Pending</p>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">{{ wd.created_at|date:"M d, Y" }} • Processing</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-amber-600">-${{ wd.amount }}</span>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Completed Transactions -->
                         {% for txn in recent_transactions %}
                         <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-full {% if txn.transaction_type == 'deposit' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %} dark:bg-opacity-20 flex items-center justify-center shrink-0">
+                                <div class="size-10 rounded-full {% if txn.transaction_type == 'deposit' or txn.transaction_type == 'profit' or txn.transaction_type == 'capital_return' %}bg-green-100 text-green-700{% else %}bg-orange-100 text-orange-700{% endif %} dark:bg-opacity-20 flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-lg">
-                                        {% if txn.transaction_type == 'deposit' %}add{% else %}remove{% endif %}
+                                        {% if txn.transaction_type == 'deposit' or txn.transaction_type == 'profit' or txn.transaction_type == 'capital_return' %}add{% else %}remove{% endif %}
                                     </span>
                                 </div>
                                 <div class="flex flex-col">
@@ -374,14 +407,16 @@
                                     <p class="text-xs text-text-sec-light dark:text-text-sec-dark">{{ txn.timestamp|date:"M d, Y" }} • {{ txn.transaction_type|title }}</p>
                                 </div>
                             </div>
-                            <span class="text-sm font-bold {% if txn.transaction_type == 'deposit' %}text-green-600{% else %}text-orange-600{% endif %}">
-                                {% if txn.transaction_type == 'deposit' %}+{% else %}-{% endif %}${{ txn.amount }}
+                            <span class="text-sm font-bold {% if txn.transaction_type == 'deposit' or txn.transaction_type == 'profit' or txn.transaction_type == 'capital_return' %}text-green-600{% else %}text-orange-600{% endif %}">
+                                {% if txn.transaction_type == 'deposit' or txn.transaction_type == 'profit' or txn.transaction_type == 'capital_return' %}+{% else %}-{% endif %}${{ txn.amount }}
                             </span>
                         </div>
                         {% empty %}
+                        {% if not pending_deposits and not pending_withdrawals %}
                         <div class="p-8 text-center">
                             <p class="text-text-sec-light dark:text-text-sec-dark text-sm">No recent activity found.</p>
                         </div>
+                        {% endif %}
                         {% endfor %}
                     </div>
                 </div>

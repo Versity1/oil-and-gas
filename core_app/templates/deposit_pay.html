@@ -1,0 +1,135 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Complete Payment - Techo Drill{% endblock %}
+
+{% block content %}
+<main class="w-full max-w-2xl mx-auto p-4 md:p-6 lg:p-8 pb-24">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 text-text-sec-light dark:text-text-sec-dark hover:text-primary transition-colors mb-4">
+            <span class="material-symbols-outlined text-lg">arrow_back</span>
+            Back to Dashboard
+        </a>
+        <h1 class="text-2xl md:text-3xl font-bold text-text-main-light dark:text-text-main-dark">Complete Your Payment</h1>
+        <p class="text-text-sec-light dark:text-text-sec-dark mt-1">Send the exact amount to the address below to activate your investment.</p>
+    </div>
+
+    <!-- Payment Card -->
+    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <!-- Status Badge -->
+        <div class="px-6 py-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-b border-gray-100 dark:border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="size-10 rounded-full bg-amber-500/20 text-amber-600 flex items-center justify-center">
+                    <span class="material-symbols-outlined">schedule</span>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-amber-600">Payment Pending</p>
+                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">Waiting for your transfer</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <!-- Amount -->
+            <div class="text-center py-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                <p class="text-xs font-bold text-text-sec-light uppercase tracking-widest mb-2">Amount to Send</p>
+                <p class="text-4xl font-black text-text-main-light dark:text-text-main-dark">${{ deposit.amount|floatformat:2 }}</p>
+            </div>
+
+            <!-- Payment Method Details -->
+            <div class="space-y-4">
+                <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                    <p class="text-xs font-bold text-text-sec-light uppercase tracking-widest mb-2">Payment Method</p>
+                    <div class="flex items-center gap-3">
+                        <div class="size-10 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined">{% if 'BTC' in payment_method.name %}currency_bitcoin{% else %}payments{% endif %}</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-text-main-light dark:text-text-main-dark">{{ payment_method.name }}</p>
+                            <p class="text-xs text-text-sec-light">Network: {{ payment_method.network }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallet Address -->
+                <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                    <p class="text-xs font-bold text-text-sec-light uppercase tracking-widest mb-2">Send To This Address</p>
+                    <div class="flex items-center gap-2">
+                        <code id="walletAddress" class="flex-1 text-sm font-mono text-text-main-light dark:text-text-main-dark break-all bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700">{{ payment_method.wallet_address }}</code>
+                        <button onclick="copyAddress()" class="shrink-0 size-10 rounded-lg bg-primary text-white flex items-center justify-center hover:bg-primary-dark transition-colors">
+                            <span class="material-symbols-outlined text-lg">content_copy</span>
+                        </button>
+                    </div>
+                    <p id="copyFeedback" class="text-xs text-green-600 mt-2 hidden">Address copied to clipboard!</p>
+                </div>
+
+                <!-- QR Code -->
+                {% if payment_method.qr_code %}
+                <div class="p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl flex flex-col items-center">
+                    <p class="text-xs font-bold text-text-sec-light uppercase tracking-widest mb-4">Scan to Pay</p>
+                    <div class="bg-white p-4 rounded-2xl shadow-lg">
+                        <img src="{{ payment_method.qr_code.url }}" alt="Payment QR Code" class="w-48 h-48 object-contain">
+                    </div>
+                    <p class="text-xs text-text-sec-light mt-3">Scan this QR code with your wallet app</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Investment Details -->
+            {% if deposit.linked_plan %}
+            <div class="p-4 bg-primary/5 rounded-xl border border-primary/20">
+                <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">Investment Details</p>
+                <p class="text-sm text-text-main-light dark:text-text-main-dark">
+                    <span class="font-bold">{{ deposit.linked_plan.name }}</span> • {{ deposit.linked_plan.daily_profit_rate }}% Daily Return
+                </p>
+            </div>
+            {% elif deposit.linked_project %}
+            <div class="p-4 bg-primary/5 rounded-xl border border-primary/20">
+                <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">Project Investment</p>
+                <p class="text-sm text-text-main-light dark:text-text-main-dark">
+                    <span class="font-bold">{{ deposit.linked_project.title }}</span> • {{ deposit.linked_project.return_rate }}% Return
+                </p>
+            </div>
+            {% elif deposit.linked_asset %}
+            <div class="p-4 bg-primary/5 rounded-xl border border-primary/20">
+                <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">Asset Purchase</p>
+                <p class="text-sm text-text-main-light dark:text-text-main-dark">
+                    <span class="font-bold">{{ deposit.linked_asset.name }}</span> ({{ deposit.linked_asset.ticker }})
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Instructions -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+                <div class="flex gap-3">
+                    <span class="material-symbols-outlined text-blue-600 shrink-0">info</span>
+                    <div class="text-sm text-blue-800 dark:text-blue-200">
+                        <p class="font-bold mb-1">Important Instructions</p>
+                        <ul class="text-xs space-y-1 list-disc list-inside opacity-80">
+                            <li>Send exactly <strong>${{ deposit.amount|floatformat:2 }}</strong> worth of {{ payment_method.symbol }}</li>
+                            <li>Use the <strong>{{ payment_method.network }}</strong> network only</li>
+                            <li>Your investment will be activated automatically once confirmed</li>
+                            <li>Processing typically takes 10-30 minutes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'dashboard' %}" class="block w-full py-4 bg-gray-100 dark:bg-gray-800 text-text-main-light dark:text-text-main-dark font-bold rounded-xl text-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                I've Sent the Payment
+            </a>
+        </div>
+    </div>
+</main>
+
+<script>
+    function copyAddress() {
+        const address = document.getElementById('walletAddress').innerText;
+        navigator.clipboard.writeText(address).then(() => {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.classList.remove('hidden');
+            setTimeout(() => feedback.classList.add('hidden'), 2000);
+        });
+    }
+</script>
+{% endblock %}

@@ -126,3 +126,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Background Tasks Configuration (Django 6)
+# For development, ImmediateBackend runs tasks synchronously.
+# For production, configure a third-party backend or use a scheduler.
+TASKS = {
+    "default": {
+        "BACKEND": "django.tasks.backends.ImmediateBackend",
+    }
+}
