@@ -32,7 +32,7 @@
             
             <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ project.description }}</p>
             
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-3 gap-3 mb-4">
                 <div class="bg-admin-bg rounded-lg p-3 text-center">
                     <p class="text-xs text-gray-500 mb-1">Min</p>
                     <p class="font-bold text-sm">${{ project.min_investment|floatformat:0 }}</p>
@@ -46,6 +46,19 @@
                     <p class="font-bold text-sm">{{ project.duration_days }}d</p>
                 </div>
             </div>
+            
+            <!-- Status Update Form -->
+            <form action="{% url 'admin_update_project_status' project.id %}" method="POST" class="flex gap-2">
+                {% csrf_token %}
+                <select name="status" class="flex-1 px-3 py-2 bg-admin-bg border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                    <option value="funding" {% if project.status == 'funding' %}selected{% endif %}>Funding</option>
+                    <option value="active" {% if project.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="completed" {% if project.status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+                <button type="submit" class="px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-sm font-medium transition-colors">
+                    Update
+                </button>
+            </form>
         </div>
     </div>
     {% empty %}

@@ -315,3 +315,236 @@ def admin_user_plans(request):
         'status_filter': status_filter,
     }
     return render(request, 'custom_admin/user_plans.html', context)
+
+
+# ========== USER MANAGEMENT ACTIONS ==========
+
+@staff_member_required
+def admin_user_detail(request, user_id):
+    """View detailed user information."""
+    user_obj = get_object_or_404(User, id=user_id)
+    
+    # Get user's data
+    deposits = Deposit.objects.filter(user=user_obj).order_by('-created_at')[:10]
+    withdrawals = Withdrawal.objects.filter(user=user_obj).order_by('-created_at')[:10]
+    transactions = Transaction.objects.filter(account=user_obj.account).order_by('-timestamp')[:10]
+    user_plans = UserPlan.objects.filter(user=user_obj).select_related('plan')
+    investments = Investment.objects.filter(user=user_obj).select_related('project', 'asset')
+    
+    # Stats
+    total_deposited = Deposit.objects.filter(user=user_obj, status='completed').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    total_withdrawn = Withdrawal.objects.filter(user=user_obj, status='completed').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    
+    context = {
+        'user_obj': user_obj,
+        'deposits': deposits,
+        'withdrawals': withdrawals,
+        'transactions': transactions,
+        'user_plans': user_plans,
+        'investments': investments,
+        'total_deposited': total_deposited,
+        'total_withdrawn': total_withdrawn,
+    }
+    return render(request, 'custom_admin/user_detail.html', context)
+
+
+@staff_member_required
+def admin_toggle_user(request, user_id):
+    """Suspend or activate a user."""
+    user_obj = get_object_or_404(User, id=user_id)
+    
+    # Don't allow suspending yourself or superusers
+    if user_obj == request.user:
+        messages.error(request, "You cannot suspend yourself.")
+        return redirect('admin_users')
+    
+    if user_obj.is_superuser:
+        messages.error(request, "You cannot suspend a superuser.")
+        return redirect('admin_users')
+    
+    user_obj.is_active = not user_obj.is_active
+    user_obj.save()
+    
+    status = "activated" if user_obj.is_active else "suspended"
+    messages.success(request, f"User '{user_obj.username}' has been {status}.")
+    return redirect('admin_users')
+
+
+@staff_member_required
+def admin_delete_user(request, user_id):
+    """Delete a user account."""
+    user_obj = get_object_or_404(User, id=user_id)
+    
+    # Safety checks
+    if user_obj == request.user:
+        messages.error(request, "You cannot delete yourself.")
+        return redirect('admin_users')
+    
+    if user_obj.is_superuser:
+        messages.error(request, "You cannot delete a superuser.")
+        return redirect('admin_users')
+    
+    if request.method == 'POST':
+        username = user_obj.username
+        user_obj.delete()
+        messages.success(request, f"User '{username}' has been permanently deleted.")
+        return redirect('admin_users')
+    
+    # GET request - show confirmation
+    context = {'user_obj': user_obj}
+    return render(request, 'custom_admin/confirm_delete.html', context)
+
+
+@staff_member_required
+def admin_adjust_balance(request, user_id):
+    """Credit or debit a user's balance."""
+    user_obj = get_object_or_404(User, id=user_id)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        amount = request.POST.get('amount')
+        reason = request.POST.get('reason', '')
+        
+        try:
+            amount = Decimal(amount)
+            if amount <= 0:
+                raise ValueError("Amount must be positive")
+        except:
+            messages.error(request, "Invalid amount provided.")
+            return redirect('admin_user_detail', user_id=user_id)
+        
+        account = user_obj.account
+        
+        if action == 'credit':
+            account.balance += amount
+            account.save()
+            
+            Transaction.objects.create(
+                account=account,
+                transaction_type='deposit',
+                amount=amount,
+                description=f"Admin credit: {reason}" if reason else "Admin credit adjustment",
+                status='completed'
+            )
+            messages.success(request, f"Credited ${amount} to {user_obj.username}'s account.")
+            
+        elif action == 'debit':
+            if account.balance < amount:
+                messages.error(request, f"Insufficient balance. User has ${account.balance}.")
+                return redirect('admin_user_detail', user_id=user_id)
+            
+            account.balance -= amount
+            account.save()
+            
+            Transaction.objects.create(
+                account=account,
+                transaction_type='withdrawal',
+                amount=amount,
+                description=f"Admin debit: {reason}" if reason else "Admin debit adjustment",
+                status='completed'
+            )
+            messages.success(request, f"Debited ${amount} from {user_obj.username}'s account.")
+    
+    return redirect('admin_user_detail', user_id=user_id)
+
+
+# ========== ASSET PRICE UPDATE ==========
+
+@staff_member_required
+def admin_update_asset_price(request, asset_id):
+    """Update asset price."""
+    asset = get_object_or_404(Asset, id=asset_id)
+    
+    if request.method == 'POST':
+        new_price = request.POST.get('price')
+        
+        try:
+            new_price = Decimal(new_price)
+            if new_price <= 0:
+                raise ValueError("Price must be positive")
+        except:
+            messages.error(request, "Invalid price provided.")
+            return redirect('admin_assets')
+        
+        # Store old price
+        asset.previous_price = asset.current_price
+        asset.current_price = new_price
+        asset.save()
+        
+        messages.success(request, f"Updated {asset.name} price to ${new_price}.")
+    
+    return redirect('admin_assets')
+
+
+# ========== PROJECT STATUS UPDATE ==========
+
+@staff_member_required 
+def admin_update_project_status(request, project_id):
+    """Update project status."""
+    project = get_object_or_404(Project, id=project_id)
+    
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        
+        if new_status in ['funding', 'active', 'completed']:
+            project.status = new_status
+            project.save()
+            messages.success(request, f"Project '{project.title}' status updated to {new_status}.")
+        else:
+            messages.error(request, "Invalid status provided.")
+    
+    return redirect('admin_projects')
+
+
+# ========== USER PLAN MANAGEMENT ==========
+
+@staff_member_required
+def admin_toggle_user_plan(request, plan_id):
+    """Toggle user plan active status or mark as completed."""
+    user_plan = get_object_or_404(UserPlan, id=plan_id)
+    user_plan.is_active = not user_plan.is_active
+    user_plan.save()
+    
+    status = "activated" if user_plan.is_active else "completed/deactivated"
+    messages.success(request, f"User plan has been {status}.")
+    return redirect('admin_user_plans')
+
+
+@staff_member_required
+def admin_add_profit(request, plan_id):
+    """Manually add profit to a user plan."""
+    user_plan = get_object_or_404(UserPlan, id=plan_id)
+    
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        
+        try:
+            amount = Decimal(amount)
+            if amount <= 0:
+                raise ValueError("Amount must be positive")
+        except:
+            messages.error(request, "Invalid amount provided.")
+            return redirect('admin_user_plans')
+        
+        # Add to profit
+        user_plan.current_profit += amount
+        user_plan.save()
+        
+        # Credit user's account
+        account = user_plan.user.account
+        account.balance += amount
+        account.save()
+        
+        # Create transaction
+        Transaction.objects.create(
+            account=account,
+            transaction_type='profit',
+            amount=amount,
+            description=f"Profit from {user_plan.plan.name}",
+            status='completed'
+        )
+        
+        messages.success(request, f"Added ${amount} profit to {user_plan.user.username}'s plan.")
+    
+    return redirect('admin_user_plans')
+

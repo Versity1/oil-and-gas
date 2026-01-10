@@ -22,7 +22,7 @@
 </div>
 
 <!-- Users Table -->
-<div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+<div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden overflow-x-auto">
     <table class="w-full">
         <thead class="bg-admin-bg/50">
             <tr class="text-left text-xs uppercase text-gray-500">
@@ -32,6 +32,7 @@
                 <th class="px-6 py-4">Balance</th>
                 <th class="px-6 py-4">Joined</th>
                 <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">Actions</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-admin-border">
@@ -62,16 +63,37 @@
                     {% if u.is_active %}
                     <span class="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
                     {% else %}
-                    <span class="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-medium">Inactive</span>
+                    <span class="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-medium">Suspended</span>
                     {% endif %}
                     {% if u.is_staff %}
                     <span class="text-xs px-3 py-1 rounded-full bg-primary/20 text-primary font-medium ml-1">Staff</span>
                     {% endif %}
                 </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'admin_user_detail' u.id %}" 
+                           class="p-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg transition-colors"
+                           title="View Details">
+                            <span class="material-symbols-outlined text-lg">visibility</span>
+                        </a>
+                        {% if not u.is_superuser and u != request.user %}
+                        <a href="{% url 'admin_toggle_user' u.id %}" 
+                           class="p-2 {% if u.is_active %}bg-amber-500/20 hover:bg-amber-500/30 text-amber-400{% else %}bg-green-500/20 hover:bg-green-500/30 text-green-400{% endif %} rounded-lg transition-colors"
+                           title="{% if u.is_active %}Suspend{% else %}Activate{% endif %}">
+                            <span class="material-symbols-outlined text-lg">{% if u.is_active %}block{% else %}check_circle{% endif %}</span>
+                        </a>
+                        <a href="{% url 'admin_delete_user' u.id %}" 
+                           class="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
+                           title="Delete">
+                            <span class="material-symbols-outlined text-lg">delete</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                     <span class="material-symbols-outlined text-4xl mb-2 block">person_off</span>
                     No users found
                 </td>

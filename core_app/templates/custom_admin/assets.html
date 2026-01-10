@@ -63,11 +63,24 @@
                     {% endif %}
                 </td>
                 <td class="px-6 py-4">
-                    <a href="{% url 'admin_toggle_asset' asset.id %}" 
-                       class="px-4 py-2 rounded-lg text-xs font-medium transition-colors
-                           {% if asset.is_active %}bg-red-500/20 text-red-400 hover:bg-red-500/30{% else %}bg-green-500/20 text-green-400 hover:bg-green-500/30{% endif %}">
-                        {% if asset.is_active %}Deactivate{% else %}Activate{% endif %}
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <!-- Update Price Form -->
+                        <form action="{% url 'admin_update_asset_price' asset.id %}" method="POST" class="flex items-center gap-2">
+                            {% csrf_token %}
+                            <input type="number" name="price" step="0.01" min="0.01" 
+                                   value="{{ asset.current_price }}" 
+                                   class="w-24 px-2 py-1 bg-admin-bg border border-admin-border rounded text-white text-sm focus:outline-none focus:border-primary">
+                            <button type="submit" class="p-1.5 bg-primary/20 hover:bg-primary/30 text-primary rounded transition-colors" title="Update Price">
+                                <span class="material-symbols-outlined text-sm">save</span>
+                            </button>
+                        </form>
+                        <a href="{% url 'admin_toggle_asset' asset.id %}" 
+                           class="p-1.5 rounded transition-colors
+                               {% if asset.is_active %}bg-red-500/20 hover:bg-red-500/30 text-red-400{% else %}bg-green-500/20 hover:bg-green-500/30 text-green-400{% endif %}"
+                           title="{% if asset.is_active %}Deactivate{% else %}Activate{% endif %}">
+                            <span class="material-symbols-outlined text-sm">{% if asset.is_active %}block{% else %}check_circle{% endif %}</span>
+                        </a>
+                    </div>
                 </td>
             </tr>
             {% empty %}

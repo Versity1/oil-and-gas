@@ -1,0 +1,53 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Confirm Delete{% endblock %}
+{% block page_title %}Delete User{% endblock %}
+{% block page_subtitle %}This action cannot be undone{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="bg-admin-card border border-red-500/50 rounded-xl p-8 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
+            <span class="material-symbols-outlined text-red-500 text-3xl">warning</span>
+        </div>
+        
+        <h2 class="text-xl font-bold mb-2">Delete {{ user_obj.username }}?</h2>
+        <p class="text-gray-400 mb-6">
+            You are about to permanently delete this user account. This will remove all their data including:
+        </p>
+        
+        <ul class="text-left text-sm text-gray-400 mb-6 space-y-2">
+            <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-red-400 text-sm">close</span>
+                Account balance: ${{ user_obj.account.balance|floatformat:2 }}
+            </li>
+            <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-red-400 text-sm">close</span>
+                All deposits and withdrawals
+            </li>
+            <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-red-400 text-sm">close</span>
+                All investment plans and profits
+            </li>
+            <li class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-red-400 text-sm">close</span>
+                All transaction history
+            </li>
+        </ul>
+        
+        <div class="flex gap-4">
+            <a href="{% url 'admin_users' %}" 
+               class="flex-1 py-3 bg-admin-bg border border-admin-border rounded-lg font-medium hover:bg-white/5 transition-colors">
+                Cancel
+            </a>
+            <form action="{% url 'admin_delete_user' user_obj.id %}" method="POST" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="w-full py-3 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors">
+                    Delete Forever
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

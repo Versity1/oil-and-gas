@@ -1,0 +1,240 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}{{ user_obj.username }}{% endblock %}
+{% block page_title %}User: {{ user_obj.username }}{% endblock %}
+{% block page_subtitle %}Detailed user information and management{% endblock %}
+
+{% block content %}
+<!-- User Info Card -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Main Info -->
+    <div class="lg:col-span-2 bg-admin-card border border-admin-border rounded-xl p-6">
+        <div class="flex items-start gap-4 mb-6">
+            <div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-3xl">person</span>
+            </div>
+            <div class="flex-1">
+                <h2 class="text-2xl font-bold">{{ user_obj.first_name }} {{ user_obj.last_name }}</h2>
+                <p class="text-gray-500">@{{ user_obj.username }}</p>
+                <p class="text-sm text-gray-400 mt-1">{{ user_obj.email }}</p>
+            </div>
+            <div class="flex flex-col gap-2">
+                {% if user_obj.is_active %}
+                <span class="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+                {% else %}
+                <span class="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-medium">Suspended</span>
+                {% endif %}
+                {% if user_obj.is_staff %}
+                <span class="text-xs px-3 py-1 rounded-full bg-primary/20 text-primary font-medium">Staff</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-admin-bg rounded-lg p-4">
+                <p class="text-xs text-gray-500 mb-1">Account #</p>
+                <p class="font-mono text-sm">{{ user_obj.account.account_number }}</p>
+            </div>
+            <div class="bg-admin-bg rounded-lg p-4">
+                <p class="text-xs text-gray-500 mb-1">Balance</p>
+                <p class="font-bold text-lg text-primary">${{ user_obj.account.balance|floatformat:2 }}</p>
+            </div>
+            <div class="bg-admin-bg rounded-lg p-4">
+                <p class="text-xs text-gray-500 mb-1">Total Deposited</p>
+                <p class="font-bold text-green-400">${{ total_deposited|floatformat:2 }}</p>
+            </div>
+            <div class="bg-admin-bg rounded-lg p-4">
+                <p class="text-xs text-gray-500 mb-1">Total Withdrawn</p>
+                <p class="font-bold text-red-400">${{ total_withdrawn|floatformat:2 }}</p>
+            </div>
+        </div>
+        
+        <div class="text-sm text-gray-500">
+            <p>Joined: {{ user_obj.date_joined|date:"F d, Y" }}</p>
+            <p>Last Login: {{ user_obj.last_login|date:"F d, Y H:i"|default:"Never" }}</p>
+        </div>
+    </div>
+    
+    <!-- Actions Panel -->
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <h3 class="font-bold mb-4">Quick Actions</h3>
+        
+        <!-- Suspend/Activate Toggle -->
+        {% if not user_obj.is_superuser and user_obj != request.user %}
+        <a href="{% url 'admin_toggle_user' user_obj.id %}" 
+           class="w-full mb-3 py-3 px-4 rounded-lg font-medium flex items-center gap-2 transition-colors
+               {% if user_obj.is_active %}bg-amber-500/20 text-amber-400 hover:bg-amber-500/30{% else %}bg-green-500/20 text-green-400 hover:bg-green-500/30{% endif %}">
+            <span class="material-symbols-outlined">{% if user_obj.is_active %}block{% else %}check_circle{% endif %}</span>
+            {% if user_obj.is_active %}Suspend User{% else %}Activate User{% endif %}
+        </a>
+        {% endif %}
+        
+        <!-- Adjust Balance Form -->
+        <div class="bg-admin-bg rounded-lg p-4 mb-3">
+            <p class="text-sm font-medium mb-3">Adjust Balance</p>
+            <form action="{% url 'admin_adjust_balance' user_obj.id %}" method="POST" class="space-y-3">
+                {% csrf_token %}
+                <input type="number" name="amount" step="0.01" min="0.01" placeholder="Amount" required
+                       class="w-full px-3 py-2 bg-admin-sidebar border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                <input type="text" name="reason" placeholder="Reason (optional)"
+                       class="w-full px-3 py-2 bg-admin-sidebar border border-admin-border rounded-lg text-white text-sm focus:outline-none focus:border-primary">
+                <div class="flex gap-2">
+                    <button type="submit" name="action" value="credit" 
+                            class="flex-1 py-2 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded-lg text-sm font-medium transition-colors">
+                        + Credit
+                    </button>
+                    <button type="submit" name="action" value="debit" 
+                            class="flex-1 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg text-sm font-medium transition-colors">
+                        − Debit
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Delete User -->
+        {% if not user_obj.is_superuser and user_obj != request.user %}
+        <a href="{% url 'admin_delete_user' user_obj.id %}" 
+           class="w-full py-3 px-4 rounded-lg font-medium flex items-center gap-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
+            <span class="material-symbols-outlined">delete</span>
+            Delete User
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Tabs Content -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Deposits -->
+    <div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+        <div class="p-4 border-b border-admin-border">
+            <h3 class="font-bold">Recent Deposits</h3>
+        </div>
+        <div class="divide-y divide-admin-border max-h-80 overflow-y-auto">
+            {% for deposit in deposits %}
+            <div class="p-4 flex items-center justify-between">
+                <div>
+                    <p class="font-bold">${{ deposit.amount|floatformat:2 }}</p>
+                    <p class="text-xs text-gray-500">{{ deposit.created_at|date:"M d, Y" }}</p>
+                </div>
+                <span class="text-xs px-2 py-1 rounded-full
+                    {% if deposit.status == 'pending' %}bg-amber-500/20 text-amber-400
+                    {% elif deposit.status == 'completed' %}bg-green-500/20 text-green-400
+                    {% else %}bg-red-500/20 text-red-400{% endif %}">
+                    {{ deposit.get_status_display }}
+                </span>
+            </div>
+            {% empty %}
+            <p class="p-4 text-center text-gray-500">No deposits</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Recent Withdrawals -->
+    <div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+        <div class="p-4 border-b border-admin-border">
+            <h3 class="font-bold">Recent Withdrawals</h3>
+        </div>
+        <div class="divide-y divide-admin-border max-h-80 overflow-y-auto">
+            {% for withdrawal in withdrawals %}
+            <div class="p-4 flex items-center justify-between">
+                <div>
+                    <p class="font-bold">${{ withdrawal.amount|floatformat:2 }}</p>
+                    <p class="text-xs text-gray-500">{{ withdrawal.created_at|date:"M d, Y" }}</p>
+                </div>
+                <span class="text-xs px-2 py-1 rounded-full
+                    {% if withdrawal.status == 'pending' %}bg-amber-500/20 text-amber-400
+                    {% elif withdrawal.status == 'completed' %}bg-green-500/20 text-green-400
+                    {% else %}bg-red-500/20 text-red-400{% endif %}">
+                    {{ withdrawal.get_status_display }}
+                </span>
+            </div>
+            {% empty %}
+            <p class="p-4 text-center text-gray-500">No withdrawals</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- User Plans -->
+{% if user_plans %}
+<div class="mt-6 bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+    <div class="p-4 border-b border-admin-border">
+        <h3 class="font-bold">Investment Plans</h3>
+    </div>
+    <table class="w-full">
+        <thead class="bg-admin-bg/50 text-xs uppercase text-gray-500">
+            <tr>
+                <th class="px-4 py-3 text-left">Plan</th>
+                <th class="px-4 py-3 text-left">Amount</th>
+                <th class="px-4 py-3 text-left">Profit</th>
+                <th class="px-4 py-3 text-left">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-admin-border">
+            {% for up in user_plans %}
+            <tr>
+                <td class="px-4 py-3 font-medium">{{ up.plan.name }}</td>
+                <td class="px-4 py-3">${{ up.amount|floatformat:2 }}</td>
+                <td class="px-4 py-3 text-green-400">+${{ up.current_profit|floatformat:2 }}</td>
+                <td class="px-4 py-3">
+                    {% if up.is_active %}
+                    <span class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Active</span>
+                    {% else %}
+                    <span class="text-xs px-2 py-1 rounded-full bg-gray-500/20 text-gray-400">Completed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- Recent Transactions -->
+<div class="mt-6 bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+    <div class="p-4 border-b border-admin-border">
+        <h3 class="font-bold">Recent Transactions</h3>
+    </div>
+    <table class="w-full">
+        <thead class="bg-admin-bg/50 text-xs uppercase text-gray-500">
+            <tr>
+                <th class="px-4 py-3 text-left">Reference</th>
+                <th class="px-4 py-3 text-left">Type</th>
+                <th class="px-4 py-3 text-left">Amount</th>
+                <th class="px-4 py-3 text-left">Date</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-admin-border">
+            {% for tx in transactions %}
+            <tr>
+                <td class="px-4 py-3 font-mono text-sm text-primary">{{ tx.reference }}</td>
+                <td class="px-4 py-3">
+                    <span class="text-xs px-2 py-1 rounded-full
+                        {% if tx.transaction_type == 'deposit' %}bg-green-500/20 text-green-400
+                        {% elif tx.transaction_type == 'withdrawal' %}bg-red-500/20 text-red-400
+                        {% else %}bg-amber-500/20 text-amber-400{% endif %}">
+                        {{ tx.get_transaction_type_display }}
+                    </span>
+                </td>
+                <td class="px-4 py-3 font-bold {% if tx.transaction_type == 'deposit' or tx.transaction_type == 'profit' %}text-green-400{% else %}text-red-400{% endif %}">
+                    {% if tx.transaction_type == 'deposit' or tx.transaction_type == 'profit' %}+{% else %}-{% endif %}${{ tx.amount|floatformat:2 }}
+                </td>
+                <td class="px-4 py-3 text-gray-500 text-sm">{{ tx.timestamp|date:"M d, Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="px-4 py-6 text-center text-gray-500">No transactions</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Back Button -->
+<div class="mt-6">
+    <a href="{% url 'admin_users' %}" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to Users
+    </a>
+</div>
+{% endblock %}

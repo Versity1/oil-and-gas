@@ -30,6 +30,7 @@
                 <th class="px-6 py-4">Total Value</th>
                 <th class="px-6 py-4">Start Date</th>
                 <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">Actions</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-admin-border">
@@ -68,6 +69,27 @@
                     {% else %}
                     <span class="text-xs px-3 py-1 rounded-full bg-gray-500/20 text-gray-400 font-medium">Completed</span>
                     {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        {% if up.is_active %}
+                        <!-- Add Profit Form -->
+                        <form action="{% url 'admin_add_profit' up.id %}" method="POST" class="flex items-center gap-1">
+                            {% csrf_token %}
+                            <input type="number" name="amount" step="0.01" min="0.01" placeholder="Profit" 
+                                   class="w-20 px-2 py-1 bg-admin-bg border border-admin-border rounded text-white text-sm focus:outline-none focus:border-primary">
+                            <button type="submit" class="p-1.5 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded transition-colors" title="Add Profit">
+                                <span class="material-symbols-outlined text-sm">add</span>
+                            </button>
+                        </form>
+                        {% endif %}
+                        <a href="{% url 'admin_toggle_user_plan' up.id %}" 
+                           class="p-1.5 rounded transition-colors
+                               {% if up.is_active %}bg-amber-500/20 hover:bg-amber-500/30 text-amber-400{% else %}bg-green-500/20 hover:bg-green-500/30 text-green-400{% endif %}"
+                           title="{% if up.is_active %}Complete Plan{% else %}Reactivate{% endif %}">
+                            <span class="material-symbols-outlined text-sm">{% if up.is_active %}stop_circle{% else %}play_circle{% endif %}</span>
+                        </a>
+                    </div>
                 </td>
             </tr>
             {% empty %}
