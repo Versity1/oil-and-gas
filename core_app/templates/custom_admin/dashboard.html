@@ -57,7 +57,7 @@
 </div>
 
 <!-- Financial Overview -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-admin-card border border-admin-border rounded-xl p-6">
         <p class="text-sm text-gray-500 uppercase font-bold mb-2">Total Deposits</p>
         <p class="text-2xl font-bold text-green-400">${{ total_deposits|floatformat:2 }}</p>
@@ -67,8 +67,149 @@
         <p class="text-2xl font-bold text-red-400">${{ total_withdrawals|floatformat:2 }}</p>
     </div>
     <div class="bg-admin-card border border-admin-border rounded-xl p-6">
-        <p class="text-sm text-gray-500 uppercase font-bold mb-2">Total Balance</p>
+        <p class="text-sm text-gray-500 uppercase font-bold mb-2">Main Balances</p>
         <p class="text-2xl font-bold text-primary">${{ total_balance|floatformat:2 }}</p>
+    </div>
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <p class="text-sm text-gray-500 uppercase font-bold mb-2">Trading Balances</p>
+        <p class="text-2xl font-bold text-emerald-400">${{ total_trading_balance|floatformat:2 }}</p>
+    </div>
+</div>
+
+<!-- Shares & Bonds Metrics -->
+<div class="bg-gradient-to-br from-blue-900/50 to-purple-900/30 border border-blue-700/30 rounded-2xl p-6 mb-8">
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-blue-400 text-2xl">monitoring</span>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg">Shares & Bonds Overview</h3>
+                <p class="text-sm text-gray-400">Asset investment metrics</p>
+            </div>
+        </div>
+        <a href="{% url 'admin_assets' %}" class="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm font-medium transition-colors">
+            Manage Assets
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+        <div class="bg-white/5 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-blue-400">{{ total_assets }}</p>
+            <p class="text-xs text-gray-400 mt-1">Total Assets</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-green-400">{{ active_assets }}</p>
+            <p class="text-xs text-gray-400 mt-1">Active Assets</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold">{{ total_shares }}</p>
+            <p class="text-xs text-gray-400 mt-1">Shares</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold">{{ total_bonds }}</p>
+            <p class="text-xs text-gray-400 mt-1">Bonds</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-amber-400">{{ total_asset_investments }}</p>
+            <p class="text-xs text-gray-400 mt-1">Active Positions</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold {% if unrealized_pnl >= 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                {% if unrealized_pnl >= 0 %}+{% endif %}${{ unrealized_pnl|floatformat:2 }}
+            </p>
+            <p class="text-xs text-gray-400 mt-1">Unrealized P&L</p>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white/5 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase mb-2">Total Invested</p>
+            <p class="text-xl font-bold">${{ total_asset_invested|floatformat:2 }}</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase mb-2">Current Market Value</p>
+            <p class="text-xl font-bold">${{ total_current_value|floatformat:2 }}</p>
+        </div>
+        <div class="bg-white/5 rounded-xl p-4">
+            <p class="text-xs text-gray-400 uppercase mb-2">Portfolio Return</p>
+            {% if total_asset_invested > 0 %}
+            {% widthratio unrealized_pnl total_asset_invested 100 as return_pct %}
+            <p class="text-xl font-bold {% if unrealized_pnl >= 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                {% if unrealized_pnl >= 0 %}+{% endif %}{{ return_pct }}%
+            </p>
+            {% else %}
+            <p class="text-xl font-bold text-gray-400">N/A</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Top Assets & Recent Trades -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Top Assets -->
+    <div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-admin-border">
+            <h3 class="font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-400">star</span>
+                Top Assets by Investors
+            </h3>
+        </div>
+        <div class="divide-y divide-admin-border">
+            {% for asset in top_assets %}
+            {% if asset.investor_count > 0 %}
+            <div class="flex items-center justify-between p-4 hover:bg-white/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center
+                        {% if asset.asset_type == 'share' %}bg-blue-500/20 text-blue-400{% else %}bg-amber-500/20 text-amber-400{% endif %}">
+                        <span class="material-symbols-outlined text-lg">{% if asset.asset_type == 'share' %}monitoring{% else %}account_balance{% endif %}</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ asset.name }}</p>
+                        <p class="text-xs text-gray-500">{{ asset.ticker }} • {{ asset.asset_type|title }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold">{{ asset.investor_count }} investors</p>
+                    <p class="text-xs text-green-400">${{ asset.total_invested|floatformat:0|default:"0" }} invested</p>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <p class="p-4 text-center text-gray-500">No asset investments yet</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Recent Trades -->
+    <div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-admin-border">
+            <h3 class="font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-green-400">swap_horiz</span>
+                Recent Trades
+            </h3>
+        </div>
+        <div class="divide-y divide-admin-border">
+            {% for trade in recent_trades %}
+            <div class="flex items-center justify-between p-4 hover:bg-white/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-green-400 text-lg">sell</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ trade.user.username }}</p>
+                        <p class="text-xs text-gray-500">Sold {{ trade.asset.name }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold">${{ trade.amount_invested|floatformat:2 }}</p>
+                    <p class="text-xs text-gray-400">{{ trade.units|floatformat:4 }} units</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="p-4 text-center text-gray-500">No trades yet</p>
+            {% endfor %}
+        </div>
     </div>
 </div>
 

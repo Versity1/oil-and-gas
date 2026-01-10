@@ -42,6 +42,8 @@ urlpatterns = [
     path('buy-asset/<int:asset_id>/', views.buy_asset, name='buy_asset'),
     path('buy-package/<int:package_id>/', views.buy_package, name='buy_package'),
     path('deposit/<int:deposit_id>/pay/', views.deposit_pay, name='deposit_pay'),
+    path('transfer-to-main/', views.transfer_to_main, name='transfer_to_main'),
+    path('sell-asset/<int:investment_id>/', views.sell_asset, name='sell_asset'),
     
     # Custom Admin Pages
     path('admin/', admin_views.admin_dashboard, name='admin_dashboard'),

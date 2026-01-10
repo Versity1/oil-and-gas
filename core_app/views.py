@@ -559,3 +559,112 @@ def withdrawal(request):
         form = WithdrawalForm()
     
     return render(request, 'withdrawal.html', {'form': form, 'account': account})
+
+
+@login_required
+def transfer_to_main(request):
+    """Transfer funds from trading balance to main balance."""
+    if request.method == 'POST':
+        account = request.user.account
+        amount_str = request.POST.get('amount', '0').replace(',', '')
+        
+        try:
+            from decimal import Decimal
+            amount = Decimal(amount_str)
+            
+            if amount <= 0:
+                messages.error(request, "Please enter a valid amount.")
+                return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
+            
+            if amount > account.trading_balance:
+                messages.error(request, f"Insufficient trading balance. Available: ${account.trading_balance}")
+                return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
+            
+            with transaction.atomic():
+                account.trading_balance -= amount
+                account.balance += amount
+                account.save()
+                
+                # Create transaction record
+                Transaction.objects.create(
+                    account=account,
+                    transaction_type='deposit',
+                    amount=amount,
+                    description="Transfer from Trading Wallet",
+                    status='completed',
+                    reference=f"TRF-{request.user.id}-{int(__import__('time').time())}"
+                )
+            
+            messages.success(request, f"Successfully transferred ${amount} to your main balance.")
+        except Exception as e:
+            messages.error(request, f"Transfer failed: {str(e)}")
+    
+    return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
+
+
+@login_required
+def sell_asset(request, investment_id):
+    """Sell an asset investment and credit trading balance."""
+    investment = get_object_or_404(Investment, id=investment_id, user=request.user)
+    
+    if investment.status != 'active':
+        messages.error(request, "This investment is no longer active.")
+        return redirect('shares')
+    
+    if not investment.asset:
+        messages.error(request, "This is not a share/bond investment.")
+        return redirect('shares')
+    
+    if request.method == 'POST':
+        from decimal import Decimal
+        import time
+        
+        # Calculate current value
+        current_value = investment.units * investment.asset.current_price
+        profit = current_value - investment.amount_invested
+        
+        with transaction.atomic():
+            account = request.user.account
+            
+            # Credit trading balance with current value
+            account.trading_balance += current_value
+            account.save()
+            
+            # Mark investment as sold
+            investment.status = 'sold'
+            investment.save()
+            
+            # Create transaction record
+            Transaction.objects.create(
+                account=account,
+                transaction_type='deposit',
+                amount=current_value,
+                description=f"Sold {investment.asset.name} ({investment.units:.4f} units)",
+                status='completed',
+                reference=f"SELL-{investment.asset.id}-{request.user.id}-{int(time.time())}"
+            )
+        
+        # Determine if profit or loss
+        if profit >= 0:
+            messages.success(request, f"Sold {investment.asset.name} for ${current_value:.2f} (+${profit:.2f} profit). Funds added to your Trading Wallet.")
+        else:
+            messages.success(request, f"Sold {investment.asset.name} for ${current_value:.2f} (${profit:.2f} loss). Funds added to your Trading Wallet.")
+        
+        # Send email notification
+        try:
+            send_investment_email(
+                user=request.user,
+                investment_type='share',
+                investment_name=f"Sold: {investment.asset.name}",
+                amount=current_value,
+                units=investment.units,
+                price=investment.asset.current_price
+            )
+        except:
+            pass
+        
+        return redirect('shares')
+    
+    # GET request - show confirmation page (or just redirect back)
+    return redirect('shares')
+

@@ -27,6 +27,38 @@ def admin_dashboard(request):
     total_deposits = Deposit.objects.filter(status='completed').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
     total_withdrawals = Withdrawal.objects.filter(status='completed').aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
     total_balance = Account.objects.aggregate(total=Sum('balance'))['total'] or Decimal('0.00')
+    total_trading_balance = Account.objects.aggregate(total=Sum('trading_balance'))['total'] or Decimal('0.00')
+    
+    # Shares & Bonds Metrics
+    total_assets = Asset.objects.count()
+    active_assets = Asset.objects.filter(is_active=True).count()
+    total_shares = Asset.objects.filter(asset_type='share').count()
+    total_bonds = Asset.objects.filter(asset_type='bond').count()
+    
+    # Asset Investments
+    total_asset_investments = Investment.objects.filter(asset__isnull=False, status='active').count()
+    total_asset_invested = Investment.objects.filter(asset__isnull=False, status='active').aggregate(total=Sum('amount_invested'))['total'] or Decimal('0.00')
+    
+    # Calculate total current value of all asset investments
+    active_asset_investments = Investment.objects.filter(asset__isnull=False, status='active').select_related('asset')
+    total_current_value = sum(
+        inv.units * inv.asset.current_price for inv in active_asset_investments
+    ) if active_asset_investments else Decimal('0.00')
+    
+    # Unrealized P&L
+    unrealized_pnl = total_current_value - total_asset_invested
+    
+    # Top performing assets (by number of investors)
+    top_assets = Asset.objects.filter(is_active=True).annotate(
+        investor_count=Count('investment', filter=Q(investment__status='active')),
+        total_invested=Sum('investment__amount_invested', filter=Q(investment__status='active'))
+    ).order_by('-investor_count')[:5]
+    
+    # Recent asset trades (sold investments)
+    recent_trades = Investment.objects.filter(
+        asset__isnull=False, 
+        status='sold'
+    ).select_related('user', 'asset').order_by('-created_at')[:5]
     
     # Recent activity
     recent_deposits = Deposit.objects.select_related('user', 'payment_method').order_by('-created_at')[:5]
@@ -41,9 +73,21 @@ def admin_dashboard(request):
         'total_deposits': total_deposits,
         'total_withdrawals': total_withdrawals,
         'total_balance': total_balance,
+        'total_trading_balance': total_trading_balance,
         'recent_deposits': recent_deposits,
         'recent_withdrawals': recent_withdrawals,
         'recent_users': recent_users,
+        # Shares & Bonds metrics
+        'total_assets': total_assets,
+        'active_assets': active_assets,
+        'total_shares': total_shares,
+        'total_bonds': total_bonds,
+        'total_asset_investments': total_asset_investments,
+        'total_asset_invested': total_asset_invested,
+        'total_current_value': total_current_value,
+        'unrealized_pnl': unrealized_pnl,
+        'top_assets': top_assets,
+        'recent_trades': recent_trades,
     }
     return render(request, 'custom_admin/dashboard.html', context)
 

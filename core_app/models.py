@@ -6,6 +6,8 @@ import uuid
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account')
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    trading_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, 
+                                          help_text="Balance from shares/bonds profits")
     account_number = models.CharField(max_length=12, unique=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -18,6 +20,20 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Account - {self.account_number}"
+    
+    def transfer_to_main_balance(self, amount):
+        """Transfer funds from trading balance to main balance."""
+        from decimal import Decimal
+        amount = Decimal(str(amount))
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
+        if amount > self.trading_balance:
+            raise ValueError("Insufficient trading balance")
+        
+        self.trading_balance -= amount
+        self.balance += amount
+        self.save()
+        return True
 
 class PaymentMethod(models.Model):
     name = models.CharField(max_length=50)
