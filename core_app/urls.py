@@ -65,8 +65,11 @@ urlpatterns = [
     path('admin/projects/', admin_views.admin_projects, name='admin_projects'),
     path('admin/projects/<int:project_id>/update-status/', admin_views.admin_update_project_status, name='admin_update_project_status'),
     path('admin/assets/', admin_views.admin_assets, name='admin_assets'),
+    path('admin/assets/create/', admin_views.admin_create_asset, name='admin_create_asset'),
     path('admin/assets/<int:asset_id>/toggle/', admin_views.admin_toggle_asset, name='admin_toggle_asset'),
     path('admin/assets/<int:asset_id>/update-price/', admin_views.admin_update_asset_price, name='admin_update_asset_price'),
+    path('admin/assets/<int:asset_id>/edit/', admin_views.admin_edit_asset, name='admin_edit_asset'),
+    path('admin/assets/<int:asset_id>/delete/', admin_views.admin_delete_asset, name='admin_delete_asset'),
     path('admin/payment-methods/', admin_views.admin_payment_methods, name='admin_payment_methods'),
     path('admin/payment-methods/<int:method_id>/toggle/', admin_views.admin_toggle_payment_method, name='admin_toggle_payment_method'),
 ]

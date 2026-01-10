@@ -91,33 +91,13 @@ def admin_approve_deposit(request, deposit_id):
     deposit = get_object_or_404(Deposit, id=deposit_id)
     
     if deposit.status == 'pending':
+        # Simply change status to completed
+        # The signal handler (handle_deposit_update in signals.py) will:
+        # - Credit the user's account balance
+        # - Create the transaction record
+        # - Handle linked investments (project/asset/plan)
         deposit.status = 'completed'
         deposit.save()
-        
-        # Credit user's account
-        account = deposit.user.account
-        account.balance += deposit.amount
-        account.save()
-        
-        # Create transaction record
-        Transaction.objects.create(
-            account=account,
-            transaction_type='deposit',
-            amount=deposit.amount,
-            description=f"Deposit via {deposit.payment_method.name}",
-            status='completed'
-        )
-        
-        # If linked to a plan, create UserPlan
-        if deposit.linked_plan:
-            UserPlan.objects.create(
-                user=deposit.user,
-                plan=deposit.linked_plan,
-                amount=deposit.amount
-            )
-            # Deduct from balance for the plan
-            account.balance -= deposit.amount
-            account.save()
         
         messages.success(request, f"Deposit of ${deposit.amount} approved successfully.")
     else:
@@ -163,17 +143,12 @@ def admin_approve_withdrawal(request, withdrawal_id):
     withdrawal = get_object_or_404(Withdrawal, id=withdrawal_id)
     
     if withdrawal.status == 'pending':
+        # Simply change status to completed
+        # The signal handler (handle_withdrawal_update in signals.py) will:
+        # - Deduct from user's account balance
+        # - Create the transaction record
         withdrawal.status = 'completed'
         withdrawal.save()
-        
-        # Create transaction record (balance already deducted on request)
-        Transaction.objects.create(
-            account=withdrawal.user.account,
-            transaction_type='withdrawal',
-            amount=withdrawal.amount,
-            description=f"Withdrawal to {withdrawal.network} wallet",
-            status='completed'
-        )
         
         messages.success(request, f"Withdrawal of ${withdrawal.amount} approved successfully.")
     else:
@@ -472,6 +447,105 @@ def admin_update_asset_price(request, asset_id):
         asset.save()
         
         messages.success(request, f"Updated {asset.name} price to ${new_price}.")
+    
+    return redirect('admin_assets')
+
+
+@staff_member_required
+def admin_create_asset(request):
+    """Create a new asset/share."""
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        ticker = request.POST.get('ticker', '').upper()
+        asset_type = request.POST.get('asset_type', 'share')
+        current_price = request.POST.get('current_price')
+        interest_rate = request.POST.get('interest_rate')
+        maturity_date = request.POST.get('maturity_date')
+        
+        try:
+            current_price = Decimal(current_price)
+            if current_price <= 0:
+                raise ValueError("Price must be positive")
+        except:
+            messages.error(request, "Invalid price provided.")
+            return redirect('admin_assets')
+        
+        # Check for duplicate ticker
+        if Asset.objects.filter(ticker=ticker).exists():
+            messages.error(request, f"Asset with ticker '{ticker}' already exists.")
+            return redirect('admin_assets')
+        
+        asset = Asset.objects.create(
+            name=name,
+            ticker=ticker,
+            asset_type=asset_type,
+            current_price=current_price,
+            previous_price=current_price,
+            interest_rate=Decimal(interest_rate) if interest_rate else None,
+            maturity_date=maturity_date if maturity_date else None,
+            is_active=True
+        )
+        
+        messages.success(request, f"Asset '{name}' created successfully.")
+    
+    return redirect('admin_assets')
+
+
+@staff_member_required
+def admin_edit_asset(request, asset_id):
+    """Edit an existing asset."""
+    asset = get_object_or_404(Asset, id=asset_id)
+    
+    if request.method == 'POST':
+        asset.name = request.POST.get('name', asset.name)
+        new_ticker = request.POST.get('ticker', asset.ticker).upper()
+        
+        # Check if new ticker conflicts with another asset
+        if new_ticker != asset.ticker and Asset.objects.filter(ticker=new_ticker).exists():
+            messages.error(request, f"Asset with ticker '{new_ticker}' already exists.")
+            return redirect('admin_assets')
+        
+        asset.ticker = new_ticker
+        asset.asset_type = request.POST.get('asset_type', asset.asset_type)
+        
+        new_price = request.POST.get('current_price')
+        if new_price:
+            try:
+                new_price = Decimal(new_price)
+                if new_price != asset.current_price:
+                    asset.previous_price = asset.current_price
+                    asset.current_price = new_price
+            except:
+                pass
+        
+        interest_rate = request.POST.get('interest_rate')
+        asset.interest_rate = Decimal(interest_rate) if interest_rate else None
+        
+        maturity_date = request.POST.get('maturity_date')
+        asset.maturity_date = maturity_date if maturity_date else None
+        
+        asset.save()
+        messages.success(request, f"Asset '{asset.name}' updated successfully.")
+    
+    return redirect('admin_assets')
+
+
+@staff_member_required
+def admin_delete_asset(request, asset_id):
+    """Delete an asset."""
+    asset = get_object_or_404(Asset, id=asset_id)
+    
+    if request.method == 'POST':
+        name = asset.name
+        # Check if there are active investments
+        active_investments = Investment.objects.filter(asset=asset, status='active').count()
+        
+        if active_investments > 0:
+            messages.error(request, f"Cannot delete '{name}' - there are {active_investments} active investments.")
+            return redirect('admin_assets')
+        
+        asset.delete()
+        messages.success(request, f"Asset '{name}' deleted successfully.")
     
     return redirect('admin_assets')
 

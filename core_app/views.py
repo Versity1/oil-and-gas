@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
 from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan
-from .utils import send_transaction_email, send_transaction_request_email
+from .utils import send_transaction_email, send_transaction_request_email, send_investment_email
 
 # Front Pages
 def home(request):
@@ -215,6 +215,15 @@ def buy_project(request, project_id):
                     )
                     account.balance -= amount
                     account.save()
+                
+                # Send investment confirmation email
+                send_investment_email(
+                    user=request.user,
+                    investment_type='project',
+                    investment_name=project.title,
+                    amount=amount
+                )
+                
                 messages.success(request, f"Successfully invested ${amount} in {project.title}")
                 return redirect('dashboard')
             else:
@@ -276,6 +285,17 @@ def buy_asset(request, asset_id):
                     )
                     account.balance -= amount
                     account.save()
+                
+                # Send investment confirmation email
+                send_investment_email(
+                    user=request.user,
+                    investment_type='share',
+                    investment_name=asset.name,
+                    amount=amount,
+                    units=units,
+                    price=asset.current_price
+                )
+                
                 messages.success(request, f"Successfully invested ${amount} in {asset.name}")
                 return redirect('dashboard')
             else:
@@ -350,6 +370,15 @@ def buy_package(request, package_id):
                     )
                     account.balance -= amount
                     account.save()
+                
+                # Send investment confirmation email
+                send_investment_email(
+                    user=request.user,
+                    investment_type='plan',
+                    investment_name=package.name,
+                    amount=amount
+                )
+                
                 messages.success(request, f"Successfully invested ${amount} in {package.name} plan")
                 return redirect('dashboard')
             else:
