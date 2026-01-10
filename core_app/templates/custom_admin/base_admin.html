@@ -1,0 +1,260 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}Admin Dashboard{% endblock %} - Techo Drill</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b66c3",
+                        "admin-bg": "#0f172a",
+                        "admin-sidebar": "#1e293b",
+                        "admin-card": "#1e293b",
+                        "admin-border": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Sidebar link styles */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #9ca3af;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .sidebar-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .sidebar-link.active {
+            color: #fff;
+            background-color: rgba(19, 127, 236, 0.2);
+            border-left: 4px solid #137fec;
+            padding-left: calc(1rem - 4px);
+        }
+        /* Mobile menu animation */
+        .sidebar-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .sidebar-panel {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        .sidebar-panel.open {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-admin-bg font-display text-gray-100 antialiased">
+    <!-- Mobile Menu Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/60 z-40 md:hidden" onclick="toggleSidebar()"></div>
+    
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar-panel fixed left-0 top-0 h-full w-64 bg-admin-sidebar border-r border-admin-border flex flex-col z-50 md:translate-x-0 md:transform-none">
+            <!-- Logo -->
+            <div class="p-6 border-b border-admin-border flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
+                    <div>
+                        <h1 class="text-lg font-bold">Techo Drill</h1>
+                        <p class="text-xs text-gray-500">Admin Panel</p>
+                    </div>
+                </div>
+                <!-- Close button for mobile -->
+                <button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-white/10 rounded-lg">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+                <p class="text-xs uppercase text-gray-500 font-bold mb-3 px-4">Main</p>
+                <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+                
+                <p class="text-xs uppercase text-gray-500 font-bold mt-6 mb-3 px-4">Users & Finance</p>
+                <a href="{% url 'admin_users' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
+                    <span class="material-symbols-outlined">group</span>
+                    Users
+                </a>
+                <a href="{% url 'admin_deposits' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_deposits' %}active{% endif %}">
+                    <span class="material-symbols-outlined">payments</span>
+                    Deposits
+                    {% if pending_deposits_count %}<span class="ml-auto bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">{{ pending_deposits_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_withdrawals' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_withdrawals' %}active{% endif %}">
+                    <span class="material-symbols-outlined">credit_score</span>
+                    Withdrawals
+                    {% if pending_withdrawals_count %}<span class="ml-auto bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">{{ pending_withdrawals_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_transactions' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_transactions' %}active{% endif %}">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    Transactions
+                </a>
+                
+                <p class="text-xs uppercase text-gray-500 font-bold mt-6 mb-3 px-4">Investments</p>
+                <a href="{% url 'admin_investment_plans' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_investment_plans' %}active{% endif %}">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                    Investment Plans
+                </a>
+                <a href="{% url 'admin_user_plans' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_user_plans' %}active{% endif %}">
+                    <span class="material-symbols-outlined">assignment</span>
+                    User Plans
+                </a>
+                <a href="{% url 'admin_projects' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_projects' %}active{% endif %}">
+                    <span class="material-symbols-outlined">construction</span>
+                    Projects
+                </a>
+                <a href="{% url 'admin_assets' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_assets' %}active{% endif %}">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    Assets
+                </a>
+                
+                <p class="text-xs uppercase text-gray-500 font-bold mt-6 mb-3 px-4">Settings</p>
+                <a href="{% url 'admin_payment_methods' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_payment_methods' %}active{% endif %}">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    Payment Methods
+                </a>
+                <a href="{% url 'home' %}" class="sidebar-link">
+                    <span class="material-symbols-outlined">home</span>
+                    View Website
+                </a>
+            </nav>
+            
+            <!-- User Info -->
+            <div class="p-4 border-t border-admin-border">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">person</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold">{{ user.username }}</p>
+                        <p class="text-xs text-gray-500">Administrator</p>
+                    </div>
+                    <form action="{% url 'logout' %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="p-2 hover:bg-white/10 rounded-lg transition-colors" title="Logout">
+                            <span class="material-symbols-outlined text-gray-400 hover:text-white">logout</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-64">
+            <!-- Top Bar -->
+            <header class="sticky top-0 z-30 bg-admin-bg/95 backdrop-blur-sm border-b border-admin-border px-4 md:px-8 py-4 flex justify-between items-center">
+                <!-- Mobile menu button -->
+                <button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-white/10 rounded-lg mr-3">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                
+                <div class="flex-1">
+                    <h1 class="text-lg md:text-xl font-bold">{% block page_title %}Dashboard{% endblock %}</h1>
+                    <p class="text-xs md:text-sm text-gray-500 hidden sm:block">{% block page_subtitle %}Overview and statistics{% endblock %}</p>
+                </div>
+                <div class="flex items-center gap-2 md:gap-4">
+                    <button class="p-2 hover:bg-white/10 rounded-full transition-colors relative">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Messages -->
+            {% if messages %}
+            <div class="px-4 md:px-8 pt-4">
+                {% for message in messages %}
+                <div class="flex items-center gap-3 p-4 rounded-xl mb-3 
+                    {% if message.tags == 'success' %}bg-green-500/20 border border-green-500/50 text-green-400
+                    {% elif message.tags == 'error' %}bg-red-500/20 border border-red-500/50 text-red-400
+                    {% elif message.tags == 'warning' %}bg-amber-500/20 border border-amber-500/50 text-amber-400
+                    {% else %}bg-primary/20 border border-primary/50 text-primary{% endif %}">
+                    <span class="material-symbols-outlined">
+                        {% if message.tags == 'success' %}check_circle{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}
+                    </span>
+                    <p class="text-sm font-medium flex-1">{{ message }}</p>
+                    <button onclick="this.parentElement.remove()" class="hover:opacity-70">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Page Content -->
+            <div class="p-4 md:p-8">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+            
+            // Prevent body scroll when menu is open
+            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+        }
+        
+        // Close sidebar when clicking a link (mobile)
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+        
+        // Close sidebar on window resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+</body>
+</html>

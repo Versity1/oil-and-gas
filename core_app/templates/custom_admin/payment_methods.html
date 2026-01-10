@@ -1,0 +1,55 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Payment Methods{% endblock %}
+{% block page_title %}Payment Methods{% endblock %}
+{% block page_subtitle %}Manage cryptocurrency payment options{% endblock %}
+
+{% block content %}
+<!-- Payment Methods Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for method in methods %}
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6 hover:border-primary/50 transition-colors">
+        <div class="flex items-center gap-4 mb-4">
+            {% if method.thumbnail %}
+            <img src="{{ method.thumbnail.url }}" alt="{{ method.name }}" class="w-12 h-12 rounded-full object-cover">
+            {% else %}
+            <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+            </div>
+            {% endif %}
+            <div class="flex-1">
+                <h3 class="font-bold">{{ method.name }}</h3>
+                <p class="text-sm text-gray-500">{{ method.symbol }} - {{ method.network }}</p>
+            </div>
+            {% if method.is_active %}
+            <span class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+            {% else %}
+            <span class="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400 font-medium">Inactive</span>
+            {% endif %}
+        </div>
+        
+        <div class="bg-admin-bg rounded-lg p-3 mb-4">
+            <p class="text-xs text-gray-500 mb-1">Wallet Address</p>
+            <p class="font-mono text-xs text-gray-300 break-all">{{ method.wallet_address }}</p>
+        </div>
+        
+        {% if method.qr_code %}
+        <div class="bg-white rounded-lg p-4 mb-4 flex items-center justify-center">
+            <img src="{{ method.qr_code.url }}" alt="QR Code" class="w-32 h-32">
+        </div>
+        {% endif %}
+        
+        <a href="{% url 'admin_toggle_payment_method' method.id %}" 
+           class="block w-full py-2 text-center rounded-lg text-sm font-medium transition-colors
+               {% if method.is_active %}bg-red-500/20 text-red-400 hover:bg-red-500/30{% else %}bg-green-500/20 text-green-400 hover:bg-green-500/30{% endif %}">
+            {% if method.is_active %}Deactivate{% else %}Activate{% endif %}
+        </a>
+    </div>
+    {% empty %}
+    <div class="col-span-full py-12 text-center text-gray-500">
+        <span class="material-symbols-outlined text-4xl mb-2 block">account_balance_wallet</span>
+        No payment methods found
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

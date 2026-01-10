@@ -1,0 +1,108 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Withdrawals{% endblock %}
+{% block page_title %}Withdrawals{% endblock %}
+{% block page_subtitle %}Manage and approve user withdrawals{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="flex items-center gap-4 mb-6">
+    <a href="{% url 'admin_withdrawals' %}" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if status_filter == 'all' %}bg-primary text-white{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        All
+    </a>
+    <a href="{% url 'admin_withdrawals' %}?status=pending" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if status_filter == 'pending' %}bg-amber-500 text-black{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        Pending
+    </a>
+    <a href="{% url 'admin_withdrawals' %}?status=completed" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if status_filter == 'completed' %}bg-green-500 text-black{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        Completed
+    </a>
+    <a href="{% url 'admin_withdrawals' %}?status=failed" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if status_filter == 'failed' %}bg-red-500 text-white{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        Failed
+    </a>
+</div>
+
+<!-- Withdrawals Table -->
+<div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-admin-bg/50">
+            <tr class="text-left text-xs uppercase text-gray-500">
+                <th class="px-6 py-4">User</th>
+                <th class="px-6 py-4">Amount</th>
+                <th class="px-6 py-4">Wallet</th>
+                <th class="px-6 py-4">Network</th>
+                <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">Date</th>
+                <th class="px-6 py-4">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-admin-border">
+            {% for withdrawal in withdrawals %}
+            <tr class="hover:bg-white/5">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-red-500 text-sm">person</span>
+                        </div>
+                        <div>
+                            <p class="font-medium">{{ withdrawal.user.username }}</p>
+                            <p class="text-xs text-gray-500">{{ withdrawal.user.email }}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <p class="font-bold text-lg text-red-400">${{ withdrawal.amount|floatformat:2 }}</p>
+                </td>
+                <td class="px-6 py-4">
+                    {% if withdrawal.wallet_name %}
+                    <p class="font-medium">{{ withdrawal.wallet_name }}</p>
+                    {% endif %}
+                    <p class="text-xs text-gray-500 truncate max-w-[200px]" title="{{ withdrawal.wallet_address }}">
+                        {{ withdrawal.wallet_address }}
+                    </p>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-xs px-2 py-1 bg-primary/20 text-primary rounded-full">{{ withdrawal.network }}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-xs px-3 py-1 rounded-full font-medium
+                        {% if withdrawal.status == 'pending' %}bg-amber-500/20 text-amber-400
+                        {% elif withdrawal.status == 'completed' %}bg-green-500/20 text-green-400
+                        {% else %}bg-red-500/20 text-red-400{% endif %}">
+                        {{ withdrawal.get_status_display }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-gray-400 text-sm">
+                    {{ withdrawal.created_at|date:"M d, Y" }}<br>
+                    <span class="text-xs">{{ withdrawal.created_at|time:"H:i" }}</span>
+                </td>
+                <td class="px-6 py-4">
+                    {% if withdrawal.status == 'pending' %}
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'admin_approve_withdrawal' withdrawal.id %}" 
+                           class="p-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-colors"
+                           title="Approve">
+                            <span class="material-symbols-outlined text-lg">check</span>
+                        </a>
+                        <a href="{% url 'admin_reject_withdrawal' withdrawal.id %}" 
+                           class="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
+                           title="Reject & Refund">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </a>
+                    </div>
+                    {% else %}
+                    <span class="text-gray-500 text-sm">Processed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                    <span class="material-symbols-outlined text-4xl mb-2 block">inbox</span>
+                    No withdrawals found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

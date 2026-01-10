@@ -5,6 +5,37 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>{% block title %}Techo Drill Innovation{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}Techo Drill Innovation - Leading oil and gas investment platform. Invest in sustainable energy with AI-driven exploration, offshore drilling, and high-yield investment plans. Start with as little as $500.{% endblock %}">
+    <meta name="keywords" content="oil and gas investment, energy investment, offshore drilling, sustainable energy, petroleum, crude oil, natural gas, investment platform, TDI shares, drilling technology">
+    <meta name="author" content="Techo Drill Innovation">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}https://tethodrill.com/{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Techo Drill Innovation - Energy for a Limitless Future{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Pioneer sustainable energy investment with AI-driven exploration. High-yield returns backed by real oil & gas operations.{% endblock %}">
+    <meta property="og:image" content="{% static 'images/sunset_oil_rig.jpg' %}">
+    <meta property="og:site_name" content="Techo Drill Innovation">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://tethodrill.com/">
+    <meta name="twitter:title" content="Techo Drill Innovation - Energy for a Limitless Future">
+    <meta name="twitter:description" content="Pioneer sustainable energy investment with AI-driven exploration. High-yield returns backed by real oil & gas operations.">
+    <meta name="twitter:image" content="{% static 'images/sunset_oil_rig.jpg' %}">
+    
+    <!-- Additional SEO -->
+    <meta name="theme-color" content="#137fec">
+    <link rel="canonical" href="{% block canonical_url %}https://tethodrill.com/{% endblock %}">
+    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>

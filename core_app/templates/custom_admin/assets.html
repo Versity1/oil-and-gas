@@ -1,0 +1,84 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Assets{% endblock %}
+{% block page_title %}Assets{% endblock %}
+{% block page_subtitle %}Manage shares and bonds{% endblock %}
+
+{% block content %}
+<!-- Assets Table -->
+<div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-admin-bg/50">
+            <tr class="text-left text-xs uppercase text-gray-500">
+                <th class="px-6 py-4">Asset</th>
+                <th class="px-6 py-4">Ticker</th>
+                <th class="px-6 py-4">Type</th>
+                <th class="px-6 py-4">Current Price</th>
+                <th class="px-6 py-4">Change</th>
+                <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-admin-border">
+            {% for asset in assets %}
+            <tr class="hover:bg-white/5">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center
+                            {% if asset.asset_type == 'share' %}bg-primary/20{% else %}bg-amber-500/20{% endif %}">
+                            <span class="material-symbols-outlined 
+                                {% if asset.asset_type == 'share' %}text-primary{% else %}text-amber-500{% endif %}">
+                                {% if asset.asset_type == 'share' %}monitoring{% else %}account_balance{% endif %}
+                            </span>
+                        </div>
+                        <p class="font-medium">{{ asset.name }}</p>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="font-mono text-sm px-2 py-1 bg-admin-bg rounded">{{ asset.ticker }}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-xs px-3 py-1 rounded-full font-medium
+                        {% if asset.asset_type == 'share' %}bg-primary/20 text-primary{% else %}bg-amber-500/20 text-amber-500{% endif %}">
+                        {{ asset.get_asset_type_display }}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <p class="font-bold text-lg">${{ asset.current_price|floatformat:2 }}</p>
+                </td>
+                <td class="px-6 py-4">
+                    {% if asset.growth_percentage > 0 %}
+                    <span class="text-green-400 font-medium">+{{ asset.growth_percentage }}%</span>
+                    {% elif asset.growth_percentage < 0 %}
+                    <span class="text-red-400 font-medium">{{ asset.growth_percentage }}%</span>
+                    {% else %}
+                    <span class="text-gray-500">0%</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                    {% if asset.is_active %}
+                    <span class="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+                    {% else %}
+                    <span class="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-medium">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                    <a href="{% url 'admin_toggle_asset' asset.id %}" 
+                       class="px-4 py-2 rounded-lg text-xs font-medium transition-colors
+                           {% if asset.is_active %}bg-red-500/20 text-red-400 hover:bg-red-500/30{% else %}bg-green-500/20 text-green-400 hover:bg-green-500/30{% endif %}">
+                        {% if asset.is_active %}Deactivate{% else %}Activate{% endif %}
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                    <span class="material-symbols-outlined text-4xl mb-2 block">monitoring</span>
+                    No assets found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

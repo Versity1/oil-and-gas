@@ -1,0 +1,94 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Transactions{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+{% block page_subtitle %}View all transaction history{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="flex items-center gap-4 mb-6">
+    <a href="{% url 'admin_transactions' %}" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if type_filter == 'all' %}bg-primary text-white{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        All
+    </a>
+    <a href="{% url 'admin_transactions' %}?type=deposit" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if type_filter == 'deposit' %}bg-green-500 text-black{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        Deposits
+    </a>
+    <a href="{% url 'admin_transactions' %}?type=withdrawal" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if type_filter == 'withdrawal' %}bg-red-500 text-white{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        Withdrawals
+    </a>
+    <a href="{% url 'admin_transactions' %}?type=profit" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {% if type_filter == 'profit' %}bg-amber-500 text-black{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %}">
+        Profits
+    </a>
+</div>
+
+<!-- Transactions Table -->
+<div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-admin-bg/50">
+            <tr class="text-left text-xs uppercase text-gray-500">
+                <th class="px-6 py-4">Reference</th>
+                <th class="px-6 py-4">User</th>
+                <th class="px-6 py-4">Type</th>
+                <th class="px-6 py-4">Amount</th>
+                <th class="px-6 py-4">Description</th>
+                <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">Date</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-admin-border">
+            {% for tx in transactions %}
+            <tr class="hover:bg-white/5">
+                <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-primary">{{ tx.reference }}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-sm">person</span>
+                        </div>
+                        <span class="font-medium">{{ tx.account.user.username }}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-xs px-3 py-1 rounded-full font-medium
+                        {% if tx.transaction_type == 'deposit' %}bg-green-500/20 text-green-400
+                        {% elif tx.transaction_type == 'withdrawal' %}bg-red-500/20 text-red-400
+                        {% elif tx.transaction_type == 'profit' %}bg-amber-500/20 text-amber-400
+                        {% else %}bg-primary/20 text-primary{% endif %}">
+                        {{ tx.get_transaction_type_display }}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <p class="font-bold text-lg 
+                        {% if tx.transaction_type == 'deposit' or tx.transaction_type == 'profit' %}text-green-400{% else %}text-red-400{% endif %}">
+                        {% if tx.transaction_type == 'deposit' or tx.transaction_type == 'profit' %}+{% else %}-{% endif %}${{ tx.amount|floatformat:2 }}
+                    </p>
+                </td>
+                <td class="px-6 py-4 text-gray-400 text-sm max-w-[200px] truncate">
+                    {{ tx.description|default:"—" }}
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-xs px-3 py-1 rounded-full font-medium
+                        {% if tx.status == 'pending' %}bg-amber-500/20 text-amber-400
+                        {% elif tx.status == 'completed' %}bg-green-500/20 text-green-400
+                        {% else %}bg-red-500/20 text-red-400{% endif %}">
+                        {{ tx.get_status_display }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-gray-400 text-sm">
+                    {{ tx.timestamp|date:"M d, Y" }}<br>
+                    <span class="text-xs">{{ tx.timestamp|time:"H:i" }}</span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                    <span class="material-symbols-outlined text-4xl mb-2 block">receipt_long</span>
+                    No transactions found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

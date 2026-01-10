@@ -1,0 +1,63 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Investment Plans{% endblock %}
+{% block page_title %}Investment Plans{% endblock %}
+{% block page_subtitle %}Manage available investment packages{% endblock %}
+
+{% block content %}
+<!-- Investment Plans Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for plan in plans %}
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6 hover:border-primary/50 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <h3 class="font-bold text-lg">{{ plan.name }}</h3>
+                <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ plan.short_description }}</p>
+            </div>
+            {% if plan.is_active %}
+            <span class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+            {% else %}
+            <span class="text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400 font-medium">Inactive</span>
+            {% endif %}
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-admin-bg rounded-lg p-3">
+                <p class="text-xs text-gray-500 mb-1">Daily Profit</p>
+                <p class="font-bold text-green-400">{{ plan.daily_profit_rate }}%</p>
+            </div>
+            <div class="bg-admin-bg rounded-lg p-3">
+                <p class="text-xs text-gray-500 mb-1">Duration</p>
+                <p class="font-bold">{{ plan.duration_days }} days</p>
+            </div>
+            <div class="bg-admin-bg rounded-lg p-3">
+                <p class="text-xs text-gray-500 mb-1">Min Investment</p>
+                <p class="font-bold">${{ plan.min_price|floatformat:0 }}</p>
+            </div>
+            <div class="bg-admin-bg rounded-lg p-3">
+                <p class="text-xs text-gray-500 mb-1">Max Investment</p>
+                <p class="font-bold">${{ plan.max_price|floatformat:0 }}</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2 text-xs text-gray-500 mb-4">
+            <span class="material-symbols-outlined text-sm">{% if plan.capital_return %}check_circle{% else %}cancel{% endif %}</span>
+            {% if plan.capital_return %}Capital returned at maturity{% else %}No capital return{% endif %}
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <a href="{% url 'admin_toggle_plan' plan.id %}" 
+               class="flex-1 py-2 text-center rounded-lg text-sm font-medium transition-colors
+                   {% if plan.is_active %}bg-red-500/20 text-red-400 hover:bg-red-500/30{% else %}bg-green-500/20 text-green-400 hover:bg-green-500/30{% endif %}">
+                {% if plan.is_active %}Deactivate{% else %}Activate{% endif %}
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full py-12 text-center text-gray-500">
+        <span class="material-symbols-outlined text-4xl mb-2 block">auto_awesome</span>
+        No investment plans found
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

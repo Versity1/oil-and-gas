@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from . import admin_views
 
 urlpatterns = [
     # Front Pages
@@ -41,4 +42,23 @@ urlpatterns = [
     path('buy-asset/<int:asset_id>/', views.buy_asset, name='buy_asset'),
     path('buy-package/<int:package_id>/', views.buy_package, name='buy_package'),
     path('deposit/<int:deposit_id>/pay/', views.deposit_pay, name='deposit_pay'),
+    
+    # Custom Admin Pages
+    path('admin/', admin_views.admin_dashboard, name='admin_dashboard'),
+    path('admin/users/', admin_views.admin_users, name='admin_users'),
+    path('admin/deposits/', admin_views.admin_deposits, name='admin_deposits'),
+    path('admin/deposits/<int:deposit_id>/approve/', admin_views.admin_approve_deposit, name='admin_approve_deposit'),
+    path('admin/deposits/<int:deposit_id>/reject/', admin_views.admin_reject_deposit, name='admin_reject_deposit'),
+    path('admin/withdrawals/', admin_views.admin_withdrawals, name='admin_withdrawals'),
+    path('admin/withdrawals/<int:withdrawal_id>/approve/', admin_views.admin_approve_withdrawal, name='admin_approve_withdrawal'),
+    path('admin/withdrawals/<int:withdrawal_id>/reject/', admin_views.admin_reject_withdrawal, name='admin_reject_withdrawal'),
+    path('admin/transactions/', admin_views.admin_transactions, name='admin_transactions'),
+    path('admin/investment-plans/', admin_views.admin_investment_plans, name='admin_investment_plans'),
+    path('admin/investment-plans/<int:plan_id>/toggle/', admin_views.admin_toggle_plan, name='admin_toggle_plan'),
+    path('admin/user-plans/', admin_views.admin_user_plans, name='admin_user_plans'),
+    path('admin/projects/', admin_views.admin_projects, name='admin_projects'),
+    path('admin/assets/', admin_views.admin_assets, name='admin_assets'),
+    path('admin/assets/<int:asset_id>/toggle/', admin_views.admin_toggle_asset, name='admin_toggle_asset'),
+    path('admin/payment-methods/', admin_views.admin_payment_methods, name='admin_payment_methods'),
+    path('admin/payment-methods/<int:method_id>/toggle/', admin_views.admin_toggle_payment_method, name='admin_toggle_payment_method'),
 ]

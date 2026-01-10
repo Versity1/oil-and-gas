@@ -1,0 +1,183 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Overview and quick statistics{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Total Users -->
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-2xl">group</span>
+            </div>
+            <span class="text-xs text-gray-500 uppercase font-bold">Users</span>
+        </div>
+        <p class="text-3xl font-bold">{{ total_users }}</p>
+        <p class="text-sm text-gray-500 mt-1">Registered accounts</p>
+    </div>
+    
+    <!-- Pending Deposits -->
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-amber-500 text-2xl">payments</span>
+            </div>
+            <span class="text-xs text-gray-500 uppercase font-bold">Deposits</span>
+        </div>
+        <p class="text-3xl font-bold text-amber-500">{{ pending_deposits }}</p>
+        <p class="text-sm text-gray-500 mt-1">Pending approval</p>
+    </div>
+    
+    <!-- Pending Withdrawals -->
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-red-500 text-2xl">credit_score</span>
+            </div>
+            <span class="text-xs text-gray-500 uppercase font-bold">Withdrawals</span>
+        </div>
+        <p class="text-3xl font-bold text-red-500">{{ pending_withdrawals }}</p>
+        <p class="text-sm text-gray-500 mt-1">Pending approval</p>
+    </div>
+    
+    <!-- Active Plans -->
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-green-500 text-2xl">auto_awesome</span>
+            </div>
+            <span class="text-xs text-gray-500 uppercase font-bold">Active Plans</span>
+        </div>
+        <p class="text-3xl font-bold text-green-500">{{ active_plans }}</p>
+        <p class="text-sm text-gray-500 mt-1">User subscriptions</p>
+    </div>
+</div>
+
+<!-- Financial Overview -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <p class="text-sm text-gray-500 uppercase font-bold mb-2">Total Deposits</p>
+        <p class="text-2xl font-bold text-green-400">${{ total_deposits|floatformat:2 }}</p>
+    </div>
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <p class="text-sm text-gray-500 uppercase font-bold mb-2">Total Withdrawals</p>
+        <p class="text-2xl font-bold text-red-400">${{ total_withdrawals|floatformat:2 }}</p>
+    </div>
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6">
+        <p class="text-sm text-gray-500 uppercase font-bold mb-2">Total Balance</p>
+        <p class="text-2xl font-bold text-primary">${{ total_balance|floatformat:2 }}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Recent Deposits -->
+    <div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-admin-border">
+            <h3 class="font-bold">Recent Deposits</h3>
+            <a href="{% url 'admin_deposits' %}" class="text-sm text-primary hover:underline">View All</a>
+        </div>
+        <div class="divide-y divide-admin-border">
+            {% for deposit in recent_deposits %}
+            <div class="flex items-center justify-between p-4 hover:bg-white/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-lg">person</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ deposit.user.username }}</p>
+                        <p class="text-xs text-gray-500">{{ deposit.payment_method.name }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold">${{ deposit.amount|floatformat:2 }}</p>
+                    <span class="text-xs px-2 py-0.5 rounded-full 
+                        {% if deposit.status == 'pending' %}bg-amber-500/20 text-amber-400
+                        {% elif deposit.status == 'completed' %}bg-green-500/20 text-green-400
+                        {% else %}bg-red-500/20 text-red-400{% endif %}">
+                        {{ deposit.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="p-4 text-center text-gray-500">No deposits yet</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Recent Withdrawals -->
+    <div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-admin-border">
+            <h3 class="font-bold">Recent Withdrawals</h3>
+            <a href="{% url 'admin_withdrawals' %}" class="text-sm text-primary hover:underline">View All</a>
+        </div>
+        <div class="divide-y divide-admin-border">
+            {% for withdrawal in recent_withdrawals %}
+            <div class="flex items-center justify-between p-4 hover:bg-white/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-red-500 text-lg">person</span>
+                    </div>
+                    <div>
+                        <p class="font-medium">{{ withdrawal.user.username }}</p>
+                        <p class="text-xs text-gray-500">{{ withdrawal.network }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold">${{ withdrawal.amount|floatformat:2 }}</p>
+                    <span class="text-xs px-2 py-0.5 rounded-full 
+                        {% if withdrawal.status == 'pending' %}bg-amber-500/20 text-amber-400
+                        {% elif withdrawal.status == 'completed' %}bg-green-500/20 text-green-400
+                        {% else %}bg-red-500/20 text-red-400{% endif %}">
+                        {{ withdrawal.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="p-4 text-center text-gray-500">No withdrawals yet</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Recent Users -->
+<div class="mt-8 bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+    <div class="flex items-center justify-between p-6 border-b border-admin-border">
+        <h3 class="font-bold">Recent Users</h3>
+        <a href="{% url 'admin_users' %}" class="text-sm text-primary hover:underline">View All</a>
+    </div>
+    <table class="w-full">
+        <thead class="bg-admin-bg/50">
+            <tr class="text-left text-xs uppercase text-gray-500">
+                <th class="px-6 py-3">User</th>
+                <th class="px-6 py-3">Email</th>
+                <th class="px-6 py-3">Joined</th>
+                <th class="px-6 py-3">Balance</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-admin-border">
+            {% for u in recent_users %}
+            <tr class="hover:bg-white/5">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-sm">person</span>
+                        </div>
+                        <span class="font-medium">{{ u.username }}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-gray-400">{{ u.email }}</td>
+                <td class="px-6 py-4 text-gray-400">{{ u.date_joined|date:"M d, Y" }}</td>
+                <td class="px-6 py-4 font-bold">${{ u.account.balance|floatformat:2|default:"0.00" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="px-6 py-4 text-center text-gray-500">No users yet</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

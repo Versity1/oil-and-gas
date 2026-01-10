@@ -1,0 +1,58 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Projects{% endblock %}
+{% block page_title %}Projects{% endblock %}
+{% block page_subtitle %}Manage investment projects{% endblock %}
+
+{% block content %}
+<!-- Projects Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for project in projects %}
+    <div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden hover:border-primary/50 transition-colors">
+        {% if project.image %}
+        <div class="h-40 bg-admin-bg">
+            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="w-full h-full object-cover">
+        </div>
+        {% else %}
+        <div class="h-40 bg-admin-bg flex items-center justify-center">
+            <span class="material-symbols-outlined text-4xl text-gray-600">construction</span>
+        </div>
+        {% endif %}
+        
+        <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+                <h3 class="font-bold text-lg">{{ project.title }}</h3>
+                <span class="text-xs px-2 py-1 rounded-full font-medium
+                    {% if project.status == 'funding' %}bg-amber-500/20 text-amber-400
+                    {% elif project.status == 'active' %}bg-green-500/20 text-green-400
+                    {% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                    {{ project.get_status_display }}
+                </span>
+            </div>
+            
+            <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ project.description }}</p>
+            
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-admin-bg rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 mb-1">Min</p>
+                    <p class="font-bold text-sm">${{ project.min_investment|floatformat:0 }}</p>
+                </div>
+                <div class="bg-admin-bg rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 mb-1">Return</p>
+                    <p class="font-bold text-sm text-green-400">{{ project.return_rate }}%</p>
+                </div>
+                <div class="bg-admin-bg rounded-lg p-3 text-center">
+                    <p class="text-xs text-gray-500 mb-1">Duration</p>
+                    <p class="font-bold text-sm">{{ project.duration_days }}d</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full py-12 text-center text-gray-500">
+        <span class="material-symbols-outlined text-4xl mb-2 block">construction</span>
+        No projects found
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

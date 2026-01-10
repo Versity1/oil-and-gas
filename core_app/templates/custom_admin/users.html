@@ -1,0 +1,83 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Users{% endblock %}
+{% block page_title %}Users{% endblock %}
+{% block page_subtitle %}View and manage all registered users{% endblock %}
+
+{% block content %}
+<!-- Search Bar -->
+<div class="flex items-center gap-4 mb-6">
+    <form method="GET" class="flex-1 max-w-md">
+        <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">search</span>
+            <input type="text" name="search" value="{{ search }}" placeholder="Search users by name, email, or username..."
+                   class="w-full pl-12 pr-4 py-3 bg-admin-card border border-admin-border rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+        </div>
+    </form>
+    {% if search %}
+    <a href="{% url 'admin_users' %}" class="px-4 py-3 bg-admin-card border border-admin-border rounded-xl text-gray-400 hover:text-white transition-colors">
+        Clear
+    </a>
+    {% endif %}
+</div>
+
+<!-- Users Table -->
+<div class="bg-admin-card border border-admin-border rounded-xl overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-admin-bg/50">
+            <tr class="text-left text-xs uppercase text-gray-500">
+                <th class="px-6 py-4">User</th>
+                <th class="px-6 py-4">Email</th>
+                <th class="px-6 py-4">Account #</th>
+                <th class="px-6 py-4">Balance</th>
+                <th class="px-6 py-4">Joined</th>
+                <th class="px-6 py-4">Status</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-admin-border">
+            {% for u in users %}
+            <tr class="hover:bg-white/5">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary">person</span>
+                        </div>
+                        <div>
+                            <p class="font-medium">{{ u.first_name }} {{ u.last_name }}</p>
+                            <p class="text-xs text-gray-500">@{{ u.username }}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-gray-400">{{ u.email }}</td>
+                <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-gray-400">{{ u.account.account_number|default:"—" }}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <p class="font-bold text-lg">${{ u.account.balance|floatformat:2|default:"0.00" }}</p>
+                </td>
+                <td class="px-6 py-4 text-gray-400 text-sm">
+                    {{ u.date_joined|date:"M d, Y" }}
+                </td>
+                <td class="px-6 py-4">
+                    {% if u.is_active %}
+                    <span class="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-medium">Active</span>
+                    {% else %}
+                    <span class="text-xs px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-medium">Inactive</span>
+                    {% endif %}
+                    {% if u.is_staff %}
+                    <span class="text-xs px-3 py-1 rounded-full bg-primary/20 text-primary font-medium ml-1">Staff</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                    <span class="material-symbols-outlined text-4xl mb-2 block">person_off</span>
+                    No users found
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

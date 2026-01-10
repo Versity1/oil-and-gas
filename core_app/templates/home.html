@@ -1,4 +1,5 @@
 {% extends 'base_front.html' %}
+{% load static %}
 
 {% block title %}Techo Drill Innovation - Home{% endblock %}
 
@@ -26,7 +27,7 @@
         <!-- Background Video/Image -->
         <div class="absolute inset-0 z-0">
             <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent z-10"></div>
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP9IyKn5y9A-mKHpuFqsU1GwSmOgRQiZDrqCRcyURmw50_Xy0qFvSmPxzGIRtUWjsezFfpjb3EEOAtiANAO7nM6zudeepHDp28vjwwXXvaiuyf9FgGAFOIrHkWIzxPEU49-D_W4XPxlCXT8STgihOoakAkw-g86T9kzopEYQZxArGJEn5b6zb8wG-Qkhg8-ibuTOfBcq07bXHPcumGLo0UcBK36oGL3nmlt2pVRwTa8iyJ8jftJquYZ-FDZzNMWmSHHADtimCgqc7e" alt="Offshore rig" class="w-full h-full object-cover animate-pan">
+            <img src="{% static 'images/sunset_oil_rig.jpg' %}" alt="Offshore rig at sunset" class="w-full h-full object-cover animate-pan">
         </div>
 
         <div class="container mx-auto px-4 md:px-8 relative z-20">
@@ -170,7 +171,7 @@
             <div class="w-full md:w-1/2 relative group">
                 <div class="absolute -inset-4 bg-gradient-to-r from-primary to-blue-400 rounded-3xl opacity-20 blur-xl group-hover:opacity-30 transition-opacity"></div>
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:-translate-y-2">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxXLdyCjwyRoFHJs5nsLkIPN6dH5IYjiDvIxSlGo9hV0nPQIVZj19ltQ5u3aWJqKsBBbzQarIwZMHnKQB0exRxiyjSNNWx_uGT4n5nbK0xuEQsN5m6XVAIkGNnNidXp3MkQJXPOPWD1dHUH1xFW4pFr9Rr74b7YL9BWH1fVYV1Gk09TCD2p2SFsxUdCBE0G6ktmzpXXNy2qW-jL9B05run622uiRNoyJKiYrq3p-bPDCiH8MAnMYG2I_G5jxEeb_veUp8QNhAKnoM9" alt="Offshore rig platform" class="w-full h-auto object-cover"/>
+                    <img src="{% static 'images/offshore_platform.jpg' %}" alt="Offshore rig platform" class="w-full h-auto object-cover"/>
                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 </div>
                 <!-- Floating Card -->
@@ -281,6 +282,81 @@
         </div>
     </section>
 
+    <!-- Operations Showcase -->
+    <section class="py-16 md:py-24 px-4 md:px-8 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-primary font-bold text-sm tracking-wider uppercase mb-2 block">Our Facilities</span>
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">World-Class Operations</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">State-of-the-art infrastructure powering global energy demands across multiple continents.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Facility 1 -->
+                <div class="group relative overflow-hidden rounded-2xl h-80 cursor-pointer">
+                    <img src="{% static 'images/storage_tanks_night.jpg' %}" alt="Storage facility at night" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform group-hover:-translate-y-2 transition-transform duration-300">
+                        <span class="inline-block px-3 py-1 bg-primary/80 text-white text-xs font-bold rounded-full mb-3">Storage</span>
+                        <h3 class="text-xl font-bold mb-2">Strategic Reserves</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">450,000 barrel capacity across 12 advanced storage facilities with real-time monitoring.</p>
+                    </div>
+                </div>
+                
+                <!-- Facility 2 -->
+                <div class="group relative overflow-hidden rounded-2xl h-80 cursor-pointer">
+                    <img src="{% static 'images/pipeline_worker.jpg' %}" alt="Pipeline operations" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform group-hover:-translate-y-2 transition-transform duration-300">
+                        <span class="inline-block px-3 py-1 bg-green-500/80 text-white text-xs font-bold rounded-full mb-3">Pipeline</span>
+                        <h3 class="text-xl font-bold mb-2">Distribution Network</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">2,400 km of smart pipelines with automated pressure regulation and leak detection.</p>
+                    </div>
+                </div>
+                
+                <!-- Facility 3 -->
+                <div class="group relative overflow-hidden rounded-2xl h-80 cursor-pointer">
+                    <img src="{% static 'images/offshore_platform.jpg' %}" alt="Offshore drilling platform" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform group-hover:-translate-y-2 transition-transform duration-300">
+                        <span class="inline-block px-3 py-1 bg-amber-500/80 text-white text-xs font-bold rounded-full mb-3">Offshore</span>
+                        <h3 class="text-xl font-bold mb-2">Deep Sea Platforms</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">120 active rigs extracting from depths up to 3,000 meters with minimal environmental impact.</p>
+                    </div>
+                </div>
+                
+                <!-- Facility 4 -->
+                <div class="group relative overflow-hidden rounded-2xl h-80 cursor-pointer md:col-span-2 lg:col-span-1">
+                    <img src="{% static 'images/refinery_plant.jpg' %}" alt="Refinery processing plant" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform group-hover:-translate-y-2 transition-transform duration-300">
+                        <span class="inline-block px-3 py-1 bg-blue-500/80 text-white text-xs font-bold rounded-full mb-3">Refinery</span>
+                        <h3 class="text-xl font-bold mb-2">Processing Facilities</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Advanced refinery complex processing 200,000 barrels per day into premium-grade products.</p>
+                    </div>
+                </div>
+                
+                <!-- Facility 5 - Full Width -->
+                <div class="group relative overflow-hidden rounded-2xl h-80 cursor-pointer md:col-span-2">
+                    <img src="{% static 'images/sunset_oil_rig.jpg' %}" alt="Sunset drilling operations" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform group-hover:-translate-y-2 transition-transform duration-300">
+                        <span class="inline-block px-3 py-1 bg-purple-500/80 text-white text-xs font-bold rounded-full mb-3">Fleet</span>
+                        <h3 class="text-xl font-bold mb-2">Maritime Operations</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">Integrated fleet of 45 vessels supporting offshore operations with 24/7 logistics and supply chain management.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="{% url 'services' %}" class="inline-flex items-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all hover:scale-105">
+                    Explore All Operations
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Investment Dashboard Widget -->
     <section class="px-4 md:px-8 py-12">
         <div class="bg-gradient-to-r from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/5 rounded-2xl border border-primary/20 shadow-lg p-6 md:p-10 max-w-5xl mx-auto card-hover">
@@ -373,7 +449,7 @@
                 <!-- Post 1 -->
                 <article class="group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 flex flex-col h-full card-hover">
                     <div class="h-48 overflow-hidden relative">
-                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP9IyKn5y9A-mKHpuFqsU1GwSmOgRQiZDrqCRcyURmw50_Xy0qFvSmPxzGIRtUWjsezFfpjb3EEOAtiANAO7nM6zudeepHDp28vjwwXXvaiuyf9FgGAFOIrHkWIzxPEU49-D_W4XPxlCXT8STgihOoakAkw-g86T9kzopEYQZxArGJEn5b6zb8wG-Qkhg8-ibuTOfBcq07bXHPcumGLo0UcBK36oGL3nmlt2pVRwTa8iyJ8jftJquYZ-FDZzNMWmSHHADtimCgqc7e" alt="Rig at sunset" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"/>
+                        <img src="{% static 'images/storage_tanks_night.jpg' %}" alt="Storage tanks at night" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"/>
                         <span class="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Innovation</span>
                     </div>
                     <div class="p-6 flex flex-col flex-grow">
@@ -393,7 +469,7 @@
                 <!-- Post 2 -->
                 <article class="group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 flex flex-col h-full card-hover">
                     <div class="h-48 overflow-hidden relative">
-                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGL0Jam19iHgX8UrxDAczHro3mjbPDLmPUPj-xDz1M2CsjiDYsNjt2ZjjKxGlHt3uOqRhh08vr-aMVxH1jUGZdWxCw38KBpzX0PKNWxeMWbqjKLN-KAnpjhRvC55yKd4f_8aJhirK-LVhFjAuZHBKjx_vd4IxMmiSg-RwsqjvtSbn5dtNAU7YHGubma02VDbYuYGRpQFzeo2IxSPAXbVJvqj2fOCdyg-Igl9h5BJ7rsjqb34-GSr_RJXH9SRTZDj4_57ThJvcTwRLx" alt="Sustainable rig" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"/>
+                        <img src="{% static 'images/pipeline_worker.jpg' %}" alt="Pipeline worker at facility" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"/>
                         <span class="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Sustainability</span>
                     </div>
                     <div class="p-6 flex flex-col flex-grow">
@@ -413,7 +489,7 @@
                 <!-- Post 3 -->
                 <article class="group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 flex flex-col h-full card-hover">
                     <div class="h-48 overflow-hidden relative">
-                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZH7EEivoQv7haifS-nEVPV-7xg79TC3g3NKnaH0c4gyJ4Vw2E6DIAAFBQem15uklAMjJFHxWMM1PoTjbp2Rpb11j04B1BuPcFT1tNbBY34h12H_HeVpPkuOKSmBNDOl_aXgosGonoL4t_REIZWLmfi11DSdv4qZAkpMXa6MIUZnvrNqXXTL5rFhWhoOYvasrBY61FrIns9G8189N0ARi8XO5QBbOxiUkAJTUSS98jEhObafDbGF2fejUg0VK3Ll1x6-Nf2f230yPm" alt="Market chart" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"/>
+                        <img src="{% static 'images/refinery_plant.jpg' %}" alt="Refinery processing plant" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"/>
                         <span class="absolute top-4 left-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">Market</span>
                     </div>
                     <div class="p-6 flex flex-col flex-grow">
@@ -520,6 +596,106 @@
                 </summary>
                 <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
                     Absolutely. Our dashboard and trading interfaces are fully responsive and optimized for mobile devices, allowing you to manage your portfolio from anywhere.
+                </div>
+            </details>
+            <!-- FAQ Item 6 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    What investment plans are available?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    We offer multiple investment tiers: Starter Plan (5% APY), Growth Bond Series A (7% APY), Premium Portfolio (10% APY), and Elite Investor packages with custom returns. Each plan has different minimum investment thresholds and lock-in periods.
+                </div>
+            </details>
+            <!-- FAQ Item 7 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    How often are dividends paid?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Dividends are paid monthly for all investment plans. You can choose to receive them directly to your wallet or reinvest them automatically for compound growth.
+                </div>
+            </details>
+            <!-- FAQ Item 8 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    Where are your drilling operations located?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    We operate in over 15 countries across the Gulf of Mexico, North Sea, West Africa, and the Asia-Pacific region. Our headquarters is located in Houston, Texas with regional offices in London, Lagos, and Singapore.
+                </div>
+            </details>
+            <!-- FAQ Item 9 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    What cryptocurrencies do you accept for deposits?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    We accept Bitcoin (BTC), Ethereum (ETH), USDT (TRC20 & ERC20), and USDC. Bank wire transfers and credit card payments are also available for fiat deposits.
+                </div>
+            </details>
+            <!-- FAQ Item 10 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    Is Techo Drill a publicly traded company?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Yes. TDI shares are publicly traded with a current value of $42.85 per share. You can purchase equity shares directly through our platform, giving you ownership stakes in our operations and quarterly dividend payouts.
+                </div>
+            </details>
+            <!-- FAQ Item 11 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    How do I verify my account?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Account verification requires a government-issued ID (passport or driver's license) and proof of address. The verification process typically takes 24-48 hours. Verified accounts have higher withdrawal limits and access to premium features.
+                </div>
+            </details>
+            <!-- FAQ Item 12 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    What happens if oil prices drop significantly?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Our diversified portfolio includes natural gas, renewable energy assets, and refining operations, which helps hedge against crude oil price volatility. Additionally, we use advanced futures contracts and hedging strategies to protect investor returns during market downturns.
+                </div>
+            </details>
+            <!-- FAQ Item 13 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    Can I refer friends and earn bonuses?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Yes! Our referral program rewards you with 5% of your referral's first deposit, up to $500. Your referred friends also receive a $25 welcome bonus when they make their first investment. Referral bonuses are paid instantly to your account.
+                </div>
+            </details>
+            <!-- FAQ Item 14 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    How do I contact customer support?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Our support team is available 24/7 via live chat, email (support@tethodrill.com), and phone. Premium investors have access to dedicated account managers. Average response time is under 2 hours for all inquiries.
+                </div>
+            </details>
+            <!-- FAQ Item 15 -->
+            <details class="group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden card-hover">
+                <summary class="flex items-center justify-between p-6 cursor-pointer text-lg font-bold text-text-main-light dark:text-text-main-dark hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    What certifications and licenses does Techo Drill hold?
+                    <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                </summary>
+                <div class="px-6 pb-6 text-text-sec-light dark:text-text-sec-dark leading-relaxed">
+                    Techo Drill Innovation is ISO 9001, ISO 14001, and ISO 45001 certified. We are licensed by the Securities and Exchange Commission (SEC) for investment services, and our drilling operations comply with OSHA, EPA, and international maritime regulations.
                 </div>
             </details>
         </div>
