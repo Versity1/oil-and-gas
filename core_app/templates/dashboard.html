@@ -313,11 +313,11 @@
                     </div>
                 </div>
 
-                <!-- My Active Investments -->
+                <!-- My Active Investments (Plans) -->
                 {% if user_active_plans %}
                 <div>
                     <div class="flex justify-between items-center mb-4 px-1">
-                        <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">My Active Investments</h3>
+                        <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">My Investment Plans</h3>
                     </div>
                     
                     <div class="space-y-4">
@@ -325,8 +325,8 @@
                         <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
                             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div class="flex items-center gap-4">
-                                    <div class="size-12 rounded-xl bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center shadow-lg">
-                                        <span class="material-symbols-outlined">trending_up</span>
+                                    <div class="size-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 text-white flex items-center justify-center shadow-lg">
+                                        <span class="material-symbols-outlined">auto_awesome</span>
                                     </div>
                                     <div>
                                         <h4 class="font-bold text-text-main-light dark:text-text-main-dark">{{ item.plan.plan.name }}</h4>
@@ -336,12 +336,12 @@
                                 
                                 <div class="grid grid-cols-3 gap-4 md:gap-8 text-center md:text-right">
                                     <div>
-                                        <p class="text-[10px] text-text-sec-light uppercase tracking-wider mb-1">Daily Rate</p>
-                                        <p class="text-sm font-bold text-green-600">{{ item.plan.plan.daily_profit_rate }}%</p>
+                                        <p class="text-[10px] text-text-sec-light uppercase tracking-wider mb-1">Current Profit</p>
+                                        <p class="text-sm font-bold text-green-600">+${{ item.current_profit|floatformat:2 }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-[10px] text-text-sec-light uppercase tracking-wider mb-1">Expected Profit</p>
-                                        <p class="text-sm font-bold text-primary">${{ item.expected_profit|floatformat:2 }}</p>
+                                        <p class="text-[10px] text-text-sec-light uppercase tracking-wider mb-1">Expected Total</p>
+                                        <p class="text-sm font-bold text-primary">${{ item.expected_total|floatformat:2 }}</p>
                                     </div>
                                     <div>
                                         <p class="text-[10px] text-text-sec-light uppercase tracking-wider mb-1">Matures On</p>
@@ -352,15 +352,129 @@
                             
                             <div class="mt-4">
                                 <div class="flex justify-between text-[10px] text-text-sec-light mb-1">
-                                    <span>Current Profit: ${{ item.plan.current_profit|floatformat:2 }}</span>
-                                    <span>{{ item.plan.plan.duration_days }} days plan</span>
+                                    <span>Progress: ${{ item.current_profit|floatformat:2 }} / ${{ item.expected_profit|floatformat:2 }} profit</span>
+                                    <span>{{ item.plan.plan.daily_profit_rate }}% daily</span>
                                 </div>
                                 <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
-                                    <div class="bg-gradient-to-r from-primary to-green-500 h-2 rounded-full" style="width: {% widthratio item.plan.current_profit item.expected_profit 100 %}%"></div>
+                                    <div class="bg-gradient-to-r from-purple-500 to-purple-700 h-2 rounded-full" style="width: {% widthratio item.current_profit item.expected_profit 100 %}%"></div>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- My Project Investments -->
+                {% if project_investments %}
+                <div>
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">My Project Investments</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for inv in project_investments %}
+                        <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                            <div class="flex items-start gap-4 mb-4">
+                                <div class="size-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white flex items-center justify-center shadow-lg shrink-0">
+                                    <span class="material-symbols-outlined">oil_barrel</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-bold text-text-main-light dark:text-text-main-dark truncate">{{ inv.project.title }}</h4>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">{{ inv.project.return_rate }}% return • {{ inv.project.duration_days }} days</p>
+                                </div>
+                                <span class="text-[10px] font-black px-2 py-1 rounded-full uppercase
+                                    {% if inv.project.status == 'active' %}bg-green-100 text-green-600{% elif inv.project.status == 'completed' %}bg-blue-100 text-blue-600{% else %}bg-amber-100 text-amber-600{% endif %}">
+                                    {{ inv.project.status }}
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center">
+                                    <p class="text-[10px] text-text-sec-light uppercase mb-1">Invested</p>
+                                    <p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">${{ inv.amount_invested|floatformat:2 }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center">
+                                    <p class="text-[10px] text-text-sec-light uppercase mb-1">Expected</p>
+                                    <p class="text-sm font-bold text-green-600">${{ inv.expected_total|floatformat:2 }}</p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center">
+                                    <p class="text-[10px] text-text-sec-light uppercase mb-1">Profit</p>
+                                    <p class="text-sm font-bold text-primary">+${{ inv.expected_profit|floatformat:2 }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-xs text-text-sec-light dark:text-text-sec-dark">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                    Matures: {{ inv.maturity_date|date:"M d, Y" }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- My Shares & Bonds -->
+                {% if asset_investments %}
+                <div>
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">My Shares & Bonds</h3>
+                        <a href="{% url 'shares' %}" class="text-sm text-primary font-medium hover:text-primary-dark transition-colors">Manage Portfolio</a>
+                    </div>
+                    
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-[10px] uppercase text-text-sec-light tracking-wider border-b border-gray-100 dark:border-gray-800">
+                                        <th class="px-4 py-3 text-left">Asset</th>
+                                        <th class="px-4 py-3 text-right">Units</th>
+                                        <th class="px-4 py-3 text-right">Invested</th>
+                                        <th class="px-4 py-3 text-right">Current Value</th>
+                                        <th class="px-4 py-3 text-right">Gain/Loss</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                    {% for inv in asset_investments %}
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        <td class="px-4 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="size-10 rounded-full flex items-center justify-center
+                                                    {% if inv.type == 'share' %}bg-blue-100 text-blue-600{% else %}bg-amber-100 text-amber-600{% endif %}">
+                                                    <span class="material-symbols-outlined text-lg">{% if inv.type == 'share' %}monitoring{% else %}account_balance{% endif %}</span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-bold text-text-main-light dark:text-text-main-dark">{{ inv.asset.name }}</p>
+                                                    <p class="text-[10px] text-text-sec-light">{{ inv.asset.ticker }} • {{ inv.type|title }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-4 text-right">
+                                            <p class="font-bold text-text-main-light dark:text-text-main-dark">{{ inv.units|floatformat:4 }}</p>
+                                            <p class="text-[10px] text-text-sec-light">@ ${{ inv.purchase_price|floatformat:2 }}</p>
+                                        </td>
+                                        <td class="px-4 py-4 text-right">
+                                            <p class="font-bold text-text-main-light dark:text-text-main-dark">${{ inv.amount_invested|floatformat:2 }}</p>
+                                        </td>
+                                        <td class="px-4 py-4 text-right">
+                                            <p class="font-bold text-text-main-light dark:text-text-main-dark">${{ inv.current_value|floatformat:2 }}</p>
+                                            <p class="text-[10px] text-text-sec-light">@ ${{ inv.current_price|floatformat:2 }}</p>
+                                        </td>
+                                        <td class="px-4 py-4 text-right">
+                                            <p class="font-bold {% if inv.unrealized_gain >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                                {% if inv.unrealized_gain >= 0 %}+{% endif %}${{ inv.unrealized_gain|floatformat:2 }}
+                                            </p>
+                                            <p class="text-[10px] {% if inv.gain_percent >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                                                {% if inv.gain_percent >= 0 %}+{% endif %}{{ inv.gain_percent|floatformat:2 }}%
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 {% endif %}

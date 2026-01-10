@@ -68,6 +68,8 @@ def logout_view(request):
 @login_required
 def dashboard(request):
     from django.db.models import Sum
+    from datetime import timedelta
+    from decimal import Decimal
     
     account, created = Account.objects.get_or_create(user=request.user)
     transactions = Transaction.objects.filter(account=account).order_by('-timestamp')[:5]
@@ -84,21 +86,84 @@ def dashboard(request):
     total_project_invested = Investment.objects.filter(user=request.user, status='active').aggregate(total=Sum('amount_invested'))['total'] or 0
     total_invested = total_plan_invested + total_project_invested
     
-    # Get user's active investment plans
-    from datetime import timedelta
-    from decimal import Decimal
+    # Get user's active investment plans with maturity and expected profit
     user_active_plans = UserPlan.objects.filter(user=request.user, is_active=True).select_related('plan')
-    
-    # Calculate maturity date and expected profit for each plan
     user_plans_data = []
     for user_plan in user_active_plans:
         maturity_date = user_plan.start_date + timedelta(days=user_plan.plan.duration_days)
         daily_rate = Decimal(user_plan.plan.daily_profit_rate) / Decimal(100)
         expected_profit = user_plan.amount * daily_rate * user_plan.plan.duration_days
+        expected_total = user_plan.amount + expected_profit if user_plan.plan.capital_return else expected_profit
         user_plans_data.append({
             'plan': user_plan,
             'maturity_date': maturity_date,
             'expected_profit': expected_profit,
+            'expected_total': expected_total,
+            'current_profit': user_plan.current_profit,
+        })
+    
+    # Get user's project investments with maturity and expected income
+    project_investments = Investment.objects.filter(
+        user=request.user, 
+        project__isnull=False,
+        status='active'
+    ).select_related('project')
+    
+    project_investments_data = []
+    for inv in project_investments:
+        maturity_date = inv.created_at + timedelta(days=inv.project.duration_days)
+        return_rate = Decimal(inv.project.return_rate) / Decimal(100)
+        expected_profit = inv.amount_invested * return_rate
+        expected_total = inv.amount_invested + expected_profit
+        
+        project_investments_data.append({
+            'investment': inv,
+            'project': inv.project,
+            'amount_invested': inv.amount_invested,
+            'maturity_date': maturity_date,
+            'expected_profit': expected_profit,
+            'expected_total': expected_total,
+            'type': 'project',
+        })
+    
+    # Get user's asset investments (shares/bonds) with current value
+    asset_investments = Investment.objects.filter(
+        user=request.user,
+        asset__isnull=False,
+        status='active'
+    ).select_related('asset')
+    
+    asset_investments_data = []
+    for inv in asset_investments:
+        current_value = inv.units * inv.asset.current_price
+        unrealized_gain = current_value - inv.amount_invested
+        gain_percent = (unrealized_gain / inv.amount_invested * 100) if inv.amount_invested > 0 else Decimal(0)
+        
+        # For bonds, calculate maturity and interest
+        if inv.asset.asset_type == 'bond' and inv.asset.maturity_date:
+            maturity_date = inv.asset.maturity_date
+            interest_rate = Decimal(inv.asset.interest_rate or 0) / Decimal(100)
+            expected_interest = inv.amount_invested * interest_rate
+            expected_total = inv.amount_invested + expected_interest
+        else:
+            maturity_date = None
+            expected_interest = None
+            expected_total = current_value
+        
+        asset_investments_data.append({
+            'investment': inv,
+            'asset': inv.asset,
+            'amount_invested': inv.amount_invested,
+            'units': inv.units,
+            'purchase_price': inv.purchase_price,
+            'current_price': inv.asset.current_price,
+            'current_value': current_value,
+            'unrealized_gain': unrealized_gain,
+            'gain_percent': gain_percent,
+            'maturity_date': maturity_date,
+            'expected_interest': expected_interest,
+            'expected_total': expected_total,
+            'type': inv.asset.asset_type,
         })
     
     return render(request, 'dashboard.html', {
@@ -110,7 +175,9 @@ def dashboard(request):
         'investment_plans': investment_plans,
         'payment_methods': payment_methods,
         'total_invested': total_invested,
-        'user_active_plans': user_plans_data
+        'user_active_plans': user_plans_data,
+        'project_investments': project_investments_data,
+        'asset_investments': asset_investments_data,
     })
 
 @login_required
