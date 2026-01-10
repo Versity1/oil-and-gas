@@ -1,0 +1,218 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Techo Drill Innovation - Investment Plans{% endblock %}
+
+{% block extra_content %}
+<!-- Investment Modal -->
+<div id="investModal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" aria-hidden="true" onclick="closeInvestModal()"></div>
+        
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        
+        <div class="inline-block align-bottom bg-surface-light dark:bg-surface-dark rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-gray-200 dark:border-gray-700">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-text-main-light dark:text-text-main-dark" id="modal-title">Invest in Plan</h3>
+                    <button onclick="closeInvestModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                
+                <form id="investForm" method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <p class="text-sm text-text-sec-light dark:text-text-sec-dark mb-4">You are about to invest in: <span id="modalPlanName" class="font-bold text-text-main-light dark:text-text-main-dark"></span></p>
+                        
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Amount to Invest (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
+                            <input type="number" id="investAmount" name="amount" step="0.01" class="w-full pl-8 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xl font-bold focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="0.00" required>
+                        </div>
+                        <p id="amountRangeMsg" class="text-[10px] text-gray-500 mt-2 font-medium"></p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Select Funding Source</label>
+                        
+                        <div class="grid grid-cols-1 gap-2">
+                            <!-- Account Balance Option -->
+                            <label class="relative flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+                                <input type="radio" name="payment_method" value="balance" class="hidden peer" checked>
+                                <div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3">
+                                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Account Balance</p>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">${{ account.balance|floatformat:2 }} available</p>
+                                </div>
+                                <div class="peer-checked:block hidden text-primary">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </div>
+                            </label>
+
+                            <!-- Dynamic Payment Methods -->
+                            {% for pm in payment_methods %}
+                            <label class="relative flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+                                <input type="radio" name="payment_method" value="{{ pm.id }}" class="hidden peer">
+                                <div class="size-10 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center mr-3">
+                                    <span class="material-symbols-outlined">{% if 'BTC' in pm.name %}currency_bitcoin{% else %}payments{% endif %}</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">{{ pm.name }}</p>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">Direct Deposit & Invest</p>
+                                </div>
+                                <div class="peer-checked:block hidden text-primary">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                        Complete Investment <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                    </button>
+                    
+                    <p class="text-[10px] text-center text-text-sec-light dark:text-text-sec-dark px-4">
+                        By proceeding, you agree to the terms of this investment plan. Profits are distributed every 24 hours.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openInvestModal(packageId, name, minPrice, maxPrice) {
+        const modal = document.getElementById('investModal');
+        const form = document.getElementById('investForm');
+        const nameSpan = document.getElementById('modalPlanName');
+        const amountInput = document.getElementById('investAmount');
+        const rangeMsg = document.getElementById('amountRangeMsg');
+        
+        nameSpan.textContent = name;
+        amountInput.value = minPrice;
+        amountInput.min = minPrice;
+        amountInput.max = maxPrice;
+        rangeMsg.textContent = `Investment Range: $${minPrice} - $${maxPrice}`;
+        form.action = `/buy-package/${packageId}/`;
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeInvestModal() {
+        const modal = document.getElementById('investModal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<main class="w-full max-w-7xl mx-auto md:p-6 lg:p-8">
+    <!-- Hero Section -->
+    <div class="relative w-full h-[220px] md:h-[320px] bg-gradient-to-br from-indigo-600 to-purple-900 flex flex-col justify-center overflow-hidden md:rounded-2xl shadow-lg mb-8 p-6 md:p-10 text-white">
+        <div class="relative z-10">
+            <p class="text-indigo-100 text-sm font-medium mb-1 uppercase tracking-wider">Earn Passive Income</p>
+            <h1 class="text-4xl md:text-5xl font-black mb-2">Investment Plans</h1>
+            <p class="text-indigo-200 text-xs md:text-sm max-w-md">Our automated trading algorithms and oil market insights generate daily returns for our members. Choose a plan and start earning today.</p>
+        </div>
+        <!-- Abstract background pattern -->
+        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Active Plans Section -->
+    {% if active_user_plans %}
+    <div class="px-4 md:px-0 mb-10">
+        <h2 class="text-text-main-light dark:text-text-main-dark tracking-tight text-xl font-bold mb-4">Your Active Plans</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for up in active_user_plans %}
+            <div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div>
+                    <h4 class="font-bold text-text-main-light dark:text-text-main-dark">{{ up.plan.name }}</h4>
+                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">Invested: ${{ up.amount }} | Total Profit: <span class="text-green-500 font-bold">${{ up.current_profit|floatformat:2 }}</span></p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold">Daily Return</p>
+                    <p class="text-sm font-black text-primary">{{ up.plan.daily_profit_rate }}%</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Plans Grid -->
+    <div class="px-4 md:px-0 mb-6 flex justify-between items-end">
+        <div>
+            <h2 class="text-text-main-light dark:text-text-main-dark tracking-tight text-3xl font-bold">Available Packages</h2>
+            <p class="text-text-sec-light dark:text-text-sec-dark text-sm mt-1">Select a package that fits your investment goals.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-0 mb-12">
+        {% for package in packages %}
+        <div class="relative group bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-3xl p-8 shadow-sm hover:shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col">
+            <!-- Profit Badge -->
+            <div class="absolute -top-4 right-8 bg-primary text-white text-xs font-black px-4 py-2 rounded-full shadow-lg">
+                {{ package.daily_profit_rate }}% DAILY
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-2xl font-black text-text-main-light dark:text-text-main-dark mb-2">{{ package.name }}</h3>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark leading-relaxed">{{ package.short_description }}</p>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-800">
+                    <span class="text-sm text-text-sec-light font-medium">Min. Investment</span>
+                    <span class="text-lg font-bold text-text-main-light dark:text-text-main-dark">${{ package.min_price|floatformat:0 }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-800">
+                    <span class="text-sm text-text-sec-light font-medium">Max. Investment</span>
+                    <span class="text-lg font-bold text-text-main-light dark:text-text-main-dark">${{ package.max_price|floatformat:0 }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-800">
+                    <span class="text-sm text-text-sec-light font-medium">Duration</span>
+                    <span class="text-lg font-bold text-text-main-light dark:text-text-main-dark">{{ package.duration_days }} Days</span>
+                </div>
+                <div class="flex justify-between items-center py-3">
+                    <span class="text-sm text-text-sec-light font-medium">Capital Return</span>
+                    <span class="text-xs font-black text-green-500 uppercase">{% if package.capital_return %}Yes{% else %}No{% endif %}</span>
+                </div>
+            </div>
+
+            <button onclick="openInvestModal('{{ package.id }}', '{{ package.name }}', '{{ package.min_price }}', '{{ package.max_price }}')" class="mt-auto w-full py-4 bg-gray-900 dark:bg-primary text-white font-black rounded-2xl group-hover:bg-primary transition-colors shadow-lg shadow-gray-200 dark:shadow-none flex items-center justify-center gap-2">
+                Get Started <span class="material-symbols-outlined">rocket_launch</span>
+            </button>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-20 text-center">
+            <span class="material-symbols-outlined text-6xl text-gray-200 mb-4">inventory_2</span>
+            <p class="text-text-sec-light dark:text-text-sec-dark font-bold">No investment packages currently active.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Features -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-0 mb-12">
+        <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-800">
+            <span class="material-symbols-outlined text-3xl text-primary mb-3">auto_awesome</span>
+            <h4 class="font-bold text-text-main-light dark:text-text-main-dark mb-2">Automated Returns</h4>
+            <p class="text-xs text-text-sec-light dark:text-text-sec-dark">Our system processes and credits your daily profits every 24 hours without fail.</p>
+        </div>
+        <div class="p-6 bg-green-50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-800">
+            <span class="material-symbols-outlined text-3xl text-green-500 mb-3">account_balance</span>
+            <h4 class="font-bold text-text-main-light dark:text-text-main-dark mb-2">Capital Protection</h4>
+            <p class="text-xs text-text-sec-light dark:text-text-sec-dark">Your initial investment is protected and returned fully after the plan duration.</p>
+        </div>
+        <div class="p-6 bg-purple-50 dark:bg-purple-900/10 rounded-2xl border border-purple-100 dark:border-purple-800">
+            <span class="material-symbols-outlined text-3xl text-purple-500 mb-3">notifications_active</span>
+            <h4 class="font-bold text-text-main-light dark:text-text-main-dark mb-2">Instant Alerts</h4>
+            <p class="text-xs text-text-sec-light dark:text-text-sec-dark">Receive email notifications for every profit credit and plan completion.</p>
+        </div>
+    </div>
+</main>
+{% endblock %}

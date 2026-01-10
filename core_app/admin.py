@@ -1,5 +1,18 @@
 from django.contrib import admin
-from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan
+
+@admin.register(InvestmentPlan)
+class InvestmentPlanAdmin(admin.ModelAdmin):
+    list_display = ('name', 'daily_profit_rate', 'min_price', 'max_price', 'duration_days', 'is_active')
+    list_filter = ('is_active', 'capital_return')
+    search_fields = ('name',)
+
+@admin.register(UserPlan)
+class UserPlanAdmin(admin.ModelAdmin):
+    list_display = ('user', 'plan', 'amount', 'current_profit', 'is_active', 'start_date')
+    list_filter = ('is_active', 'plan')
+    search_fields = ('user__username', 'plan__name')
+    readonly_fields = ('start_date', 'last_profit_at')
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
@@ -19,7 +32,7 @@ class PaymentMethodAdmin(admin.ModelAdmin):
 
 @admin.register(Deposit)
 class DepositAdmin(admin.ModelAdmin):
-    list_display = ('user', 'amount', 'payment_method', 'status', 'created_at')
+    list_display = ('user', 'amount', 'payment_method', 'status', 'linked_plan', 'created_at')
     list_filter = ('status', 'payment_method')
     search_fields = ('user__username', 'transaction_hash')
     readonly_fields = ('created_at', 'updated_at')

@@ -20,12 +20,12 @@
                     </div>
                     <!-- Segmented Buttons (Desktop Right Aligned) -->
                     <div class="flex h-10 w-full md:w-auto items-center justify-center rounded-lg bg-gray-100 dark:bg-background-dark p-1">
-                        <label class="flex cursor-pointer h-full flex-1 md:w-24 items-center justify-center overflow-hidden rounded-md transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-[#2A3B4D] has-[:checked]:shadow-sm has-[:checked]:text-primary text-text-sec-light dark:text-text-sec-dark text-sm font-bold uppercase tracking-wide">
-                            <span class="truncate">Shares</span>
+                        <label class="flex cursor-pointer h-full flex-1 md:w-28 items-center justify-center overflow-hidden rounded-md transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-[#2A3B4D] has-[:checked]:shadow-sm has-[:checked]:text-primary text-text-sec-light dark:text-text-sec-dark text-xs font-bold uppercase tracking-wide">
+                            <span class="truncate">Stock Equity</span>
                             <input checked="" class="hidden" name="asset_type" type="radio" value="Shares"/>
                         </label>
-                        <label class="flex cursor-pointer h-full flex-1 md:w-24 items-center justify-center overflow-hidden rounded-md transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-[#2A3B4D] has-[:checked]:shadow-sm has-[:checked]:text-primary text-text-sec-light dark:text-text-sec-dark text-sm font-bold uppercase tracking-wide">
-                            <span class="truncate">Bonds</span>
+                        <label class="flex cursor-pointer h-full flex-1 md:w-28 items-center justify-center overflow-hidden rounded-md transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-[#2A3B4D] has-[:checked]:shadow-sm has-[:checked]:text-primary text-text-sec-light dark:text-text-sec-dark text-xs font-bold uppercase tracking-wide">
+                            <span class="truncate">Fixed Returns</span>
                             <input class="hidden" name="asset_type" type="radio" value="Bonds"/>
                         </label>
                     </div>
@@ -125,21 +125,38 @@
                         <!-- Payment Methods -->
                         <div class="pb-8">
                             <h3 class="text-text-main-light dark:text-text-main-dark text-lg font-bold mb-4">Select Source</h3>
-                            <div class="grid grid-cols-2 gap-3">
-                                <label class="flex cursor-pointer flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
-                                    <input checked="" class="hidden" name="payment" type="radio" value="balance"/>
-                                    <div class="size-8 rounded-full bg-primary flex items-center justify-center text-white">
+                            <div class="grid grid-cols-1 gap-2">
+                                <!-- Account Balance Option -->
+                                <label class="relative flex items-center p-3 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+                                    <input type="radio" name="payment_method" value="balance" class="hidden peer" checked>
+                                    <div class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3">
                                         <span class="material-symbols-outlined text-sm">account_balance_wallet</span>
                                     </div>
-                                    <span class="text-xs font-bold text-text-main-light dark:text-text-main-dark text-center">Account Balance</span>
-                                </label>
-                                <label class="flex cursor-pointer flex-col items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-700 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all bg-background-light dark:bg-background-dark">
-                                    <input class="hidden" name="payment" type="radio" value="crypto"/>
-                                    <div class="size-8 rounded-full bg-orange-500 flex items-center justify-center text-white">
-                                        <span class="material-symbols-outlined text-sm">currency_bitcoin</span>
+                                    <div class="flex-1">
+                                        <p class="text-xs font-bold text-text-main-light dark:text-text-main-dark">Account Balance</p>
+                                        <p class="text-[10px] text-text-sec-light dark:text-text-sec-dark">${{ account.balance|floatformat:2 }} available</p>
                                     </div>
-                                    <span class="text-xs font-bold text-text-main-light dark:text-text-main-dark text-center">External Crypto</span>
+                                    <div class="peer-checked:block hidden text-primary">
+                                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    </div>
                                 </label>
+
+                                <!-- Dynamic Payment Methods -->
+                                {% for pm in payment_methods %}
+                                <label class="relative flex items-center p-3 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+                                    <input type="radio" name="payment_method" value="{{ pm.id }}" class="hidden peer">
+                                    <div class="size-8 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center mr-3">
+                                        <span class="material-symbols-outlined text-sm">{% if 'BTC' in pm.name %}currency_bitcoin{% else %}payments{% endif %}</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-xs font-bold text-text-main-light dark:text-text-main-dark">{{ pm.name }}</p>
+                                        <p class="text-[10px] text-text-sec-light dark:text-text-sec-dark">Direct Deposit</p>
+                                    </div>
+                                    <div class="peer-checked:block hidden text-primary">
+                                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    </div>
+                                </label>
+                                {% endfor %}
                             </div>
                         </div>
                         

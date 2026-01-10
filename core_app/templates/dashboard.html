@@ -2,6 +2,167 @@
 
 {% block title %}Techo Drill Innovation - Dashboard{% endblock %}
 
+{% block extra_content %}
+<!-- Investment Modal -->
+<div id="investModal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity bg-black/60 backdrop-blur-sm" aria-hidden="true" onclick="closeInvestModal()"></div>
+        
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        
+        <div class="inline-block align-bottom bg-surface-light dark:bg-surface-dark rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-gray-200 dark:border-gray-700">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-text-main-light dark:text-text-main-dark" id="modal-title">Invest in Project</h3>
+                    <button onclick="closeInvestModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                
+                <form id="investForm" method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <p class="text-sm text-text-sec-light dark:text-text-sec-dark mb-4">You are about to fund: <span id="modalProjectTitle" class="font-bold text-text-main-light dark:text-text-main-dark"></span></p>
+                        
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Amount to Invest (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">$</span>
+                            <input type="number" id="investAmount" name="amount" step="0.01" class="w-full pl-8 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xl font-bold focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="0.00" required>
+                        </div>
+                        <p id="minInvestMsg" class="text-[10px] text-gray-500 mt-2 font-medium"></p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Select Funding Source</label>
+                        
+                        <div class="grid grid-cols-1 gap-2">
+                            <!-- Account Balance Option -->
+                            <label class="relative flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+                                <input type="radio" name="payment_method" value="balance" class="hidden peer" checked>
+                                <div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3">
+                                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Account Balance</p>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">${{ account.balance|floatformat:2 }} available</p>
+                                </div>
+                                <div class="peer-checked:block hidden text-primary">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </div>
+                            </label>
+
+                            <!-- Dynamic Payment Methods -->
+                            {% for pm in payment_methods %}
+                            <label class="relative flex items-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10">
+                                <input type="radio" name="payment_method" value="{{ pm.id }}" class="hidden peer">
+                                <div class="size-10 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center mr-3">
+                                    <span class="material-symbols-outlined">{% if 'BTC' in pm.name %}currency_bitcoin{% else %}payments{% endif %}</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">{{ pm.name }}</p>
+                                    <p class="text-xs text-text-sec-light dark:text-text-sec-dark">Direct Deposit & Invest</p>
+                                </div>
+                                <div class="peer-checked:block hidden text-primary">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary-dark transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                        Complete Investment <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                    </button>
+                    
+                    <p class="text-[10px] text-center text-text-sec-light dark:text-text-sec-dark px-4">
+                        By proceeding, you agree to fund this project. Direct deposits will be processed once payment is confirmed.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openInvestModal(projectId, title, minAmount) {
+        const modal = document.getElementById('investModal');
+        const form = document.getElementById('investForm');
+        const modalTitle = document.getElementById('modal-title');
+        const titleSpan = document.getElementById('modalProjectTitle');
+        const amountInput = document.getElementById('investAmount');
+        const minMsg = document.getElementById('minInvestMsg');
+        
+        modalTitle.textContent = "Invest in Project";
+        titleSpan.textContent = title;
+        amountInput.value = minAmount;
+        amountInput.min = minAmount;
+        amountInput.max = ""; // No max for projects usually, or set it if needed
+        minMsg.textContent = `Minimum investment: $${minAmount}`;
+        form.action = `/buy-project/${projectId}/`;
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function openPackageModal(packageId, name, minPrice, maxPrice) {
+        const modal = document.getElementById('investModal');
+        const form = document.getElementById('investForm');
+        const modalTitle = document.getElementById('modal-title');
+        const titleSpan = document.getElementById('modalProjectTitle');
+        const amountInput = document.getElementById('investAmount');
+        const minMsg = document.getElementById('minInvestMsg');
+        
+        modalTitle.textContent = "Invest in Plan";
+        titleSpan.textContent = name;
+        amountInput.value = minPrice;
+        amountInput.min = minPrice;
+        amountInput.max = maxPrice;
+        minMsg.textContent = `Investment Range: $${minPrice} - $${maxPrice}`;
+        form.action = `/buy-package/${packageId}/`;
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeInvestModal() {
+        const modal = document.getElementById('investModal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function toggleInvestDropdown(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('investDropdownMenu');
+        const chevron = document.getElementById('dropdownChevron');
+        if (!menu) return;
+        
+        const isHidden = menu.classList.contains('hidden');
+        
+        if (isHidden) {
+            menu.classList.remove('hidden');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+        } else {
+            menu.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('investDropdownMenu');
+        const container = document.getElementById('investDropdownContainer');
+        const chevron = document.getElementById('dropdownChevron');
+        
+        if (menu && container && !container.contains(event.target)) {
+            if (!menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+    });
+</script>
+{% endblock %}
+
 {% block content %}
     <!-- Main Content -->
     <main class="w-full max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
@@ -12,9 +173,45 @@
                 <p class="text-text-sec-light dark:text-text-sec-dark mt-1">Welcome back, here's what's happening today.</p>
             </div>
             <div class="flex gap-3">
-                 <button class="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors shadow-sm text-sm font-bold">
-                    <span class="material-symbols-outlined text-[20px]">add</span> Invest Now
-                 </button>
+                <div class="relative" id="investDropdownContainer">
+                    <button onclick="toggleInvestDropdown(event)" class="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors shadow-sm text-sm font-bold">
+                        <span class="material-symbols-outlined text-[20px]">add</span> Invest Now
+                        <span class="material-symbols-outlined text-[18px] transition-transform duration-200" id="dropdownChevron">expand_more</span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="investDropdownMenu" class="hidden absolute right-0 mt-3 w-64 origin-top-right rounded-2xl bg-surface-light dark:bg-surface-dark shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none z-[110] border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
+                        <div class="p-2 space-y-1">
+                            <p class="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-text-sec-light dark:text-text-sec-dark opacity-50">Select Asset Type</p>
+                            <a href="{% url 'shares' %}" class="group flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main-light dark:text-text-main-dark hover:bg-primary/5 hover:text-primary rounded-xl transition-all">
+                                <div class="size-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined">monitoring</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span>Shares & Bonds</span>
+                                    <span class="text-[10px] font-medium text-text-sec-light">Equity and fixed-income assets</span>
+                                </div>
+                            </a>
+                            <a href="{% url 'investment_packages' %}" class="group flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main-light dark:text-text-main-dark hover:bg-primary/5 hover:text-primary rounded-xl transition-all">
+                                <div class="size-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined">auto_awesome</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span>Investment Plans</span>
+                                    <span class="text-[10px] font-medium text-text-sec-light">Automated daily profit packages</span>
+                                </div>
+                            </a>
+                            <a href="{% url 'investment_plan' %}" class="group flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main-light dark:text-text-main-dark hover:bg-primary/5 hover:text-primary rounded-xl transition-all">
+                                <div class="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined">candlestick_chart</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span>Project Funding</span>
+                                    <span class="text-[10px] font-medium text-text-sec-light">Participate in specific energy projects</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -50,62 +247,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Active Projects -->
-                <div>
-                    <div class="flex justify-between items-center mb-4 px-1">
-                        <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Active Projects</h3>
-                        <a href="{% url 'products' %}" class="text-sm text-primary font-medium hover:text-primary-dark transition-colors">View All</a>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Project Card 1 -->
-                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="h-40 w-full bg-cover bg-center relative group-hover:scale-105 transition-transform duration-500" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDGL0Jam19iHgX8UrxDAczHro3mjbPDLmPUPj-xDz1M2CsjiDYsNjt2ZjjKxGlHt3uOqRhh08vr-aMVxH1jUGZdWxCw38KBpzX0PKNWxeMWbqjKLN-KAnpjhRvC55yKd4f_8aJhirK-LVhFjAuZHBKjx_vd4IxMmiSg-RwsqjvtSbn5dtNAU7YHGubma02VDbYuYGRpQFzeo2IxSPAXbVJvqj2fOCdyg-Igl9h5BJ7rsjqb34-GSr_RJXH9SRTZDj4_57ThJvcTwRLx");'>
-                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                                <div class="absolute top-3 right-3 bg-green-500/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm uppercase tracking-wide shadow-sm">Extraction</div>
-                            </div>
-                            <div class="p-5 relative bg-surface-light dark:bg-surface-dark">
-                                <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark mb-1">Alpha Rig 4</h4>
-                                <p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-4">North Sea Sector • 85% Efficiency</p>
-                                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2 mb-3">
-                                    <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
-                                </div>
-                                <div class="flex justify-between items-center text-sm">
-                                    <span class="text-text-sec-light dark:text-text-sec-dark">ROI: <span class="text-green-600 font-bold">+8.2%</span></span>
-                                    <span class="text-text-sec-light dark:text-text-sec-dark">Share: <span class="text-text-main-light dark:text-text-main-dark font-bold">$12.4k</span></span>
-                                </div>
-                            </div>
-                        </div>
-
-                         <!-- Project Card 2 -->
-                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="h-40 w-full bg-cover bg-center relative group-hover:scale-105 transition-transform duration-500" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZH7EEivoQv7haifS-nEVPV-7xg79TC3g3NKnaH0c4gyJ4Vw2E6DIAAFBQem15uklAMjJFHxWMM1PoTjbp2Rpb11j04B1BuPcFT1tNbBY34h12H_HeVpPkuOKSmBNDOl_aXgosGonoL4t_REIZWLmfi11DSdv4qZAkpMXa6MIUZnvrNqXXTL5rFhWhoOYvasrBY61FrIns9G8189N0ARi8XO5QBbOxiUkAJTUSS98jEhObafDbGF2fejUg0VK3Ll1x6-Nf2f230yPm");'>
-                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                                <div class="absolute top-3 right-3 bg-yellow-500/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm uppercase tracking-wide shadow-sm">Surveying</div>
-                            </div>
-                            <div class="p-5 relative bg-surface-light dark:bg-surface-dark">
-                                <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark mb-1">Gulf Exploration B</h4>
-                                <p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-4">Texas Basin • Phase 2</p>
-                                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2 mb-3">
-                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 40%"></div>
-                                </div>
-                                <div class="flex justify-between items-center text-sm">
-                                    <span class="text-text-sec-light dark:text-text-sec-dark">ROI: <span class="text-gray-400 font-bold">Pending</span></span>
-                                    <span class="text-text-sec-light dark:text-text-sec-dark">Share: <span class="text-text-main-light dark:text-text-main-dark font-bold">$5.1k</span></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column -->
-            <div class="lg:col-span-1 flex flex-col gap-8">
-                 <!-- Quick Actions -->
+                
+                <!-- Quick Actions -->
                 <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                    <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <h3 class="text-xs font-bold text-text-sec-light dark:text-text-sec-dark uppercase tracking-widest mb-6 px-2 opacity-70">Quick Actions</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <a href="{% url 'deposit' %}" class="flex flex-col items-center gap-2 group p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <div class="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
                                 <span class="material-symbols-outlined text-2xl">add_circle</span>
@@ -133,6 +279,81 @@
                     </div>
                 </div>
 
+                <!-- Investment Packages (Plans) -->
+                <div>
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Investment Plans</h3>
+                        <a href="{% url 'investment_packages' %}" class="text-sm text-primary font-medium hover:text-primary-dark transition-colors">View All Plans</a>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {% for package in investment_plans %}
+                        <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group">
+                            <div class="flex flex-col h-full">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-xl">auto_awesome</span>
+                                    </div>
+                                    <span class="text-[10px] font-black bg-green-500/10 text-green-600 px-2 py-1 rounded-full uppercase">{{ package.daily_profit_rate }}% Daily</span>
+                                </div>
+                                <h4 class="font-bold text-text-main-light dark:text-text-main-dark mb-1">{{ package.name }}</h4>
+                                <p class="text-[10px] text-text-sec-light dark:text-text-sec-dark mb-4 line-clamp-2">{{ package.short_description }}</p>
+                                <div class="mt-auto space-y-2">
+                                    <div class="flex justify-between text-[11px]">
+                                        <span class="text-text-sec-light">Min</span>
+                                        <span class="font-bold text-text-main-light dark:text-text-main-dark">${{ package.min_price|floatformat:0 }}</span>
+                                    </div>
+                                    <button onclick="openPackageModal('{{ package.id }}', '{{ package.name }}', '{{ package.min_price }}', '{{ package.max_price }}')" class="w-full py-2 bg-gray-900 dark:bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary transition-colors">
+                                        Invest
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Active Projects -->
+                <div>
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Active Projects</h3>
+                        <a href="{% url 'investment_plan' %}" class="text-sm text-primary font-medium hover:text-primary-dark transition-colors">View All</a>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for project in active_projects %}
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="h-40 w-full bg-cover bg-center relative group-hover:scale-105 transition-transform duration-500" style='background-image: url("{% if project.image %}{{ project.image.url }}{% else %}https://lh3.googleusercontent.com/aida-public/AB6AXuDGL0Jam19iHgX8UrxDAczHro3mjbPDLmPUPj-xDz1M2CsjiDYsNjt2ZjjKxGlHt3uOqRhh08vr-aMVxH1jUGZdWxCw38KBpzX0PKNWxeMWbqjKLN-KAnpjhRvC55yKd4f_8aJhirK-LVhFjAuZHBKjx_vd4IxMmiSg-RwsqjvtSbn5dtNAU7YHGubma02VDbYuYGRpQFzeo2IxSPAXbVJvqj2fOCdyg-Igl9h5BJ7rsjqb34-GSr_RJXH9SRTZDj4_57ThJvcTwRLx{% endif %}");'>
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                                <div class="absolute top-3 right-3 bg-primary/90 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm uppercase tracking-wide shadow-sm">{{ project.status|title }}</div>
+                            </div>
+                            <div class="p-5 relative bg-surface-light dark:bg-surface-dark">
+                                <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark mb-1">{{ project.title }}</h4>
+                                <p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-4">{{ project.duration_days }} Days • {{ project.return_rate }}% Return</p>
+                                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2 mb-3">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-sm mb-4">
+                                    <span class="text-text-sec-light dark:text-text-sec-dark font-medium">Min: <span class="text-text-main-light dark:text-text-main-dark font-bold">${{ project.min_investment|floatformat:0 }}</span></span>
+                                    <span class="text-green-600 font-bold">+{{ project.return_rate }}% ROI</span>
+                                </div>
+                                <button onclick="openInvestModal('{{ project.id }}', '{{ project.title }}', '{{ project.min_investment }}')" class="w-full py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary-dark transition-all transform active:scale-[0.98]">
+                                    Invest Now
+                                </button>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-span-full py-12 bg-surface-light dark:bg-surface-dark rounded-xl border-2 border-dashed border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center">
+                            <span class="material-symbols-outlined text-4xl text-gray-300 mb-2">oil_barrel</span>
+                            <p class="text-text-sec-light dark:text-text-sec-dark font-medium">No active funding projects.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="lg:col-span-1 flex flex-col gap-8">
                 <!-- Recent Transactions -->
                 <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
                     <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">

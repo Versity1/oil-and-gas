@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
-from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan
 from .utils import send_transaction_email, send_transaction_request_email
 
 # Front Pages
@@ -69,37 +69,47 @@ def logout_view(request):
 def dashboard(request):
     account, created = Account.objects.get_or_create(user=request.user)
     transactions = Transaction.objects.filter(account=account).order_by('-timestamp')[:5]
+    # Fetch active projects and investment plans for the dashboard
+    active_projects = Project.objects.filter(status='funding')[:3]
+    investment_plans = InvestmentPlan.objects.filter(is_active=True)[:3]
+    payment_methods = PaymentMethod.objects.filter(is_active=True)
+    
     return render(request, 'dashboard.html', {
         'account': account,
-        'recent_transactions': transactions
+        'recent_transactions': transactions,
+        'active_projects': active_projects,
+        'investment_plans': investment_plans,
+        'payment_methods': payment_methods
     })
 
 @login_required
 def investment_plan(request):
     account = request.user.account
-    projects = Project.objects.filter(status__in=['funding', 'active'])
+    projects = Project.objects.filter(status='funding')
+    payment_methods = PaymentMethod.objects.filter(is_active=True)
     return render(request, 'investment-plan.html', {
-        'account': account,
-        'projects': projects
+        'projects': projects,
+        'payment_methods': payment_methods,
+        'account': account
     })
 
 @login_required
 def shares(request):
+    tdi_share = Asset.objects.filter(ticker='TDI').first()
+    other_assets = Asset.objects.exclude(ticker='TDI')
+    payment_methods = PaymentMethod.objects.filter(is_active=True)
     account = request.user.account
-    # Fetch TDI share (assuming it's the main one)
-    tdi_share = Asset.objects.filter(ticker='TDI', asset_type='share').first()
-    # Fetch other assets
-    other_assets = Asset.objects.filter(is_active=True).exclude(ticker='TDI')
     return render(request, 'shares.html', {
-        'account': account,
         'tdi_share': tdi_share,
-        'other_assets': other_assets
+        'other_assets': other_assets,
+        'payment_methods': payment_methods,
+        'account': account
     })
 
 @login_required
 def buy_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
     if request.method == 'POST':
-        project = get_object_or_404(Project, id=project_id)
         amount_str = request.POST.get('amount', '0').replace(',', '')
         try:
             from decimal import Decimal
@@ -109,41 +119,60 @@ def buy_project(request, project_id):
             return redirect('investment_plan')
 
         account = request.user.account
+        payment_method_id = request.POST.get('payment_method')
         
         if amount < project.min_investment:
             messages.error(request, f"Minimum investment for this project is ${project.min_investment}")
-            return redirect('investment_plan')
-            
-        if account.balance >= amount:
-            with transaction.atomic():
-                account.balance -= amount
-                account.save()
-                
-                Investment.objects.create(
-                    user=request.user,
-                    project=project,
-                    amount_invested=amount,
-                    purchase_price=amount,
-                    status='active'
-                )
-                
-                Transaction.objects.create(
-                    account=account,
-                    transaction_type='withdrawal',
-                    amount=amount,
-                    description=f"Investment in Project: {project.title}",
-                    status='completed',
-                    reference=f"INV-PRJ-{project.id}-{request.user.id}-{transaction.get_connection().connection.get_server_version() if hasattr(transaction.get_connection(), 'connection') else ''}"[:100] # Simplistic unique ref
-                )
-            messages.success(request, f"Successfully invested ${amount} in {project.title}")
+            return redirect(request.META.get('HTTP_REFERER', 'investment_plan'))
+
+        # Flow 1: Use Account Balance
+        if not payment_method_id or payment_method_id == 'balance':
+            if account.balance >= amount:
+                with transaction.atomic():
+                    Investment.objects.create(
+                        user=request.user,
+                        project=project,
+                        amount_invested=amount,
+                        purchase_price=amount,
+                        status='active'
+                    )
+                    
+                    import time
+                    Transaction.objects.create(
+                        account=account,
+                        transaction_type='withdrawal',
+                        amount=amount,
+                        description=f"Investment in Project: {project.title}",
+                        status='completed',
+                        reference=f"INV-PRJ-{project.id}-{request.user.id}-{int(time.time())}"
+                    )
+                    account.balance -= amount
+                    account.save()
+                messages.success(request, f"Successfully invested ${amount} in {project.title}")
+                return redirect('dashboard')
+            else:
+                messages.error(request, "Insufficient balance. Please deposit funds or choose a direct payment method.")
+                return redirect(request.META.get('HTTP_REFERER', 'investment_plan'))
+        
+        # Flow 2: Direct Deposit & Invest
         else:
-            messages.error(request, "Insufficient funds.")
+            payment_method = get_object_or_404(PaymentMethod, id=payment_method_id)
+            deposit = Deposit.objects.create(
+                user=request.user,
+                payment_method=payment_method,
+                amount=amount,
+                linked_project=project,
+                invest_amount=amount,
+                status='pending'
+            )
+            return redirect('deposit_pay', deposit_id=deposit.id)
+
     return redirect('investment_plan')
 
 @login_required
 def buy_asset(request, asset_id):
+    asset = get_object_or_404(Asset, id=asset_id)
     if request.method == 'POST':
-        asset = get_object_or_404(Asset, id=asset_id)
         amount_str = request.POST.get('amount', '0').replace(',', '')
         try:
             from decimal import Decimal
@@ -153,34 +182,127 @@ def buy_asset(request, asset_id):
             return redirect('shares')
 
         account = request.user.account
+        payment_method_id = request.POST.get('payment_method')
         
-        if account.balance >= amount:
-            with transaction.atomic():
-                units = amount / asset.current_price
-                account.balance -= amount
-                account.save()
-                
-                Investment.objects.create(
-                    user=request.user,
-                    asset=asset,
-                    amount_invested=amount,
-                    units=units,
-                    purchase_price=asset.current_price,
-                    status='active'
-                )
-                
-                Transaction.objects.create(
-                    account=account,
-                    transaction_type='withdrawal',
-                    amount=amount,
-                    description=f"Purchased {units:.4f} units of {asset.ticker}",
-                    status='completed',
-                    reference=f"INV-AST-{asset.id}-{request.user.id}"
-                )
-            messages.success(request, f"Successfully purchased {units:.4f} units of {asset.name}")
+        # Flow 1: Use Account Balance
+        if not payment_method_id or payment_method_id == 'balance':
+            if account.balance >= amount:
+                with transaction.atomic():
+                    units = amount / asset.current_price
+                    Investment.objects.create(
+                        user=request.user,
+                        asset=asset,
+                        amount_invested=amount,
+                        units=units,
+                        purchase_price=asset.current_price,
+                        status='active'
+                    )
+                    
+                    import time
+                    Transaction.objects.create(
+                        account=account,
+                        transaction_type='withdrawal',
+                        amount=amount,
+                        description=f"Investment in Asset: {asset.name}",
+                        status='completed',
+                        reference=f"INV-AST-{asset.id}-{request.user.id}-{int(time.time())}"
+                    )
+                    account.balance -= amount
+                    account.save()
+                messages.success(request, f"Successfully invested ${amount} in {asset.name}")
+                return redirect('dashboard')
+            else:
+                messages.error(request, "Insufficient balance. Please deposit funds or choose a direct payment method.")
+                return redirect(request.META.get('HTTP_REFERER', 'shares'))
+        
+        # Flow 2: Direct Deposit & Invest
         else:
-            messages.error(request, "Insufficient funds.")
+            payment_method = get_object_or_404(PaymentMethod, id=payment_method_id)
+            deposit = Deposit.objects.create(
+                user=request.user,
+                payment_method=payment_method,
+                amount=amount,
+                linked_asset=asset,
+                invest_amount=amount,
+                status='pending'
+            )
+            return redirect('deposit_pay', deposit_id=deposit.id)
+
     return redirect('shares')
+@login_required
+def investment_packages(request):
+    account = request.user.account
+    packages = InvestmentPlan.objects.filter(is_active=True)
+    active_user_plans = UserPlan.objects.filter(user=request.user, is_active=True)
+    payment_methods = PaymentMethod.objects.filter(is_active=True)
+    return render(request, 'investment-packages.html', {
+        'packages': packages,
+        'active_user_plans': active_user_plans,
+        'payment_methods': payment_methods,
+        'account': account
+    })
+
+@login_required
+def buy_package(request, package_id):
+    package = get_object_or_404(InvestmentPlan, id=package_id)
+    if request.method == 'POST':
+        amount_str = request.POST.get('amount', '0').replace(',', '')
+        try:
+            from decimal import Decimal
+            amount = Decimal(amount_str)
+        except:
+            messages.error(request, "Invalid amount.")
+            return redirect('investment_packages')
+
+        account = request.user.account
+        payment_method_id = request.POST.get('payment_method')
+        
+        if amount < package.min_price or amount > package.max_price:
+            messages.error(request, f"Investment must be between ${package.min_price} and ${package.max_price}")
+            return redirect(request.META.get('HTTP_REFERER', 'investment_packages'))
+
+        # Flow 1: Use Account Balance
+        if not payment_method_id or payment_method_id == 'balance':
+            if account.balance >= amount:
+                with transaction.atomic():
+                    UserPlan.objects.create(
+                        user=request.user,
+                        plan=package,
+                        amount=amount,
+                        is_active=True
+                    )
+                    
+                    import time
+                    Transaction.objects.create(
+                        account=account,
+                        transaction_type='withdrawal',
+                        amount=amount,
+                        description=f"Investment in Plan: {package.name}",
+                        status='completed',
+                        reference=f"INV-PLN-{package.id}-{request.user.id}-{int(time.time())}"
+                    )
+                    account.balance -= amount
+                    account.save()
+                messages.success(request, f"Successfully invested ${amount} in {package.name} plan")
+                return redirect('dashboard')
+            else:
+                messages.error(request, "Insufficient balance. Please deposit funds or choose a direct payment method.")
+                return redirect(request.META.get('HTTP_REFERER', 'investment_packages'))
+        
+        # Flow 2: Direct Deposit & Invest
+        else:
+            payment_method = get_object_or_404(PaymentMethod, id=payment_method_id)
+            deposit = Deposit.objects.create(
+                user=request.user,
+                payment_method=payment_method,
+                amount=amount,
+                linked_plan=package,
+                invest_amount=amount,
+                status='pending'
+            )
+            return redirect('deposit_pay', deposit_id=deposit.id)
+
+    return redirect('investment_packages')
 
 @login_required
 def transaction_history(request):

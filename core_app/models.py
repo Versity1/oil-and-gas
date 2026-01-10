@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 import uuid
 
 class Account(models.Model):
@@ -41,6 +42,13 @@ class Deposit(models.Model):
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     transaction_hash = models.CharField(max_length=255, blank=True, null=True, help_text="User provided proof of payment")
+    
+    # Fields to support "Deposit & Invest" flow
+    linked_project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_deposits')
+    linked_asset = models.ForeignKey('Asset', on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_deposits')
+    linked_plan = models.ForeignKey('InvestmentPlan', on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_deposits')
+    invest_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, help_text="Amount to invest specifically if multi-deposit")
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -136,6 +144,8 @@ class Transaction(models.Model):
     TRANSACTION_TYPES = (
         ('deposit', 'Deposit'),
         ('withdrawal', 'Withdrawal'),
+        ('profit', 'Daily Profit'),
+        ('capital_return', 'Capital Return'),
     )
     
     STATUS_CHOICES = (
@@ -159,3 +169,29 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.transaction_type.capitalize()} - {self.amount} ({self.account.user.username})"
+
+class InvestmentPlan(models.Model):
+    name = models.CharField(max_length=100)
+    short_description = models.TextField()
+    min_price = models.DecimalField(max_digits=12, decimal_places=2)
+    max_price = models.DecimalField(max_digits=12, decimal_places=2)
+    daily_profit_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Daily percentage return (e.g. 1.50)")
+    duration_days = models.IntegerField(help_text="Total duration of the plan in days")
+    capital_return = models.BooleanField(default=True, help_text="Return original investment at the end")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class UserPlan(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_plans')
+    plan = models.ForeignKey(InvestmentPlan, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    current_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    start_date = models.DateTimeField(auto_now_add=True)
+    last_profit_at = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.plan.name} (${self.amount})"

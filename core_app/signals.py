@@ -23,6 +23,9 @@ def handle_deposit_update(sender, instance, created, **kwargs):
         if not Transaction.objects.filter(reference=txn_ref).exists():
             with transaction.atomic():
                 account = instance.user.account
+                # If it's a direct investment deposit, we might not want to add to balance 
+                # OR we add to balance and then immediately deduct.
+                # Adding to balance first is cleaner for ledger history.
                 account.balance += instance.amount
                 account.save()
                 
@@ -35,6 +38,57 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                     reference=txn_ref
                 )
                 send_transaction_email(instance.user, txn)
+
+                # Automated Investment Logic
+                if instance.linked_project or instance.linked_asset or instance.linked_plan:
+                    invest_amount = instance.invest_amount or instance.amount
+                    if account.balance >= invest_amount:
+                        from .models import Investment, UserPlan
+                        import time
+                        
+                        if instance.linked_project:
+                            Investment.objects.create(
+                                user=instance.user,
+                                project=instance.linked_project,
+                                amount_invested=invest_amount,
+                                purchase_price=invest_amount,
+                                status='active'
+                            )
+                            description = f"Investment in Project: {instance.linked_project.title}"
+                            ref_prefix = f"INV-PRJ-{instance.linked_project.id}"
+                        elif instance.linked_asset:
+                            units = invest_amount / instance.linked_asset.current_price
+                            Investment.objects.create(
+                                user=instance.user,
+                                asset=instance.linked_asset,
+                                amount_invested=invest_amount,
+                                units=units,
+                                purchase_price=instance.linked_asset.current_price,
+                                status='active'
+                            )
+                            description = f"Investment in Asset: {instance.linked_asset.name}"
+                            ref_prefix = f"INV-AST-{instance.linked_asset.id}"
+                        elif instance.linked_plan:
+                            UserPlan.objects.create(
+                                user=instance.user,
+                                plan=instance.linked_plan,
+                                amount=invest_amount,
+                                is_active=True
+                            )
+                            description = f"Investment in Plan: {instance.linked_plan.name}"
+                            ref_prefix = f"INV-PLN-{instance.linked_plan.id}"
+
+                        account.balance -= invest_amount
+                        account.save()
+
+                        Transaction.objects.create(
+                            account=account,
+                            transaction_type='withdrawal',
+                            amount=invest_amount,
+                            description=description,
+                            status='completed',
+                            reference=f"{ref_prefix}-{instance.user.id}-{int(time.time())}"
+                        )
 
 @receiver(post_save, sender=Withdrawal)
 def handle_withdrawal_update(sender, instance, created, **kwargs):
