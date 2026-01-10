@@ -67,6 +67,8 @@ def logout_view(request):
 # Dashboard Pages
 @login_required
 def dashboard(request):
+    from django.db.models import Sum
+    
     account, created = Account.objects.get_or_create(user=request.user)
     transactions = Transaction.objects.filter(account=account).order_by('-timestamp')[:5]
     # Fetch pending deposits and withdrawals
@@ -77,6 +79,28 @@ def dashboard(request):
     investment_plans = InvestmentPlan.objects.filter(is_active=True)[:3]
     payment_methods = PaymentMethod.objects.filter(is_active=True)
     
+    # Calculate total invested (active investments)
+    total_plan_invested = UserPlan.objects.filter(user=request.user, is_active=True).aggregate(total=Sum('amount'))['total'] or 0
+    total_project_invested = Investment.objects.filter(user=request.user, status='active').aggregate(total=Sum('amount_invested'))['total'] or 0
+    total_invested = total_plan_invested + total_project_invested
+    
+    # Get user's active investment plans
+    from datetime import timedelta
+    from decimal import Decimal
+    user_active_plans = UserPlan.objects.filter(user=request.user, is_active=True).select_related('plan')
+    
+    # Calculate maturity date and expected profit for each plan
+    user_plans_data = []
+    for user_plan in user_active_plans:
+        maturity_date = user_plan.start_date + timedelta(days=user_plan.plan.duration_days)
+        daily_rate = Decimal(user_plan.plan.daily_profit_rate) / Decimal(100)
+        expected_profit = user_plan.amount * daily_rate * user_plan.plan.duration_days
+        user_plans_data.append({
+            'plan': user_plan,
+            'maturity_date': maturity_date,
+            'expected_profit': expected_profit,
+        })
+    
     return render(request, 'dashboard.html', {
         'account': account,
         'recent_transactions': transactions,
@@ -84,7 +108,9 @@ def dashboard(request):
         'pending_withdrawals': pending_withdrawals,
         'active_projects': active_projects,
         'investment_plans': investment_plans,
-        'payment_methods': payment_methods
+        'payment_methods': payment_methods,
+        'total_invested': total_invested,
+        'user_active_plans': user_plans_data
     })
 
 @login_required
