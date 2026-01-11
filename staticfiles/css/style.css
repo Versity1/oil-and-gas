@@ -1,0 +1,28 @@
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+html { scroll-behavior: smooth; }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #137fec; border-radius: 4px; }
+
+.dark ::-webkit-scrollbar-track { background: #1a2632; }
+.dark ::-webkit-scrollbar-thumb { background: #0b66c3; }
+
+.card-hover { transition: all 0.3s ease; }
+.card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+.dark .card-hover:hover { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+
+/* Dashboard specific styles */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.h-safe-bottom { height: env(safe-area-inset-bottom); }
