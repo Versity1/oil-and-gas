@@ -1,4 +1,5 @@
 {% extends 'base_front.html' %}
+{% load static %}
 
 {% block title %}About Techo Drill Innovation{% endblock %}
 
@@ -108,7 +109,7 @@
                 <div class="absolute -left-[9px] top-0 size-[18px] rounded-full bg-white dark:bg-background-dark border-4 border-primary group-hover:scale-125 transition-transform"></div>
                 <span class="text-primary font-bold text-sm bg-primary/10 px-2 py-0.5 rounded mb-2 inline-block">2023</span>
                 <h4 class="font-bold text-lg text-text-main-light dark:text-text-main-dark">Global Expansion</h4>
-                <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Expanded operations into Southeast Asia and the North Sea, marking a new era of global reach and operational diversity.</p>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Expanded operations across the Middle East and Persian Gulf region, marking a new era of operational excellence from our UAE headquarters.</p>
                 <div class="mt-4 rounded-xl overflow-hidden h-40 w-full md:w-2/3 bg-gray-200 relative shadow-sm">
                     <div class="absolute inset-0 bg-cover bg-center" data-alt="Map showing flight paths connecting global office locations" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAzIaZlFFEDu0PXxh1wpndgqNLaTG6-zMZttnKKK9fwMddKMsVn5QQO-tY8xTrBRXW1qCLcfd9nyRly-U4WmrjFQWFAXqqhFIjrg_8BKUrPPcFchC0qU_nB5e-ikX5Br5CMX3USxIbSs6CHnao719eLx90Zb_u39nBPxl2FdNlcO0yqrcwdihMFgbWsxwAZQfIVedZlu60HTDIEzfsM4elp4frdP1qxWTKGsnH24i0bPFH6OI366QB1x7IbnchzadYK6OurXOR5tVQb");'>
                     </div>
@@ -119,14 +120,14 @@
                 <div class="absolute -left-[7px] top-1 size-3.5 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors"></div>
                 <span class="text-text-sec-light dark:text-text-sec-dark font-bold text-sm mb-1 inline-block">2012</span>
                 <h4 class="font-bold text-base text-text-main-light dark:text-text-main-dark">First Offshore Rig</h4>
-                <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Launched our first deep-water drilling project, setting new industry standards for efficiency and safety.</p>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Launched our first deep-water drilling project in the Arabian Gulf, setting new industry standards for efficiency and safety.</p>
             </div>
             <!-- Timeline Item 3 -->
             <div class="pl-8 relative group">
                 <div class="absolute -left-[7px] top-1 size-3.5 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors"></div>
                 <span class="text-text-sec-light dark:text-text-sec-dark font-bold text-sm mb-1 inline-block">2005</span>
                 <h4 class="font-bold text-base text-text-main-light dark:text-text-main-dark">Company Founded</h4>
-                <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Established in Houston, Texas with a mission to revolutionize oil exploration through technology.</p>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark mt-1 max-w-2xl">Established in Abu Dhabi, UAE with a mission to revolutionize oil exploration through technology.</p>
             </div>
         </div>
     </div>
@@ -170,6 +171,24 @@
                 </div>
                 <p class="font-bold text-lg text-text-main-light dark:text-text-main-dark">David Okonjo</p>
                 <p class="text-sm text-primary font-medium">Head of Safety</p>
+            </div>
+            <!-- Person 5 - Arabian -->
+            <div class="flex flex-col items-center group">
+                <div class="size-32 rounded-full bg-gray-200 overflow-hidden mb-4 border-4 border-transparent group-hover:border-primary transition-colors shadow-sm">
+                    <div class="h-full w-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500" data-alt="Headshot of Ahmed Al-Rashid, CFO, wearing traditional Arabian keffiyeh" style='background-image: url("{% static 'images/ahmed_al_rashid.jpg' %}");'>
+                    </div>
+                </div>
+                <p class="font-bold text-lg text-text-main-light dark:text-text-main-dark">Ahmed Al-Rashid</p>
+                <p class="text-sm text-primary font-medium">CFO</p>
+            </div>
+            <!-- Person 6 - Arabian -->
+            <div class="flex flex-col items-center group">
+                <div class="size-32 rounded-full bg-gray-200 overflow-hidden mb-4 border-4 border-transparent group-hover:border-primary transition-colors shadow-sm">
+                    <div class="h-full w-full bg-cover bg-center transform group-hover:scale-110 transition-transform duration-500" data-alt="Headshot of Fatima Al-Maktoum, VP Strategy, wearing hijab" style='background-image: url("{% static 'images/fatima_al_maktoum.jpg' %}");'>
+                    </div>
+                </div>
+                <p class="font-bold text-lg text-text-main-light dark:text-text-main-dark">Fatima Al-Maktoum</p>
+                <p class="text-sm text-primary font-medium">VP Strategy</p>
             </div>
         </div>
     </div>
