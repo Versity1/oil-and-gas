@@ -2,21 +2,53 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db import transaction
+from decimal import Decimal
+import uuid
 from .models import Account, Deposit, Withdrawal, Transaction, Notification
 from .utils import send_transaction_email
 
 @receiver(post_save, sender=User)
 def create_user_account(sender, instance, created, **kwargs):
     if created:
-        Account.objects.create(user=instance)
+        # Generate unique referral code
+        referral_code = str(uuid.uuid4().hex)[:8].upper()
+        # Ensure uniqueness
+        while Account.objects.filter(referral_code=referral_code).exists():
+            referral_code = str(uuid.uuid4().hex)[:8].upper()
+        
+        Account.objects.create(user=instance, referral_code=referral_code)
 
 @receiver(post_save, sender=User)
 def save_user_account(sender, instance, **kwargs):
     if hasattr(instance, 'account'):
         instance.account.save()
 
+@receiver(pre_save, sender=Deposit)
+def track_deposit_status(sender, instance, **kwargs):
+    if instance.pk:
+        try:
+            old_instance = Deposit.objects.get(pk=instance.pk)
+            instance._old_status = old_instance.status
+        except Deposit.DoesNotExist:
+            instance._old_status = None
+    else:
+        instance._old_status = None
+
+@receiver(pre_save, sender=Withdrawal)
+def track_withdrawal_status(sender, instance, **kwargs):
+    if instance.pk:
+        try:
+            old_instance = Withdrawal.objects.get(pk=instance.pk)
+            instance._old_status = old_instance.status
+        except Withdrawal.DoesNotExist:
+            instance._old_status = None
+    else:
+        instance._old_status = None
+
 @receiver(post_save, sender=Deposit)
 def handle_deposit_update(sender, instance, created, **kwargs):
+    old_status = getattr(instance, '_old_status', None)
+    
     if instance.status == 'completed':
         # Check if we already processed this deposit (prevent multiple balance updates)
         txn_ref = f"DEP-{instance.id}"
@@ -26,7 +58,7 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                 # If it's a direct investment deposit, we might not want to add to balance 
                 # OR we add to balance and then immediately deduct.
                 # Adding to balance first is cleaner for ledger history.
-                account.balance += instance.amount
+                account.balance = Decimal(str(account.balance)) + instance.amount
                 account.save()
                 
                 txn = Transaction.objects.create(
@@ -36,14 +68,6 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                     description=f"Crypto Deposit: {instance.payment_method.name}",
                     status='completed',
                     reference=txn_ref
-                )
-                
-                # Notification for success
-                Notification.objects.create(
-                    user=instance.user,
-                    title="Deposit Confirmed",
-                    message=f"Your deposit of ${instance.amount:,.2f} has been successfully confirmed.",
-                    notification_type="success"
                 )
                 
                 send_transaction_email(instance.user, txn)
@@ -98,11 +122,46 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                             status='completed',
                             reference=f"{ref_prefix}-{instance.user.id}-{int(time.time())}"
                         )
+        
+        # Notification Logic (Decoupled from Transaction to allow retries/fixes)
+        if old_status != 'completed':
+            Notification.objects.create(
+                user=instance.user,
+                title="Deposit Confirmed",
+                message=f"Your deposit of ${instance.amount:,.2f} has been successfully confirmed.",
+                notification_type="success"
+            )
+            
+            # Referral Bonus Logic
+            account = instance.user.account
+            if account.referred_by:
+                referrer_account = account.referred_by
+                bonus_amount = instance.amount * Decimal('0.10')  # 10% bonus
+                
+                # Credit referrer's balance
+                referrer_account.balance = Decimal(str(referrer_account.balance)) + bonus_amount
+                referrer_account.referral_earnings = Decimal(str(referrer_account.referral_earnings)) + bonus_amount
+                referrer_account.save()
+                
+                # Create transaction record for referrer
+                Transaction.objects.create(
+                    account=referrer_account,
+                    transaction_type='deposit',
+                    amount=bonus_amount,
+                    description=f"Referral bonus from {instance.user.username}'s deposit",
+                    status='completed',
+                    reference=f"REF-{instance.id}-{account.user.id}"
+                )
+                
+                # Notify referrer
+                Notification.objects.create(
+                    user=referrer_account.user,
+                    title="Referral Bonus!",
+                    message=f"You earned ${bonus_amount:,.2f} referral bonus from {instance.user.username}'s deposit.",
+                    notification_type="profit"
+                )
 
-    elif instance.status == 'failed':
-        # Simple check to avoid duplicate failure notifications if saved multiple times?
-        # For now, we assume status change to failed is a one-time event or infrequent enough.
-        # Ideally we'd check if a recent notification exists, but let's keep it simple.
+    elif instance.status == 'failed' and old_status != 'failed':
         Notification.objects.create(
             user=instance.user,
             title="Deposit Failed",
@@ -112,6 +171,8 @@ def handle_deposit_update(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Withdrawal)
 def handle_withdrawal_update(sender, instance, created, **kwargs):
+    old_status = getattr(instance, '_old_status', None)
+
     if instance.status == 'completed':
         # Check if we already processed this withdrawal
         txn_ref = f"WTH-{instance.id}"
@@ -119,7 +180,7 @@ def handle_withdrawal_update(sender, instance, created, **kwargs):
             with transaction.atomic():
                 account = instance.user.account
                 # Note: Balance check should have happened during request or here
-                account.balance -= instance.amount
+                account.balance = Decimal(str(account.balance)) - instance.amount
                 account.save()
                 
                 wallet_info = f" ({instance.wallet_name})" if instance.wallet_name else ""
@@ -132,17 +193,18 @@ def handle_withdrawal_update(sender, instance, created, **kwargs):
                     reference=txn_ref
                 )
                 
-                # Notification for success
-                Notification.objects.create(
-                    user=instance.user,
-                    title="Withdrawal Approved",
-                    message=f"Your withdrawal of ${instance.amount:,.2f} has been processed.",
-                    notification_type="success"
-                )
-                
                 send_transaction_email(instance.user, txn)
+        
+        # Notification Logic
+        if old_status != 'completed':
+            Notification.objects.create(
+                user=instance.user,
+                title="Withdrawal Approved",
+                message=f"Your withdrawal of ${instance.amount:,.2f} has been processed.",
+                notification_type="success"
+            )
 
-    elif instance.status == 'failed':
+    elif instance.status == 'failed' and old_status != 'failed':
         Notification.objects.create(
             user=instance.user,
             title="Withdrawal Rejected",

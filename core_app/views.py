@@ -45,10 +45,26 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 def register(request):
+    # Capture referral code from URL if present
+    ref_code = request.GET.get('ref', None)
+    if ref_code:
+        request.session['referral_code'] = ref_code
+    
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            
+            # Link to referrer if referral code was used
+            referral_code = request.session.pop('referral_code', None)
+            if referral_code:
+                try:
+                    referrer_account = Account.objects.get(referral_code=referral_code)
+                    user.account.referred_by = referrer_account
+                    user.account.save()
+                except Account.DoesNotExist:
+                    pass  # Invalid referral code, just ignore
+            
             login(request, user)
             messages.success(request, "Registration successful. Welcome to the dashboard!")
             return redirect('dashboard')
@@ -714,3 +730,37 @@ def mark_all_notifications_read(request):
         Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
+
+@login_required
+def referral_dashboard(request):
+    """Display user's referral stats and link."""
+    account = request.user.account
+    
+    # Get referred users
+    referrals = Account.objects.filter(referred_by=account).select_related('user')
+    
+    # Get deposit stats for each referral
+    referral_data = []
+    for ref in referrals:
+        total_deposits = Deposit.objects.filter(user=ref.user, status='completed').aggregate(
+            total=Sum('amount')
+        )['total'] or Decimal('0.00')
+        referral_data.append({
+            'user': ref.user,
+            'joined': ref.created_at,
+            'total_deposits': total_deposits,
+        })
+    
+    # Build referral link
+    referral_link = request.build_absolute_uri(f'/register?ref={account.referral_code}')
+    
+    context = {
+        'account': account,
+        'referral_link': referral_link,
+        'referral_code': account.referral_code,
+        'referral_earnings': account.referral_earnings,
+        'referral_count': referrals.count(),
+        'referrals': referral_data,
+    }
+    return render(request, 'referrals.html', context)

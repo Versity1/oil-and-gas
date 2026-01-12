@@ -1,0 +1,171 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Referrals - Techo Drill{% endblock %}
+
+{% block content %}
+<main class="px-4 py-6 max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold mb-2">Referral Program</h1>
+        <p class="text-text-sec-light dark:text-text-sec-dark">Invite friends and earn 10% commission on their deposits</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-gray-800">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-primary text-xl">group</span>
+                <span class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Referred Users</span>
+            </div>
+            <p class="text-2xl font-bold">{{ referral_count }}</p>
+        </div>
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-gray-800">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-green-500 text-xl">paid</span>
+                <span class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Total Earnings</span>
+            </div>
+            <p class="text-2xl font-bold text-green-500">${{ referral_earnings|floatformat:2 }}</p>
+        </div>
+        <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 border border-gray-100 dark:border-gray-800 col-span-2">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-primary text-xl">percent</span>
+                <span class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Commission Rate</span>
+            </div>
+            <p class="text-2xl font-bold">10%</p>
+            <p class="text-xs text-text-sec-light dark:text-text-sec-dark mt-1">On every deposit your referrals make</p>
+        </div>
+    </div>
+
+    <!-- Referral Link Section -->
+    <div class="bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-2xl p-6 mb-8 border border-primary/20">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">link</span>
+            Your Referral Link
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 bg-surface-light dark:bg-surface-dark rounded-lg p-3 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <input type="text" id="referralLink" value="{{ referral_link }}" readonly 
+                       class="w-full bg-transparent text-sm font-mono focus:outline-none text-text-main-light dark:text-text-main-dark">
+            </div>
+            <button onclick="copyReferralLink()" id="copyBtn"
+                    class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                <span class="material-symbols-outlined text-xl" id="copyIcon">content_copy</span>
+                <span id="copyText">Copy Link</span>
+            </button>
+        </div>
+        <p class="text-xs text-text-sec-light dark:text-text-sec-dark mt-3">
+            Your referral code: <span class="font-mono font-bold text-primary">{{ referral_code }}</span>
+        </p>
+    </div>
+
+    <!-- How It Works -->
+    <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-6 mb-8 border border-gray-100 dark:border-gray-800">
+        <h2 class="text-lg font-bold mb-4">How It Works</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="flex items-start gap-3">
+                <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-primary font-bold">1</span>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-1">Share Your Link</h3>
+                    <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Copy and share your unique referral link with friends</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-primary font-bold">2</span>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-1">Friend Registers</h3>
+                    <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Your friend signs up using your referral link</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span class="text-primary font-bold">3</span>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-1">Earn Bonus</h3>
+                    <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Get 10% of every deposit they make, forever!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referred Users Table -->
+    <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-800">
+            <h2 class="text-lg font-bold">Your Referrals</h2>
+        </div>
+        {% if referrals %}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 dark:bg-gray-800/50">
+                    <tr>
+                        <th class="text-left text-xs font-semibold text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider px-4 py-3">User</th>
+                        <th class="text-left text-xs font-semibold text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider px-4 py-3">Joined</th>
+                        <th class="text-right text-xs font-semibold text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider px-4 py-3">Total Deposits</th>
+                        <th class="text-right text-xs font-semibold text-text-sec-light dark:text-text-sec-dark uppercase tracking-wider px-4 py-3">Your Earnings</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    {% for ref in referrals %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-3">
+                                <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span class="text-primary font-bold text-sm">{{ ref.user.username|first|upper }}</span>
+                                </div>
+                                <span class="font-medium">{{ ref.user.username }}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-text-sec-light dark:text-text-sec-dark">
+                            {{ ref.joined|date:"M d, Y" }}
+                        </td>
+                        <td class="px-4 py-3 text-right font-medium">
+                            ${{ ref.total_deposits|floatformat:2 }}
+                        </td>
+                        <td class="px-4 py-3 text-right font-bold text-green-500">
+                            ${{ ref.total_deposits|floatformat:2|default:0 }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-8 text-center">
+            <span class="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600 mb-3">group_add</span>
+            <p class="text-text-sec-light dark:text-text-sec-dark">No referrals yet. Share your link to start earning!</p>
+        </div>
+        {% endif %}
+    </div>
+</main>
+
+<script>
+function copyReferralLink() {
+    const linkInput = document.getElementById('referralLink');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyIcon = document.getElementById('copyIcon');
+    const copyText = document.getElementById('copyText');
+    
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(linkInput.value);
+    
+    // Visual feedback
+    copyIcon.textContent = 'check';
+    copyText.textContent = 'Copied!';
+    copyBtn.classList.add('bg-green-500');
+    copyBtn.classList.remove('bg-primary');
+    
+    setTimeout(() => {
+        copyIcon.textContent = 'content_copy';
+        copyText.textContent = 'Copy Link';
+        copyBtn.classList.remove('bg-green-500');
+        copyBtn.classList.add('bg-primary');
+    }, 2000);
+}
+</script>
+{% endblock %}

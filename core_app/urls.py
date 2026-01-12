@@ -44,6 +44,7 @@ urlpatterns = [
     path('deposit/<int:deposit_id>/pay/', views.deposit_pay, name='deposit_pay'),
     path('transfer-to-main/', views.transfer_to_main, name='transfer_to_main'),
     path('sell-asset/<int:investment_id>/', views.sell_asset, name='sell_asset'),
+    path('referrals/', views.referral_dashboard, name='referral_dashboard'),
     
     # Notification API
     path('api/notifications/', views.get_notifications, name='get_notifications'),

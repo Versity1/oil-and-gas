@@ -9,6 +9,13 @@ class Account(models.Model):
     trading_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, 
                                           help_text="Balance from shares/bonds profits")
     account_number = models.CharField(max_length=12, unique=True, editable=False)
+    
+    # Referral System Fields
+    referral_code = models.CharField(max_length=10, unique=True, blank=True, null=True)
+    referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='referrals')
+    referral_earnings = models.DecimalField(max_digits=12, decimal_places=2, default=0.00,
+                                            help_text="Total earnings from referral bonuses")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
