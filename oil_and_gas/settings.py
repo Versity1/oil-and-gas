@@ -75,20 +75,33 @@ WSGI_APPLICATION = 'oil_and_gas.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lunmaxco_techodrill',
-        'USER': 'lunmaxco_jzrbjxldtecho',
-        'PASSWORD': '$fevwBvcUvr3#u,r',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+import os
+
+# Use SQLite for local development, MySQL for production
+if DEBUG:
+    # Development - SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # Production - MySQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'lunmaxco_techodrill',
+            'USER': 'lunmaxco_jzrbjxldtecho',
+            'PASSWORD': '$fevwBvcUvr3#u,r',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
 
 
 # Password validation
@@ -153,11 +166,7 @@ STORAGES = {
     },
 }
 
-# Background Tasks Configuration (Django 6)
-# Production: Uses DatabaseBackend to store tasks in the database
-# Run the worker with: python manage.py runworker
-TASKS = {
-    "default": {
-        "BACKEND": "django.tasks.backends.DatabaseBackend",
-    }
-}
+# Background Tasks Configuration
+# Since cPanel doesn't support Python 3.12+ (required for Django 6 tasks),
+# use cron jobs instead. Add this cron job in cPanel (runs daily at midnight):
+# 0 0 * * * cd /home/lunmaxco/techo && /usr/bin/python3 manage.py process_daily_profits >> /home/lunmaxco/techo/logs/cron.log 2>&1
