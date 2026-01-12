@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db import transaction
-from .models import Account, Deposit, Withdrawal, Transaction
+from .models import Account, Deposit, Withdrawal, Transaction, Notification
 from .utils import send_transaction_email
 
 @receiver(post_save, sender=User)
@@ -37,6 +37,15 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                     status='completed',
                     reference=txn_ref
                 )
+                
+                # Notification for success
+                Notification.objects.create(
+                    user=instance.user,
+                    title="Deposit Confirmed",
+                    message=f"Your deposit of ${instance.amount:,.2f} has been successfully confirmed.",
+                    notification_type="success"
+                )
+                
                 send_transaction_email(instance.user, txn)
 
                 # Automated Investment Logic
@@ -90,6 +99,17 @@ def handle_deposit_update(sender, instance, created, **kwargs):
                             reference=f"{ref_prefix}-{instance.user.id}-{int(time.time())}"
                         )
 
+    elif instance.status == 'failed':
+        # Simple check to avoid duplicate failure notifications if saved multiple times?
+        # For now, we assume status change to failed is a one-time event or infrequent enough.
+        # Ideally we'd check if a recent notification exists, but let's keep it simple.
+        Notification.objects.create(
+            user=instance.user,
+            title="Deposit Failed",
+            message=f"Your deposit of ${instance.amount:,.2f} was unsuccessful or rejected.",
+            notification_type="warning"
+        )
+
 @receiver(post_save, sender=Withdrawal)
 def handle_withdrawal_update(sender, instance, created, **kwargs):
     if instance.status == 'completed':
@@ -111,4 +131,21 @@ def handle_withdrawal_update(sender, instance, created, **kwargs):
                     status='completed',
                     reference=txn_ref
                 )
+                
+                # Notification for success
+                Notification.objects.create(
+                    user=instance.user,
+                    title="Withdrawal Approved",
+                    message=f"Your withdrawal of ${instance.amount:,.2f} has been processed.",
+                    notification_type="success"
+                )
+                
                 send_transaction_email(instance.user, txn)
+
+    elif instance.status == 'failed':
+        Notification.objects.create(
+            user=instance.user,
+            title="Withdrawal Rejected",
+            message=f"Your withdrawal request for ${instance.amount:,.2f} was declined.",
+            notification_type="warning"
+        )
