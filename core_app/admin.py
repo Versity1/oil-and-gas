@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan, Notification
 
 @admin.register(InvestmentPlan)
 class InvestmentPlanAdmin(admin.ModelAdmin):
@@ -65,3 +65,11 @@ class InvestmentAdmin(admin.ModelAdmin):
     def get_target(self, obj):
         return obj.project.title if obj.project else obj.asset.name
     get_target.short_description = 'Target'
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'user', 'notification_type', 'is_read', 'created_at')
+    list_filter = ('notification_type', 'is_read')
+    search_fields = ('title', 'message', 'user__username')
+    readonly_fields = ('created_at',)
+    ordering = ('-created_at',)

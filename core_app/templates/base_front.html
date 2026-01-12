@@ -97,10 +97,30 @@
         </nav>
 
         <div class="flex items-center gap-2">
-            <button class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
-                <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
-                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            </button>
+            <!-- Notification Dropdown -->
+            <div class="relative" id="notification-container">
+                <button id="notification-btn" class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+                    <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">notifications</span>
+                    <span id="notification-badge" class="absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 rounded-full text-[10px] text-white font-bold flex items-center justify-center hidden">0</span>
+                </button>
+                
+                <!-- Notification Dropdown Panel -->
+                <div id="notification-panel" class="absolute right-0 top-full mt-2 w-80 max-h-96 bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl overflow-hidden opacity-0 invisible transform translate-y-2 transition-all duration-200 z-50">
+                    <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="font-bold text-sm text-text-main-light dark:text-text-main-dark">Notifications</h3>
+                        <button id="mark-all-read-btn" class="text-xs text-primary hover:text-primary-dark font-medium transition-colors">
+                            Mark all read
+                        </button>
+                    </div>
+                    <div id="notification-list" class="overflow-y-auto max-h-72">
+                        <div class="p-6 text-center text-text-sec-light dark:text-text-sec-dark text-sm">
+                            <span class="material-symbols-outlined text-3xl mb-2 block opacity-50">notifications_off</span>
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <button id="menu-toggle" class="flex md:hidden items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                 <span class="material-symbols-outlined text-text-main-light dark:text-text-main-dark">menu</span>
             </button>
@@ -229,6 +249,6 @@
             </div>
         </div>
     </footer>
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}?v=1.1"></script>
 </body>
 </html>

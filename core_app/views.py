@@ -4,8 +4,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.http import JsonResponse
 from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
-from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan, Notification
 from .utils import send_transaction_email, send_transaction_request_email, send_investment_email
 
 # Front Pages
@@ -668,3 +669,48 @@ def sell_asset(request, investment_id):
     # GET request - show confirmation page (or just redirect back)
     return redirect('shares')
 
+
+# Notification API Views
+def get_notifications(request):
+    """Return user's notifications as JSON."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'unread_count': 0, 'notifications': []})
+    
+    notifications = Notification.objects.filter(user=request.user)[:20]
+    unread_count = Notification.objects.filter(user=request.user, is_read=False).count()
+    
+    data = {
+        'unread_count': unread_count,
+        'notifications': [
+            {
+                'id': n.id,
+                'title': n.title,
+                'message': n.message,
+                'type': n.notification_type,
+                'is_read': n.is_read,
+                'created_at': n.created_at.strftime('%b %d, %Y %I:%M %p'),
+            }
+            for n in notifications
+        ]
+    }
+    return JsonResponse(data)
+
+
+@login_required
+def mark_notification_read(request, notification_id):
+    """Mark a specific notification as read."""
+    if request.method == 'POST':
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
+
+@login_required
+def mark_all_notifications_read(request):
+    """Mark all user notifications as read."""
+    if request.method == 'POST':
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)

@@ -45,6 +45,11 @@ urlpatterns = [
     path('transfer-to-main/', views.transfer_to_main, name='transfer_to_main'),
     path('sell-asset/<int:investment_id>/', views.sell_asset, name='sell_asset'),
     
+    # Notification API
+    path('api/notifications/', views.get_notifications, name='get_notifications'),
+    path('api/notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('api/notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    
     # Custom Admin Pages
     path('admin/', admin_views.admin_dashboard, name='admin_dashboard'),
     path('admin/users/', admin_views.admin_users, name='admin_users'),
