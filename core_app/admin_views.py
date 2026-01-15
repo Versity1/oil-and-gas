@@ -4,13 +4,14 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Sum, Count, Q
 from django.utils import timezone
+from django.http import JsonResponse
 from datetime import timedelta
 from decimal import Decimal
 
 from .models import (
     Account, Deposit, Withdrawal, Transaction, 
     InvestmentPlan, UserPlan, Project, Asset, 
-    Investment, PaymentMethod
+    Investment, PaymentMethod, Notification
 )
 
 
@@ -910,4 +911,106 @@ def admin_add_profit(request, plan_id):
         messages.success(request, f"Added ${amount} profit to {user_plan.user.username}'s plan.")
     
     return redirect('admin_user_plans')
+
+
+# ========== NOTIFICATION MANAGEMENT ==========
+
+@staff_member_required
+def admin_notifications(request):
+    """List all notifications with filtering and send notification form."""
+    user_filter = request.GET.get('user', '')
+    type_filter = request.GET.get('type', 'all')
+    
+    notifications = Notification.objects.select_related('user').order_by('-created_at')
+    
+    if user_filter:
+        notifications = notifications.filter(
+            Q(user__username__icontains=user_filter) |
+            Q(user__email__icontains=user_filter)
+        )
+    
+    if type_filter != 'all':
+        notifications = notifications.filter(notification_type=type_filter)
+    
+    # Get all users for the send notification form
+    users = User.objects.filter(is_active=True).order_by('username')
+    
+    context = {
+        'notifications': notifications[:100],  # Limit to recent 100
+        'users': users,
+        'user_filter': user_filter,
+        'type_filter': type_filter,
+        'notification_types': Notification.NOTIFICATION_TYPES,
+    }
+    return render(request, 'custom_admin/notifications.html', context)
+
+
+@staff_member_required
+def admin_send_notification(request):
+    """Send a notification to one or all users."""
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        message = request.POST.get('message', '').strip()
+        notification_type = request.POST.get('notification_type', 'info')
+        target = request.POST.get('target', 'single')
+        user_id = request.POST.get('user_id')
+        
+        if not title or not message:
+            messages.error(request, "Title and message are required.")
+            return redirect('admin_notifications')
+        
+        if target == 'all':
+            # Send to all active users
+            users = User.objects.filter(is_active=True)
+            notifications_created = 0
+            for user in users:
+                Notification.objects.create(
+                    user=user,
+                    title=title,
+                    message=message,
+                    notification_type=notification_type
+                )
+                notifications_created += 1
+            messages.success(request, f"Notification sent to {notifications_created} users.")
+        else:
+            # Send to single user
+            if not user_id:
+                messages.error(request, "Please select a user.")
+                return redirect('admin_notifications')
+            
+            user = get_object_or_404(User, id=user_id)
+            Notification.objects.create(
+                user=user,
+                title=title,
+                message=message,
+                notification_type=notification_type
+            )
+            messages.success(request, f"Notification sent to {user.username}.")
+    
+    return redirect('admin_notifications')
+
+
+@staff_member_required
+def admin_delete_notification(request, notification_id):
+    """Delete a notification."""
+    notification = get_object_or_404(Notification, id=notification_id)
+    
+    if request.method == 'POST':
+        notification.delete()
+        messages.success(request, "Notification deleted.")
+    
+    return redirect('admin_notifications')
+
+
+@staff_member_required
+def admin_pending_counts(request):
+    """Return pending deposits/withdrawals count as JSON for header badge."""
+    pending_deposits = Deposit.objects.filter(status='pending').count()
+    pending_withdrawals = Withdrawal.objects.filter(status='pending').count()
+    
+    return JsonResponse({
+        'pending_deposits': pending_deposits,
+        'pending_withdrawals': pending_withdrawals,
+        'total_pending': pending_deposits + pending_withdrawals,
+    })
 

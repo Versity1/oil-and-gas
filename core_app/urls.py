@@ -89,4 +89,10 @@ urlpatterns = [
     path('admin/payment-methods/<int:method_id>/toggle/', admin_views.admin_toggle_payment_method, name='admin_toggle_payment_method'),
     path('admin/payment-methods/<int:method_id>/edit/', admin_views.admin_edit_payment_method, name='admin_edit_payment_method'),
     path('admin/payment-methods/<int:method_id>/delete/', admin_views.admin_delete_payment_method, name='admin_delete_payment_method'),
+    
+    # Notification Management
+    path('admin/notifications/', admin_views.admin_notifications, name='admin_notifications'),
+    path('admin/notifications/send/', admin_views.admin_send_notification, name='admin_send_notification'),
+    path('admin/notifications/<int:notification_id>/delete/', admin_views.admin_delete_notification, name='admin_delete_notification'),
+    path('admin/api/pending-counts/', admin_views.admin_pending_counts, name='admin_pending_counts'),
 ]

@@ -1,0 +1,211 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block page_subtitle %}Send and manage user notifications{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Send Notification Card -->
+    <div class="bg-admin-card rounded-xl border border-admin-border p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">send</span>
+            Send Notification
+        </h2>
+        
+        <form action="{% url 'admin_send_notification' %}" method="POST">
+            {% csrf_token %}
+            
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <!-- Target Selection -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Send To</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="target" value="single" checked class="text-primary focus:ring-primary">
+                            <span class="text-sm">Single User</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="target" value="all" class="text-primary focus:ring-primary">
+                            <span class="text-sm">All Users</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- User Selection -->
+                <div id="userSelectContainer">
+                    <label class="block text-sm text-gray-400 mb-2">Select User</label>
+                    <select name="user_id" class="w-full bg-admin-bg border border-admin-border rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+                        <option value="">-- Select User --</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <!-- Title -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Title *</label>
+                    <input type="text" name="title" required placeholder="Notification title..." 
+                           class="w-full bg-admin-bg border border-admin-border rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+                </div>
+                
+                <!-- Type -->
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Type</label>
+                    <select name="notification_type" class="w-full bg-admin-bg border border-admin-border rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+                        {% for type_value, type_label in notification_types %}
+                        <option value="{{ type_value }}">{{ type_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Message -->
+            <div class="mb-4">
+                <label class="block text-sm text-gray-400 mb-2">Message *</label>
+                <textarea name="message" required rows="3" placeholder="Notification message..." 
+                          class="w-full bg-admin-bg border border-admin-border rounded-lg px-4 py-2 focus:border-primary focus:outline-none resize-none"></textarea>
+            </div>
+            
+            <button type="submit" class="bg-primary hover:bg-primary-dark px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">send</span>
+                Send Notification
+            </button>
+        </form>
+    </div>
+    
+    <!-- Filters -->
+    <div class="bg-admin-card rounded-xl border border-admin-border p-4">
+        <form method="GET" class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm text-gray-400 mb-2">Search User</label>
+                <input type="text" name="user" value="{{ user_filter }}" placeholder="Username or email..." 
+                       class="w-full bg-admin-bg border border-admin-border rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">Type</label>
+                <select name="type" class="bg-admin-bg border border-admin-border rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+                    <option value="all" {% if type_filter == 'all' %}selected{% endif %}>All Types</option>
+                    {% for type_value, type_label in notification_types %}
+                    <option value="{{ type_value }}" {% if type_filter == type_value %}selected{% endif %}>{{ type_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="bg-primary/20 hover:bg-primary/30 border border-primary/50 px-4 py-2 rounded-lg transition-colors">
+                Filter
+            </button>
+            {% if user_filter or type_filter != 'all' %}
+            <a href="{% url 'admin_notifications' %}" class="text-gray-400 hover:text-white px-4 py-2 rounded-lg transition-colors">
+                Clear
+            </a>
+            {% endif %}
+        </form>
+    </div>
+    
+    <!-- Notifications List -->
+    <div class="bg-admin-card rounded-xl border border-admin-border overflow-hidden">
+        <div class="p-4 border-b border-admin-border">
+            <h2 class="font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">notifications</span>
+                Sent Notifications
+            </h2>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-admin-bg/50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">User</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Title</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Type</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Status</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Date</th>
+                        <th class="px-4 py-3 text-center text-xs font-bold text-gray-400 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-admin-border">
+                    {% for notification in notifications %}
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-sm">person</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">{{ notification.user.username }}</p>
+                                    <p class="text-xs text-gray-500">{{ notification.user.email }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <p class="font-medium text-sm">{{ notification.title }}</p>
+                            <p class="text-xs text-gray-500 truncate max-w-xs">{{ notification.message }}</p>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 text-xs rounded-full 
+                                {% if notification.notification_type == 'success' %}bg-green-500/20 text-green-400
+                                {% elif notification.notification_type == 'warning' %}bg-amber-500/20 text-amber-400
+                                {% elif notification.notification_type == 'profit' %}bg-emerald-500/20 text-emerald-400
+                                {% else %}bg-primary/20 text-primary{% endif %}">
+                                {{ notification.get_notification_type_display }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            {% if notification.is_read %}
+                            <span class="text-gray-500 text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">done_all</span>
+                                Read
+                            </span>
+                            {% else %}
+                            <span class="text-primary text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">mark_email_unread</span>
+                                Unread
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-400">
+                            {{ notification.created_at|date:"M d, Y H:i" }}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <form action="{% url 'admin_delete_notification' notification.id %}" method="POST" 
+                                  onsubmit="return confirm('Delete this notification?');" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" class="p-2 hover:bg-red-500/20 rounded-lg transition-colors text-gray-400 hover:text-red-400">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                            <span class="material-symbols-outlined text-4xl mb-2">notifications_off</span>
+                            <p>No notifications found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle user select visibility based on target selection
+    document.querySelectorAll('input[name="target"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const userSelect = document.getElementById('userSelectContainer');
+            if (this.value === 'all') {
+                userSelect.style.opacity = '0.5';
+                userSelect.querySelector('select').disabled = true;
+            } else {
+                userSelect.style.opacity = '1';
+                userSelect.querySelector('select').disabled = false;
+            }
+        });
+    });
+</script>
+{% endblock %}

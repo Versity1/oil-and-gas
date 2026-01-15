@@ -149,6 +149,10 @@
                     <span class="material-symbols-outlined">account_balance_wallet</span>
                     Payment Methods
                 </a>
+                <a href="{% url 'admin_notifications' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_notifications' %}active{% endif %}">
+                    <span class="material-symbols-outlined">notifications</span>
+                    Notifications
+                </a>
                 <a href="{% url 'home' %}" class="sidebar-link">
                     <span class="material-symbols-outlined">home</span>
                     View Website
@@ -189,10 +193,42 @@
                     <p class="text-xs md:text-sm text-gray-500 hidden sm:block">{% block page_subtitle %}Overview and statistics{% endblock %}</p>
                 </div>
                 <div class="flex items-center gap-2 md:gap-4">
-                    <button class="p-2 hover:bg-white/10 rounded-full transition-colors relative">
-                        <span class="material-symbols-outlined">notifications</span>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
+                    <!-- Notification Dropdown -->
+                    <div class="relative" id="notificationDropdownContainer">
+                        <button id="notificationBtn" class="p-2 hover:bg-white/10 rounded-full transition-colors relative">
+                            <span class="material-symbols-outlined">notifications</span>
+                            <span id="notificationBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                        </button>
+                        
+                        <!-- Dropdown Panel -->
+                        <div id="notificationDropdown" class="absolute right-0 top-full mt-2 w-80 bg-admin-card border border-admin-border rounded-xl shadow-2xl z-50 hidden">
+                            <div class="p-4 border-b border-admin-border">
+                                <h3 class="font-bold text-sm">Pending Actions</h3>
+                            </div>
+                            <div class="p-4 space-y-3">
+                                <!-- Pending Deposits -->
+                                <a href="{% url 'admin_deposits' %}?status=pending" class="flex items-center justify-between p-3 bg-admin-bg rounded-lg hover:bg-white/5 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-amber-400">payments</span>
+                                        <span class="text-sm">Pending Deposits</span>
+                                    </div>
+                                    <span id="pendingDepositsCount" class="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                                </a>
+                                
+                                <!-- Pending Withdrawals -->
+                                <a href="{% url 'admin_withdrawals' %}?status=pending" class="flex items-center justify-between p-3 bg-admin-bg rounded-lg hover:bg-white/5 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-amber-400">credit_score</span>
+                                        <span class="text-sm">Pending Withdrawals</span>
+                                    </div>
+                                    <span id="pendingWithdrawalsCount" class="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                                </a>
+                            </div>
+                            <div class="p-3 border-t border-admin-border">
+                                <a href="{% url 'admin_notifications' %}" class="block text-center text-sm text-primary hover:underline">Manage Notifications</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
             
@@ -255,6 +291,48 @@
                 document.body.style.overflow = '';
             }
         });
+        
+        // Notification Dropdown Functionality
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const pendingDepositsCount = document.getElementById('pendingDepositsCount');
+        const pendingWithdrawalsCount = document.getElementById('pendingWithdrawalsCount');
+        
+        // Toggle dropdown
+        notificationBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('hidden');
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('notificationDropdownContainer').contains(e.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+        
+        // Fetch pending counts
+        function fetchPendingCounts() {
+            fetch('{% url "admin_pending_counts" %}')
+                .then(response => response.json())
+                .then(data => {
+                    pendingDepositsCount.textContent = data.pending_deposits;
+                    pendingWithdrawalsCount.textContent = data.pending_withdrawals;
+                    
+                    // Show/hide badge
+                    if (data.total_pending > 0) {
+                        notificationBadge.classList.remove('hidden');
+                    } else {
+                        notificationBadge.classList.add('hidden');
+                    }
+                })
+                .catch(err => console.log('Error fetching counts:', err));
+        }
+        
+        // Fetch on load and every 30 seconds
+        fetchPendingCounts();
+        setInterval(fetchPendingCounts, 30000);
     </script>
 </body>
 </html>
