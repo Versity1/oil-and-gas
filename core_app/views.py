@@ -829,6 +829,14 @@ def kyc_verification(request):
                 status='pending'
             )
         
+        # Create notification for user
+        Notification.objects.create(
+            user=request.user,
+            title="KYC Submitted",
+            message="Your identity verification documents have been submitted and are pending review.",
+            notification_type="info"
+        )
+        
         messages.success(request, "KYC documents submitted successfully. We will review them shortly.")
         return redirect('kyc_verification')
     

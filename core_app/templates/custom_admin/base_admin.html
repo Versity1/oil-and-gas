@@ -227,6 +227,15 @@
                                     </div>
                                     <span id="pendingWithdrawalsCount" class="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">0</span>
                                 </a>
+                                
+                                <!-- Pending KYC -->
+                                <a href="{% url 'admin_kyc_list' %}?status=pending" class="flex items-center justify-between p-3 bg-admin-bg rounded-lg hover:bg-white/5 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-amber-400">verified_user</span>
+                                        <span class="text-sm">Pending KYC</span>
+                                    </div>
+                                    <span id="pendingKycCount" class="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                                </a>
                             </div>
                             <div class="p-3 border-t border-admin-border">
                                 <a href="{% url 'admin_notifications' %}" class="block text-center text-sm text-primary hover:underline">Manage Notifications</a>
@@ -302,6 +311,7 @@
         const notificationBadge = document.getElementById('notificationBadge');
         const pendingDepositsCount = document.getElementById('pendingDepositsCount');
         const pendingWithdrawalsCount = document.getElementById('pendingWithdrawalsCount');
+        const pendingKycCount = document.getElementById('pendingKycCount');
         
         // Toggle dropdown
         notificationBtn.addEventListener('click', (e) => {
@@ -323,6 +333,7 @@
                 .then(data => {
                     pendingDepositsCount.textContent = data.pending_deposits;
                     pendingWithdrawalsCount.textContent = data.pending_withdrawals;
+                    pendingKycCount.textContent = data.pending_kyc;
                     
                     // Show/hide badge
                     if (data.total_pending > 0) {

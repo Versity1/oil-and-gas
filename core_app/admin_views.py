@@ -1004,14 +1004,16 @@ def admin_delete_notification(request, notification_id):
 
 @staff_member_required
 def admin_pending_counts(request):
-    """Return pending deposits/withdrawals count as JSON for header badge."""
+    """Return pending deposits/withdrawals/KYC count as JSON for header badge."""
     pending_deposits = Deposit.objects.filter(status='pending').count()
     pending_withdrawals = Withdrawal.objects.filter(status='pending').count()
+    pending_kyc = KYCDocument.objects.filter(status='pending').count()
     
     return JsonResponse({
         'pending_deposits': pending_deposits,
         'pending_withdrawals': pending_withdrawals,
-        'total_pending': pending_deposits + pending_withdrawals,
+        'pending_kyc': pending_kyc,
+        'total_pending': pending_deposits + pending_withdrawals + pending_kyc,
     })
 
 
