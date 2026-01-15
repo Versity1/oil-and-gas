@@ -1,0 +1,189 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}KYC Verification{% endblock %}
+{% block page_title %}KYC Verification{% endblock %}
+{% block page_subtitle %}Review and manage user identity verification{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="?status=pending" class="bg-admin-card rounded-xl border border-admin-border p-4 hover:bg-white/5 transition-colors {% if status_filter == 'pending' %}ring-2 ring-amber-500{% endif %}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-amber-400">pending</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ pending_count }}</p>
+                    <p class="text-sm text-gray-400">Pending Review</p>
+                </div>
+            </div>
+        </a>
+        <a href="?status=approved" class="bg-admin-card rounded-xl border border-admin-border p-4 hover:bg-white/5 transition-colors {% if status_filter == 'approved' %}ring-2 ring-green-500{% endif %}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-green-400">verified</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ approved_count }}</p>
+                    <p class="text-sm text-gray-400">Approved</p>
+                </div>
+            </div>
+        </a>
+        <a href="?status=rejected" class="bg-admin-card rounded-xl border border-admin-border p-4 hover:bg-white/5 transition-colors {% if status_filter == 'rejected' %}ring-2 ring-red-500{% endif %}">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-400">cancel</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ rejected_count }}</p>
+                    <p class="text-sm text-gray-400">Rejected</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="flex items-center gap-4">
+        <a href="{% url 'admin_kyc_list' %}" class="px-4 py-2 rounded-lg text-sm font-medium {% if status_filter == 'all' %}bg-primary text-white{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %} transition-colors">
+            All
+        </a>
+        <a href="?status=pending" class="px-4 py-2 rounded-lg text-sm font-medium {% if status_filter == 'pending' %}bg-amber-500 text-black{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %} transition-colors">
+            Pending
+        </a>
+        <a href="?status=approved" class="px-4 py-2 rounded-lg text-sm font-medium {% if status_filter == 'approved' %}bg-green-500 text-black{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %} transition-colors">
+            Approved
+        </a>
+        <a href="?status=rejected" class="px-4 py-2 rounded-lg text-sm font-medium {% if status_filter == 'rejected' %}bg-red-500 text-white{% else %}bg-admin-card border border-admin-border text-gray-400 hover:text-white{% endif %} transition-colors">
+            Rejected
+        </a>
+    </div>
+    
+    <!-- KYC List -->
+    <div class="bg-admin-card rounded-xl border border-admin-border overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-admin-bg/50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">User</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Document</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Images</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Status</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-400 uppercase">Submitted</th>
+                        <th class="px-4 py-3 text-center text-xs font-bold text-gray-400 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-admin-border">
+                    {% for kyc in kyc_documents %}
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-sm">person</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-sm">{{ kyc.user.username }}</p>
+                                    <p class="text-xs text-gray-500">{{ kyc.user.email }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm">{{ kyc.get_document_type_display }}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex gap-2">
+                                <a href="{{ kyc.document_front.url }}" target="_blank" class="px-2 py-1 text-xs bg-primary/20 text-primary rounded hover:bg-primary/30 transition-colors">Front</a>
+                                {% if kyc.document_back %}
+                                <a href="{{ kyc.document_back.url }}" target="_blank" class="px-2 py-1 text-xs bg-primary/20 text-primary rounded hover:bg-primary/30 transition-colors">Back</a>
+                                {% endif %}
+                                <a href="{{ kyc.selfie.url }}" target="_blank" class="px-2 py-1 text-xs bg-primary/20 text-primary rounded hover:bg-primary/30 transition-colors">Selfie</a>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 text-xs rounded-full 
+                                {% if kyc.status == 'pending' %}bg-amber-500/20 text-amber-400
+                                {% elif kyc.status == 'approved' %}bg-green-500/20 text-green-400
+                                {% else %}bg-red-500/20 text-red-400{% endif %}">
+                                {{ kyc.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-400">{{ kyc.submitted_at|date:"M d, Y H:i" }}</td>
+                        <td class="px-4 py-3">
+                            {% if kyc.status == 'pending' %}
+                            <div class="flex items-center justify-center gap-2">
+                                <!-- Approve -->
+                                <form action="{% url 'admin_kyc_approve' kyc.id %}" method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="p-2 bg-green-500/20 hover:bg-green-500/30 rounded-lg transition-colors text-green-400" title="Approve">
+                                        <span class="material-symbols-outlined text-sm">check</span>
+                                    </button>
+                                </form>
+                                
+                                <!-- Reject (with modal) -->
+                                <button onclick="openRejectModal({{ kyc.id }}, '{{ kyc.user.username }}')" class="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-colors text-red-400" title="Reject">
+                                    <span class="material-symbols-outlined text-sm">close</span>
+                                </button>
+                            </div>
+                            {% else %}
+                            <span class="text-xs text-gray-500">{{ kyc.reviewed_at|date:"M d" }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                            <span class="material-symbols-outlined text-4xl mb-2">badge</span>
+                            <p>No KYC submissions found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center">
+    <div class="bg-admin-card border border-admin-border rounded-xl p-6 w-full max-w-md mx-4">
+        <h3 class="font-bold text-lg mb-4">Reject KYC</h3>
+        <p class="text-sm text-gray-400 mb-4">Rejecting verification for: <span id="rejectUsername" class="text-white font-medium"></span></p>
+        
+        <form id="rejectForm" method="POST">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm text-gray-400 mb-2">Rejection Reason *</label>
+                <textarea name="rejection_reason" required rows="3" placeholder="Explain why the documents were rejected..."
+                          class="w-full bg-admin-bg border border-admin-border rounded-lg px-4 py-2 focus:border-primary focus:outline-none resize-none"></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="closeRejectModal()" class="flex-1 bg-admin-bg border border-admin-border px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="flex-1 bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-medium transition-colors">
+                    Reject
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openRejectModal(kycId, username) {
+    document.getElementById('rejectModal').classList.remove('hidden');
+    document.getElementById('rejectModal').classList.add('flex');
+    document.getElementById('rejectUsername').textContent = username;
+    document.getElementById('rejectForm').action = '/admin/kyc/' + kycId + '/reject/';
+}
+
+function closeRejectModal() {
+    document.getElementById('rejectModal').classList.add('hidden');
+    document.getElementById('rejectModal').classList.remove('flex');
+}
+
+// Close modal on outside click
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRejectModal();
+    }
+});
+</script>
+{% endblock %}

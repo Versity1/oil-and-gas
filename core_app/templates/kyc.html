@@ -1,0 +1,123 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}KYC Verification - Techo Drill{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto p-4 md:p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">Identity Verification</h1>
+        <p class="text-text-sec-light dark:text-text-sec-dark">Verify your identity to unlock withdrawal features.</p>
+    </div>
+
+    {% if kyc %}
+    <!-- KYC Status Display -->
+    <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div class="flex items-center gap-4 mb-4">
+            {% if kyc.status == 'pending' %}
+            <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-amber-600 dark:text-amber-400">pending</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-lg">Verification Pending</h2>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Your documents are being reviewed. This usually takes 24-48 hours.</p>
+            </div>
+            {% elif kyc.status == 'approved' %}
+            <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-green-600 dark:text-green-400">verified</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-lg text-green-600 dark:text-green-400">Verified</h2>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Your identity has been verified. You can now make withdrawals.</p>
+            </div>
+            {% elif kyc.status == 'rejected' %}
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-red-600 dark:text-red-400">cancel</span>
+            </div>
+            <div>
+                <h2 class="font-bold text-lg text-red-600 dark:text-red-400">Rejected</h2>
+                <p class="text-sm text-text-sec-light dark:text-text-sec-dark">Your verification was rejected. Please resubmit with correct documents.</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if kyc.status == 'rejected' and kyc.rejection_reason %}
+        <div class="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg p-4 mb-4">
+            <p class="text-sm font-bold text-red-700 dark:text-red-400 mb-1">Rejection Reason:</p>
+            <p class="text-sm text-red-600 dark:text-red-300">{{ kyc.rejection_reason }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+                <span class="text-text-sec-light dark:text-text-sec-dark">Document Type:</span>
+                <p class="font-medium">{{ kyc.get_document_type_display }}</p>
+            </div>
+            <div>
+                <span class="text-text-sec-light dark:text-text-sec-dark">Submitted:</span>
+                <p class="font-medium">{{ kyc.submitted_at|date:"M d, Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not kyc or kyc.status == 'rejected' %}
+    <!-- KYC Submission Form -->
+    <div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="font-bold text-lg mb-4">{% if kyc %}Resubmit Documents{% else %}Submit Your Documents{% endif %}</h2>
+        
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Document Type -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Document Type *</label>
+                <select name="document_type" required 
+                        class="w-full bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 focus:border-primary focus:outline-none">
+                    <option value="">Select document type...</option>
+                    {% for value, label in doc_types %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Document Front -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Document Front *</label>
+                <p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-2">Upload a clear photo of the front of your document.</p>
+                <input type="file" name="document_front" accept="image/*" required
+                       class="w-full bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 focus:border-primary focus:outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white file:font-medium file:cursor-pointer">
+            </div>
+            
+            <!-- Document Back (Optional) -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Document Back (Optional)</label>
+                <p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-2">If your document has information on the back, upload it here.</p>
+                <input type="file" name="document_back" accept="image/*"
+                       class="w-full bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 focus:border-primary focus:outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:bg-primary/80 file:text-white file:font-medium file:cursor-pointer">
+            </div>
+            
+            <!-- Selfie -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Selfie with Document *</label>
+                <p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-2">Take a selfie holding your document next to your face. Document must be clearly visible.</p>
+                <input type="file" name="selfie" accept="image/*" required
+                       class="w-full bg-background-light dark:bg-background-dark border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 focus:border-primary focus:outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white file:font-medium file:cursor-pointer">
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">upload_file</span>
+                Submit for Verification
+            </button>
+        </form>
+        
+        <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-500/10 rounded-lg">
+            <p class="text-sm text-blue-700 dark:text-blue-300">
+                <span class="material-symbols-outlined text-sm align-text-bottom mr-1">info</span>
+                Your documents are securely stored and only used for verification purposes.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

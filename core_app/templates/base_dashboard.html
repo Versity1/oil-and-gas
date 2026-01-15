@@ -65,6 +65,7 @@
             <a href="{% url 'investment_packages' %}" class="text-sm font-medium hover:text-primary transition-colors">Investment Plans</a>
             <a href="{% url 'investment_plan' %}" class="text-sm font-medium hover:text-primary transition-colors">Projects</a>
             <a href="{% url 'referral_dashboard' %}" class="text-sm font-medium hover:text-primary transition-colors">Referrals</a>
+            <a href="{% url 'kyc_verification' %}" class="text-sm font-medium hover:text-primary transition-colors">Verify KYC</a>
         </nav>
 
         <div class="flex items-center gap-4">
@@ -181,6 +182,9 @@
                 </a>
                 <a href="{% url 'referral_dashboard' %}" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     <span class="material-symbols-outlined">group_add</span> Referrals
+                </a>
+                <a href="{% url 'kyc_verification' %}" class="flex items-center gap-3 text-base font-medium hover:text-primary p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">verified_user</span> Verify KYC
                 </a>
             </nav>
             <div class="mt-auto">

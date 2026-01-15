@@ -11,7 +11,7 @@ from decimal import Decimal
 from .models import (
     Account, Deposit, Withdrawal, Transaction, 
     InvestmentPlan, UserPlan, Project, Asset, 
-    Investment, PaymentMethod, Notification
+    Investment, PaymentMethod, Notification, KYCDocument
 )
 
 
@@ -1014,3 +1014,82 @@ def admin_pending_counts(request):
         'total_pending': pending_deposits + pending_withdrawals,
     })
 
+
+# ========== KYC MANAGEMENT ==========
+
+@staff_member_required
+def admin_kyc_list(request):
+    """List all KYC submissions with filtering."""
+    status_filter = request.GET.get('status', 'all')
+    kyc_documents = KYCDocument.objects.select_related('user').order_by('-submitted_at')
+    
+    if status_filter != 'all':
+        kyc_documents = kyc_documents.filter(status=status_filter)
+    
+    # Count by status for quick stats
+    pending_count = KYCDocument.objects.filter(status='pending').count()
+    approved_count = KYCDocument.objects.filter(status='approved').count()
+    rejected_count = KYCDocument.objects.filter(status='rejected').count()
+    
+    context = {
+        'kyc_documents': kyc_documents,
+        'status_filter': status_filter,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+    }
+    return render(request, 'custom_admin/kyc.html', context)
+
+
+@staff_member_required
+def admin_kyc_approve(request, kyc_id):
+    """Approve a KYC submission."""
+    kyc = get_object_or_404(KYCDocument, id=kyc_id)
+    
+    if request.method == 'POST':
+        kyc.status = 'approved'
+        kyc.rejection_reason = ''
+        kyc.reviewed_at = timezone.now()
+        kyc.save()
+        
+        # Create notification for user
+        Notification.objects.create(
+            user=kyc.user,
+            title="KYC Approved",
+            message="Your identity verification has been approved. You can now make withdrawals.",
+            notification_type="success"
+        )
+        
+        messages.success(request, f"KYC for {kyc.user.username} has been approved.")
+    
+    return redirect('admin_kyc_list')
+
+
+@staff_member_required
+def admin_kyc_reject(request, kyc_id):
+    """Reject a KYC submission with reason."""
+    kyc = get_object_or_404(KYCDocument, id=kyc_id)
+    
+    if request.method == 'POST':
+        rejection_reason = request.POST.get('rejection_reason', '').strip()
+        
+        if not rejection_reason:
+            messages.error(request, "Please provide a rejection reason.")
+            return redirect('admin_kyc_list')
+        
+        kyc.status = 'rejected'
+        kyc.rejection_reason = rejection_reason
+        kyc.reviewed_at = timezone.now()
+        kyc.save()
+        
+        # Create notification for user
+        Notification.objects.create(
+            user=kyc.user,
+            title="KYC Rejected",
+            message=f"Your identity verification was rejected. Reason: {rejection_reason}",
+            notification_type="warning"
+        )
+        
+        messages.success(request, f"KYC for {kyc.user.username} has been rejected.")
+    
+    return redirect('admin_kyc_list')

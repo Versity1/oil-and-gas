@@ -240,3 +240,34 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.user.username}"
+
+
+class KYCDocument(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+    DOC_TYPES = (
+        ('passport', 'Passport'),
+        ('national_id', 'National ID'),
+        ('drivers_license', "Driver's License"),
+    )
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='kyc_document')
+    document_type = models.CharField(max_length=20, choices=DOC_TYPES)
+    document_front = models.ImageField(upload_to='kyc/')
+    document_back = models.ImageField(upload_to='kyc/', blank=True, null=True, help_text="Optional for documents with back side")
+    selfie = models.ImageField(upload_to='kyc/', help_text="Selfie holding the document")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    rejection_reason = models.TextField(blank=True, help_text="Reason for rejection if applicable")
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "KYC Document"
+        verbose_name_plural = "KYC Documents"
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_document_type_display()} ({self.status})"

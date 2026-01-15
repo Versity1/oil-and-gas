@@ -153,6 +153,10 @@
                     <span class="material-symbols-outlined">notifications</span>
                     Notifications
                 </a>
+                <a href="{% url 'admin_kyc_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_kyc_list' %}active{% endif %}">
+                    <span class="material-symbols-outlined">verified_user</span>
+                    KYC Verification
+                </a>
                 <a href="{% url 'home' %}" class="sidebar-link">
                     <span class="material-symbols-outlined">home</span>
                     View Website

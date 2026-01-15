@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan, Notification
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan, Notification, KYCDocument
 
 @admin.register(InvestmentPlan)
 class InvestmentPlanAdmin(admin.ModelAdmin):
@@ -73,3 +73,12 @@ class NotificationAdmin(admin.ModelAdmin):
     search_fields = ('title', 'message', 'user__username')
     readonly_fields = ('created_at',)
     ordering = ('-created_at',)
+
+@admin.register(KYCDocument)
+class KYCDocumentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'document_type', 'status', 'submitted_at', 'reviewed_at')
+    list_filter = ('status', 'document_type')
+    search_fields = ('user__username', 'user__email')
+    readonly_fields = ('submitted_at',)
+    ordering = ('-submitted_at',)
+

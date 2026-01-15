@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import JsonResponse
 from .forms import UserRegistrationForm, DepositForm, WithdrawalForm
-from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan, Notification
+from .models import Account, Transaction, PaymentMethod, Deposit, Withdrawal, Project, Asset, Investment, InvestmentPlan, UserPlan, Notification, KYCDocument
 from .utils import send_transaction_email, send_transaction_request_email, send_investment_email
 
 # Front Pages
@@ -547,7 +547,21 @@ def deposit_pay(request, deposit_id):
 @login_required
 def withdrawal(request):
     account = request.user.account
+    
+    # Check KYC verification status
+    kyc_verified = False
+    try:
+        kyc = request.user.kyc_document
+        kyc_verified = kyc.status == 'approved'
+    except KYCDocument.DoesNotExist:
+        pass
+    
     if request.method == 'POST':
+        # Block withdrawal if KYC not verified
+        if not kyc_verified:
+            messages.error(request, "Please complete KYC verification before making withdrawals.")
+            return redirect('kyc_verification')
+        
         form = WithdrawalForm(request.POST, account=account)
         if form.is_valid():
             amount = form.cleaned_data['amount']
@@ -575,7 +589,7 @@ def withdrawal(request):
     else:
         form = WithdrawalForm()
     
-    return render(request, 'withdrawal.html', {'form': form, 'account': account})
+    return render(request, 'withdrawal.html', {'form': form, 'account': account, 'kyc_verified': kyc_verified})
 
 
 @login_required
@@ -764,3 +778,64 @@ def referral_dashboard(request):
         'referrals': referral_data,
     }
     return render(request, 'referrals.html', context)
+
+
+@login_required
+def kyc_verification(request):
+    """User KYC verification page - submit documents or view status."""
+    account = request.user.account
+    
+    # Check if user already has a KYC submission
+    kyc = None
+    try:
+        kyc = request.user.kyc_document
+    except KYCDocument.DoesNotExist:
+        pass
+    
+    if request.method == 'POST':
+        # Don't allow resubmission if pending or approved
+        if kyc and kyc.status in ['pending', 'approved']:
+            messages.warning(request, "You already have a KYC submission being processed or approved.")
+            return redirect('kyc_verification')
+        
+        document_type = request.POST.get('document_type')
+        document_front = request.FILES.get('document_front')
+        selfie = request.FILES.get('selfie')
+        document_back = request.FILES.get('document_back')  # Optional
+        
+        if not document_type or not document_front or not selfie:
+            messages.error(request, "Please provide document type, front image, and selfie.")
+            return redirect('kyc_verification')
+        
+        # Create or update KYC document
+        if kyc:
+            # Resubmission after rejection
+            kyc.document_type = document_type
+            kyc.document_front = document_front
+            kyc.selfie = selfie
+            if document_back:
+                kyc.document_back = document_back
+            kyc.status = 'pending'
+            kyc.rejection_reason = ''
+            kyc.reviewed_at = None
+            kyc.save()
+        else:
+            KYCDocument.objects.create(
+                user=request.user,
+                document_type=document_type,
+                document_front=document_front,
+                document_back=document_back,
+                selfie=selfie,
+                status='pending'
+            )
+        
+        messages.success(request, "KYC documents submitted successfully. We will review them shortly.")
+        return redirect('kyc_verification')
+    
+    context = {
+        'account': account,
+        'kyc': kyc,
+        'doc_types': KYCDocument.DOC_TYPES,
+    }
+    return render(request, 'kyc.html', context)
+

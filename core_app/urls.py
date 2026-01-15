@@ -45,6 +45,7 @@ urlpatterns = [
     path('transfer-to-main/', views.transfer_to_main, name='transfer_to_main'),
     path('sell-asset/<int:investment_id>/', views.sell_asset, name='sell_asset'),
     path('referrals/', views.referral_dashboard, name='referral_dashboard'),
+    path('kyc/', views.kyc_verification, name='kyc_verification'),
     
     # Notification API
     path('api/notifications/', views.get_notifications, name='get_notifications'),
@@ -95,4 +96,9 @@ urlpatterns = [
     path('admin/notifications/send/', admin_views.admin_send_notification, name='admin_send_notification'),
     path('admin/notifications/<int:notification_id>/delete/', admin_views.admin_delete_notification, name='admin_delete_notification'),
     path('admin/api/pending-counts/', admin_views.admin_pending_counts, name='admin_pending_counts'),
+    
+    # KYC Management
+    path('admin/kyc/', admin_views.admin_kyc_list, name='admin_kyc_list'),
+    path('admin/kyc/<int:kyc_id>/approve/', admin_views.admin_kyc_approve, name='admin_kyc_approve'),
+    path('admin/kyc/<int:kyc_id>/reject/', admin_views.admin_kyc_reject, name='admin_kyc_reject'),
 ]
